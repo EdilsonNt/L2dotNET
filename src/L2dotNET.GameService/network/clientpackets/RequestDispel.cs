@@ -18,9 +18,9 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void Read()
         {
-            _ownerId = ReadD();
-            _skillId = ReadD();
-            _skillLv = ReadD();
+            _ownerId = packet.ReadInt();
+            _skillId = packet.ReadInt();
+            _skillLv = packet.ReadInt();
         }
 
         public override void RunImpl()

@@ -5,21 +5,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestTargetCanceld : PacketBase
     {
+        private short _unselect;
+        private readonly GameClient _client;
+
         public RequestTargetCanceld(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        private short _unselect;
-
-        public override void Read()
-        {
-            _unselect = ReadH(); //0 esc key, 1 - mouse
+            _client = client;
+            _unselect = packet.ReadShort(); //0 esc key, 1 - mouse
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if ((_unselect == 0) && player.IsCastingNow())
             {

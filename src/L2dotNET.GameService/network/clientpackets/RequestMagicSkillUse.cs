@@ -6,25 +6,22 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestMagicSkillUse : PacketBase
     {
-        public RequestMagicSkillUse(Packet packet, GameClient client)
-        {
-            Makeme(client, data);
-        }
-
         private int _magicId;
         private bool _ctrlPressed;
         private bool _shiftPressed;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public RequestMagicSkillUse(Packet packet, GameClient client)
         {
-            _magicId = ReadD(); // Identifier of the used skill
-            _ctrlPressed = ReadD() != 0; // True if it's a ForceAttack : Ctrl pressed
-            _shiftPressed = ReadC() != 0; // True if Shift pressed
+            _client = client;
+            _magicId = packet.ReadInt(); // Identifier of the used skill
+            _ctrlPressed = packet.ReadInt() != 0; // True if it's a ForceAttack : Ctrl pressed
+            _shiftPressed = packet.ReadByte() != 0; // True if Shift pressed
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.PBlockAct == 1)
             {

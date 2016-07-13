@@ -7,20 +7,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class RequestSocialAction : PacketBase
     {
         private int _actionId;
+        private readonly GameClient _client;
 
         public RequestSocialAction(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _actionId = ReadD();
+            _client = client;
+            _actionId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
             if (player == null)
             {
                 return;

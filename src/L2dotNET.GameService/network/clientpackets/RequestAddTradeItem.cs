@@ -11,22 +11,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _sId;
         private long _num;
         private int _unk1;
-
+        private readonly GameClient _client;
         public RequestAddTradeItem(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _unk1 = ReadD(); // постоянно 1. в клиенте нет инфы что это
-            _sId = ReadD();
-            _num = ReadD();
+            _client = client;
+            _unk1 = packet.ReadInt(); // постоянно 1. в клиенте нет инфы что это
+            _sId = packet.ReadInt();
+            _num = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.TradeState < 3) // умник
             {

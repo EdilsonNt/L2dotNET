@@ -10,23 +10,20 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _y;
         private int _z;
         private int _heading;
+        private readonly GameClient _client;
 
         public CannotMoveAnymore(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _x = ReadD();
-            _y = ReadD();
-            _z = ReadD();
-            _heading = ReadD();
+            _client = client;
+            _x = packet.ReadInt();
+            _y = packet.ReadInt();
+            _z = packet.ReadInt();
+            _heading = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             player.NotifyStopMove(true, true);
         }

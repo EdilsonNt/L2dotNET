@@ -14,13 +14,13 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
 
         public RequestEnchantItem(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()
         {
-            _aSTargetId = ReadD();
-            _aSSupportId = ReadD();
+            _aSTargetId = packet.ReadInt();
+            _aSSupportId = packet.ReadInt();
         }
 
         public override void RunImpl()

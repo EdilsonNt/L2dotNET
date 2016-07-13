@@ -10,14 +10,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestQuestAbort(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _questId;
 
         public override void Read()
         {
-            _questId = ReadD();
+            _questId = packet.ReadInt();
         }
 
         public override void RunImpl()

@@ -19,8 +19,8 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
 
         public override void Read()
         {
-            _unk1 = ReadD();
-            _player = ReadS();
+            _unk1 = packet.ReadInt();
+            _player = packet.ReadString();
         }
 
         public override void RunImpl()

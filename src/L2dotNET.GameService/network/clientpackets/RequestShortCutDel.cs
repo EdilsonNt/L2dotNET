@@ -8,24 +8,21 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestShortCutDel : PacketBase
     {
-        public RequestShortCutDel(Packet packet, GameClient client)
-        {
-            Makeme(client, data);
-        }
-
         private int _slot;
         private int _page;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public RequestShortCutDel(Packet packet, GameClient client)
         {
-            int id = ReadD();
+            _client = client;
+            int id = packet.ReadInt();
             _slot = id % 12;
             _page = id / 12;
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             L2Shortcut scx = player.Shortcuts.FirstOrDefault(sc => (sc.Slot == _slot) && (sc.Page == _page));
 

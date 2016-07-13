@@ -7,21 +7,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestUseItem : PacketBase
     {
+        private readonly GameClient _client;
+        private int _sId;
         public RequestUseItem(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        private int _sId;
-
-        public override void Read()
-        {
-            _sId = ReadD();
+            _client = client;
+            _sId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.PBlockAct == 1)
             {

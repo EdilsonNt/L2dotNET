@@ -7,21 +7,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestLinkHtml : PacketBase
     {
+        private string _link;
+        private readonly GameClient _client;
+
         public RequestLinkHtml(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        private string _link;
-
-        public override void Read()
-        {
-            _link = ReadS();
+            _client = client;
+            _link = packet.ReadString();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             // log.Info($"link to '{ _link }'");
 

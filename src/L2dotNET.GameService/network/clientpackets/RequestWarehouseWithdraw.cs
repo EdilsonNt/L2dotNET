@@ -12,17 +12,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RequestBypassToServer));
 
-        public RequestWarehouseWithdraw(Packet packet, GameClient client)
-        {
-            Makeme(client, data);
-        }
-
         private int _count;
         private int[] _items;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public RequestWarehouseWithdraw(Packet packet, GameClient client)
         {
-            _count = ReadD();
+            _client = client;
+            _count = packet.ReadInt();
 
             if ((_count < 0) || (_count > 255))
             {
@@ -32,14 +29,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _items = new int[_count * 2];
             for (int i = 0; i < _count; i++)
             {
-                _items[i * 2] = ReadD();
-                _items[(i * 2) + 1] = ReadD();
+                _items[i * 2] = packet.ReadInt();
+                _items[(i * 2) + 1] = packet.ReadInt();
             }
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
             L2Npc npc = player.FolkNpc;
 
             if (npc == null)
@@ -57,12 +54,9 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
                 L2Item item = null; //player._warehouse.Items[objectId];
 
-                if (item == null)
-                {
-                    Log.Info($"cant find item {objectId} in warehouse {player.Name}");
-                    player.SendActionFailed();
-                    return;
-                }
+                Log.Info($"cant find item {objectId} in warehouse {player.Name}");
+                player.SendActionFailed();
+                return;
 
                 if (item.Template.Stackable)
                 {

@@ -9,20 +9,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class AnswerTradeRequest : PacketBase
     {
         private int _response;
+        private readonly GameClient _client;
 
         public AnswerTradeRequest(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _response = ReadD();
+            _client = client;
+            _response = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.TradeState != 2)
             {

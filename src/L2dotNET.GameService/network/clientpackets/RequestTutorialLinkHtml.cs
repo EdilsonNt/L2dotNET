@@ -10,14 +10,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestTutorialLinkHtml(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private string _link;
 
         public override void Read()
         {
-            _link = ReadS();
+            _link = packet.ReadString();
         }
 
         public override void RunImpl()

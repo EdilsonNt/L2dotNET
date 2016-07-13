@@ -12,12 +12,12 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
 
         public RequestChangePetName(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()
         {
-            _name = ReadS();
+            _name = packet.ReadString();
         }
 
         public override void RunImpl()

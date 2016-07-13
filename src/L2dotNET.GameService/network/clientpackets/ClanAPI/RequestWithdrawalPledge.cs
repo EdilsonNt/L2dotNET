@@ -6,19 +6,15 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
 {
     class RequestWithdrawalPledge : PacketBase
     {
+        private readonly GameClient _client;
         public RequestWithdrawalPledge(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            // not actions
+            _client = client;
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.Clan != null)
             {

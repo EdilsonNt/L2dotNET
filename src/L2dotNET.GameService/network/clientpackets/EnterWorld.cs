@@ -82,7 +82,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
         //    //{
         //    //    tracert[i] = new int[4];
         //    //    for (int o = 0; o < 4; o++)
-        //    //        tracert[i][o] = readC();
+        //    //        tracert[i][o] = packet.ReadByte();
         //    //}
         //}
     }

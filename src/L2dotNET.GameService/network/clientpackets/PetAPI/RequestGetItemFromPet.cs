@@ -12,22 +12,19 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
         private int _objectId;
         private long _count;
         private int _equipped;
+        private readonly GameClient _client;
 
         public RequestGetItemFromPet(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _objectId = ReadD();
-            _count = ReadQ();
-            _equipped = ReadD();
+            _client = client;
+            _objectId = packet.ReadInt();
+            _count = packet.ReadInt();
+            _equipped = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (!(player.Summon is L2Pet) || (player.EnchantState != 0))
             {

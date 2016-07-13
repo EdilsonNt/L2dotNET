@@ -9,14 +9,14 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
     {
         public RequestRecipeBookOpen(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _type;
 
         public override void Read()
         {
-            _type = ReadD();
+            _type = packet.ReadInt();
         }
 
         public override void RunImpl()

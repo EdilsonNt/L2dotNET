@@ -11,30 +11,27 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         private int _listId,
                     _count;
-        private long[] _items;
+        private int[] _items;
+        private readonly GameClient _client;
 
         public RequestBuyItem(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
+            _client = client;
+            _listId = packet.ReadInt();
+            _count = packet.ReadInt();
 
-        public override void Read()
-        {
-            _listId = ReadD();
-            _count = ReadD();
-
-            _items = new long[_count * 2];
+            _items = new int[_count * 2];
 
             for (int i = 0; i < _count; i++)
             {
-                _items[i * 2] = ReadD();
-                _items[(i * 2) + 1] = ReadQ();
+                _items[i * 2] = packet.ReadInt();
+                _items[(i * 2) + 1] = packet.ReadInt();
             }
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (_count <= 0)
             {

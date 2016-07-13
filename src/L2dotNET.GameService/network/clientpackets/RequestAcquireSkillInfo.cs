@@ -10,7 +10,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestAcquireSkillInfo(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _id;
@@ -19,9 +19,9 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void Read()
         {
-            _id = ReadD();
-            _level = ReadD();
-            _skillType = ReadD();
+            _id = packet.ReadInt();
+            _level = packet.ReadInt();
+            _skillType = packet.ReadInt();
         }
 
         public override void RunImpl()

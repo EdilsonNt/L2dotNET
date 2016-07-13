@@ -11,14 +11,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public NetPingResponse(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()
         {
-            _request = ReadD();
-            _msec = ReadD();
-            _unk2 = ReadD();
+            _request = packet.ReadInt();
+            _msec = packet.ReadInt();
+            _unk2 = packet.ReadInt();
         }
 
         public override void RunImpl()

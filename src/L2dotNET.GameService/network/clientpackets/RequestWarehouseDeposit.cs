@@ -12,34 +12,31 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RequestBypassToServer));
 
+        private int _count;
+        private int[] _items;
+        private readonly GameClient _client;
+
         public RequestWarehouseDeposit(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        private int _count;
-        private long[] _items;
-
-        public override void Read()
-        {
-            _count = ReadD();
+            _client = client;
+            _count = packet.ReadInt();
 
             if ((_count < 0) || (_count > 255))
             {
                 _count = 0;
             }
 
-            _items = new long[_count * 2];
+            _items = new int[_count * 2];
             for (int i = 0; i < _count; i++)
             {
-                _items[i * 2] = ReadD();
-                _items[(i * 2) + 1] = ReadQ();
+                _items[i * 2] = packet.ReadInt();
+                _items[(i * 2) + 1] = packet.ReadInt();
             }
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             L2Npc npc = player.FolkNpc;
 

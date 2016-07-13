@@ -6,19 +6,15 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestItemList : PacketBase
     {
+        private readonly GameClient _client;
         public RequestItemList(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            // do nothing
+            _client = client;
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
             player.SendItemList(true);
         }
     }

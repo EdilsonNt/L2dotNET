@@ -10,12 +10,12 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public RequestShowBoard(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()
         {
-            _type = ReadD();
+            _type = packet.ReadInt();
         }
 
         public override void RunImpl()

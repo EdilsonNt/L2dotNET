@@ -9,7 +9,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestDestroyItem(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _sId;
@@ -17,8 +17,8 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void Read()
         {
-            _sId = ReadD();
-            _num = ReadD();
+            _sId = packet.ReadInt();
+            _num = packet.ReadInt();
         }
 
         public override void RunImpl()

@@ -12,37 +12,32 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class RequestBypassToServer : PacketBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RequestBypassToServer));
-
+        private string _alias;
+        private readonly GameClient _client;
         public RequestBypassToServer(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        private string _alias;
-
-        public override void Read()
-        {
-            _alias = ReadS();
+            _client = client;
+            _alias = packet.ReadString();
         }
 
         private L2Npc GetNpc()
         {
             Log.Info($"bypass '{_alias}'");
-            L2Npc npc = (L2Npc)GetClient().CurrentPlayer.CurrentTarget;
+            L2Npc npc = (L2Npc)_client.CurrentPlayer.CurrentTarget;
 
             if (npc != null)
             {
                 return npc;
             }
 
-            GetClient().CurrentPlayer.SendMessage("no npc found");
-            GetClient().CurrentPlayer.SendActionFailed();
+            _client.CurrentPlayer.SendMessage("no npc found");
+            _client.CurrentPlayer.SendActionFailed();
             return null;
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.PBlockAct == 1)
             {

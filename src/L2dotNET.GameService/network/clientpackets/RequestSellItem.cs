@@ -9,32 +9,29 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestSellItem : PacketBase
     {
-        public RequestSellItem(Packet packet, GameClient client)
-        {
-            Makeme(client, data);
-        }
-
         private int _listId;
         private int _count;
-        private long[] _items;
+        private int[] _items;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public RequestSellItem(Packet packet, GameClient client)
         {
-            _listId = ReadD();
-            _count = ReadD();
-            _items = new long[_count * 3];
+            _client = client;
+            _listId = packet.ReadInt();
+            _count = packet.ReadInt();
+            _items = new int[_count * 3];
 
             for (int i = 0; i < _count; i++)
             {
-                _items[(i * 3) + 0] = ReadD();
-                _items[(i * 3) + 1] = ReadD();
-                _items[(i * 3) + 2] = ReadQ();
+                _items[(i * 3) + 0] = packet.ReadInt();
+                _items[(i * 3) + 1] = packet.ReadInt();
+                _items[(i * 3) + 2] = packet.ReadInt();
             }
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
             L2Npc npc = player.FolkNpc;
 
             if (npc == null)

@@ -9,20 +9,16 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class RequestStartTrade : PacketBase
     {
         private int _targetId;
-
+        private readonly GameClient _client;
         public RequestStartTrade(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _targetId = ReadD();
+            _client = client;
+            _targetId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.TradeState != 0)
             {

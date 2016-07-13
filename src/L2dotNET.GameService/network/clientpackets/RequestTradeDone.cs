@@ -9,20 +9,16 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class RequestTradeDone : PacketBase
     {
         private bool _bDone;
-
+        private readonly GameClient _client;
         public RequestTradeDone(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _bDone = ReadD() == 1;
+            _client = client;
+            _bDone = packet.ReadInt() == 1;
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.TradeState < 3) // умник
             {

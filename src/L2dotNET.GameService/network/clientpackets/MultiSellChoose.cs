@@ -24,25 +24,25 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public MultiSellChoose(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()
         {
-            _listId = ReadD();
-            _entryId = ReadD();
+            _listId = packet.ReadInt();
+            _entryId = packet.ReadInt();
             _amount = ReadQ();
-            _enchant = ReadH();
-            _unk2 = ReadD();
-            _unk3 = ReadD();
-            _unk4 = ReadH(); // elemental attributes
-            _unk5 = ReadH(); // elemental attributes
-            _unk6 = ReadH(); // elemental attributes
-            _unk7 = ReadH(); // elemental attributes
-            _unk8 = ReadH(); // elemental attributes
-            _unk9 = ReadH(); // elemental attributes
-            _unk10 = ReadH(); // elemental attributes
-            _unk11 = ReadH(); // elemental attributes
+            _enchant = packet.ReadShort();
+            _unk2 = packet.ReadInt();
+            _unk3 = packet.ReadInt();
+            _unk4 = packet.ReadShort(); // elemental attributes
+            _unk5 = packet.ReadShort(); // elemental attributes
+            _unk6 = packet.ReadShort(); // elemental attributes
+            _unk7 = packet.ReadShort(); // elemental attributes
+            _unk8 = packet.ReadShort(); // elemental attributes
+            _unk9 = packet.ReadShort(); // elemental attributes
+            _unk10 = packet.ReadShort(); // elemental attributes
+            _unk11 = packet.ReadShort(); // elemental attributes
         }
 
         public override void RunImpl()

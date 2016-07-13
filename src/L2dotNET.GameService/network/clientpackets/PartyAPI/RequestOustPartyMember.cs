@@ -8,20 +8,17 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
     class RequestOustPartyMember : PacketBase
     {
         private string _name;
+        private readonly GameClient _client;
 
         public RequestOustPartyMember(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _name = ReadS();
+            _client = client;
+            _name = packet.ReadString();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.Party == null)
             {

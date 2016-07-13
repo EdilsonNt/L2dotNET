@@ -9,14 +9,14 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
 
         public RequestPartyMatchList(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _status;
 
         public override void Read()
         {
-            _status = ReadD();
+            _status = packet.ReadInt();
         }
 
         public override void RunImpl()

@@ -8,14 +8,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public SendBypassBuildCmd(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private string _alias;
 
         public override void Read()
         {
-            _alias = ReadS();
+            _alias = packet.ReadString();
             _alias = _alias.Trim();
         }
 

@@ -9,14 +9,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestTutorialPassCmdToServer(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private string _alias;
 
         public override void Read()
         {
-            _alias = ReadS();
+            _alias = packet.ReadString();
             if (_alias.Contains("\n"))
             {
                 _alias = _alias.Replace("\n", "");

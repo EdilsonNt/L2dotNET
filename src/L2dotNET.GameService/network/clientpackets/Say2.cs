@@ -10,19 +10,16 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class Say2 : PacketBase
     {
-        public Say2(Packet packet, GameClient client)
-        {
-            Makeme(client, data);
-        }
-
         private string _text,
                        _target;
         private SayIDList _type;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public Say2(Packet packet, GameClient client)
         {
-            _text = ReadS();
-            int typeId = ReadD();
+            _client = client;
+            _text = packet.ReadString();
+            int typeId = packet.ReadInt();
 
             if ((typeId < 0) || (typeId >= SayId.MaxId))
             {
@@ -33,13 +30,13 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             if (_type == SayIDList.CHAT_TELL)
             {
-                _target = ReadS();
+                _target = packet.ReadString();
             }
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             //if (_text.Contains("	Type=1 	ID=") && _text.Contains("	Color=0 	Underline=0 	Title="))
             //{

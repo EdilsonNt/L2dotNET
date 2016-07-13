@@ -6,7 +6,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestSendMsnChatLog(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private string _text,
@@ -15,9 +15,9 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void Read()
         {
-            _text = ReadS();
-            _email = ReadS();
-            _type = ReadD();
+            _text = packet.ReadString();
+            _email = packet.ReadString();
+            _type = packet.ReadInt();
         }
 
         public override void RunImpl()

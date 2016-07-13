@@ -14,14 +14,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public CharacterDelete(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _charSlot;
 
         public override void Read()
         {
-            _charSlot = ReadD();
+            _charSlot = packet.ReadInt();
         }
 
         public override void RunImpl()

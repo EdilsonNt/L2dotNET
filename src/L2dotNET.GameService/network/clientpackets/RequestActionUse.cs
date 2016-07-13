@@ -15,22 +15,19 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _actionId;
         private bool _ctrlPressed;
         private bool _shiftPressed;
+        private readonly GameClient _client;
 
         public RequestActionUse(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _actionId = ReadD();
-            _ctrlPressed = ReadD() == 1;
-            _shiftPressed = ReadC() == 1;
+            _client = client;
+            _actionId = packet.ReadInt();
+            _ctrlPressed = packet.ReadInt() == 1;
+            _shiftPressed = packet.ReadByte() == 1;
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.Dead || player.IsCastingNow() || (player.PBlockAct == 1))
             {

@@ -18,7 +18,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void Read()
         {
-            _objectId = ReadD();
+            _objectId = packet.ReadInt();
         }
 
         public override void RunImpl()

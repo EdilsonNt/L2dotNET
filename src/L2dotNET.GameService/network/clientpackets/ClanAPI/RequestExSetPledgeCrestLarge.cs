@@ -17,7 +17,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
 
         public override void Read()
         {
-            _size = ReadD();
+            _size = packet.ReadInt();
 
             if ((_size > 0) && (_size <= 2176))
             {

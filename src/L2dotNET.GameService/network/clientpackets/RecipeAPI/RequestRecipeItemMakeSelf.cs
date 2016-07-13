@@ -12,14 +12,14 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
     {
         public RequestRecipeItemMakeSelf(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _id;
 
         public override void Read()
         {
-            _id = ReadD();
+            _id = packet.ReadInt();
         }
 
         public override void RunImpl()

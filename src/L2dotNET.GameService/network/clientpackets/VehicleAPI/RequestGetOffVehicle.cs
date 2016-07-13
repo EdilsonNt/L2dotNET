@@ -11,23 +11,20 @@ namespace L2dotNET.GameService.Network.Clientpackets.VehicleAPI
         private int _x;
         private int _y;
         private int _z;
+        private readonly GameClient _client;
 
         public RequestGetOffVehicle(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _boatId = ReadD();
-            _x = ReadD();
-            _y = ReadD();
-            _z = ReadD();
+            _client = client;
+            _boatId = packet.ReadInt();
+            _x = packet.ReadInt();
+            _y = packet.ReadInt();
+            _z = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if ((player.Boat == null) || (player.Boat.ObjId != _boatId))
             {

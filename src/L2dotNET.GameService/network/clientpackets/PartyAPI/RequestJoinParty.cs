@@ -10,21 +10,18 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
     {
         private string _name;
         private int _itemDistribution;
+        private readonly GameClient _client;
 
         public RequestJoinParty(Packet packet, GameClient client)
         {
-            Makeme(client, data);
-        }
-
-        public override void Read()
-        {
-            _name = ReadS();
-            _itemDistribution = ReadD();
+            _client = client;
+            _name = packet.ReadString();
+            _itemDistribution = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
             L2Player target = player.KnownObjects.Values.OfType<L2Player>().FirstOrDefault(obj => obj.Name.Equals(_name));
 
             //if (name.Equals(player.Name))

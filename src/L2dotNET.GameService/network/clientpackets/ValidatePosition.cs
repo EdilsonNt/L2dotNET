@@ -8,7 +8,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public ValidatePosition(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private const int Synctype = 1;
@@ -21,11 +21,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void Read()
         {
-            _x = ReadD();
-            _y = ReadD();
-            _z = ReadD();
-            _heading = ReadD();
-            _data = ReadD();
+            _x = packet.ReadInt();
+            _y = packet.ReadInt();
+            _z = packet.ReadInt();
+            _heading = packet.ReadInt();
+            _data = packet.ReadInt();
         }
 
         public override void RunImpl()

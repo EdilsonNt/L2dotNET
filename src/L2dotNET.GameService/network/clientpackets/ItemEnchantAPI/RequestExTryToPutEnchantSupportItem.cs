@@ -19,8 +19,8 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
 
         public override void Read()
         {
-            _aSSupportId = ReadD();
-            _aSTargetId = ReadD();
+            _aSSupportId = packet.ReadInt();
+            _aSTargetId = packet.ReadInt();
         }
 
         public override void RunImpl()

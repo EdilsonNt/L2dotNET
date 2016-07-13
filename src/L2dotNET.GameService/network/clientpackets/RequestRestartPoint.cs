@@ -11,16 +11,16 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public RequestRestartPoint(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()
         {
-            _type = ReadD();
+            _type = packet.ReadInt();
 
             if (_type == 22)
             {
-                _keyItem = ReadD();
+                _keyItem = packet.ReadInt();
             }
         }
 

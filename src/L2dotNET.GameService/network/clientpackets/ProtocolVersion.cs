@@ -10,14 +10,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public ProtocolVersion(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         private int _protocol;
 
         public override void Read()
         {
-            _protocol = ReadD();
+            _protocol = packet.ReadInt();
         }
 
         public override void RunImpl()

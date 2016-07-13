@@ -10,7 +10,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestRecordInfo(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()

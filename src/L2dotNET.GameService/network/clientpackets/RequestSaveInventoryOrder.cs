@@ -16,14 +16,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void Read()
         {
-            _count = ReadD();
+            _count = packet.ReadInt();
 
             //  _count = Math.Min(125, _count); мм?зачем
             _items = new int[_count * 2];
             for (int i = 0; i < _count; i++)
             {
-                _items[i * 2] = ReadD();
-                _items[(i * 2) + 1] = ReadD();
+                _items[i * 2] = packet.ReadInt();
+                _items[(i * 2) + 1] = packet.ReadInt();
             }
         }
 

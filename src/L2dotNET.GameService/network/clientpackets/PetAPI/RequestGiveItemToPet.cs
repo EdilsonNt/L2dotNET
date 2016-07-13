@@ -14,12 +14,12 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
 
         public RequestGiveItemToPet(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
         public override void Read()
         {
-            _sId = ReadD();
+            _sId = packet.ReadInt();
             _num = ReadQ();
         }
 

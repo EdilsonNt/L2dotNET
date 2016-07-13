@@ -133,19 +133,20 @@ namespace L2dotNET.LoginService.Network
         /// <param name="packet">Incoming packet.</param>
         protected void Handle(Packet packet)
         {
+            PacketBase packetBase = null;
             switch (packet.FirstOpcode)
             {
                 case 0x00:
-                    new RequestAuthLogin(packet, this).RunImpl();
+                    packetBase = new RequestAuthLogin(packet, this);
                     break;
                 case 0x02:
-                    new RequestServerLogin(packet, this).RunImpl();
+                    packetBase = new RequestServerLogin(packet, this);
                     break;
                 case 0x05:
-                    new RequestServerList(packet, this).RunImpl();
+                    packetBase = new RequestServerList(packet, this);
                     break;
                 case 0x07:
-                    new AuthGameGuard(this).RunImpl();
+                    packetBase = new AuthGameGuard(this);
                     break;
 
                 default:
@@ -153,8 +154,8 @@ namespace L2dotNET.LoginService.Network
                     break;
             }
 
-            //if (msg != null)
-            //    new Thread(new ThreadStart(msg.Run)).Start();
+            if (packetBase != null)
+                new Thread(packetBase.RunImpl).Start();
         }
 
         public int Login1,

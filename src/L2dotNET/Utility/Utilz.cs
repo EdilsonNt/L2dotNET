@@ -49,7 +49,7 @@ namespace L2dotNET.Utility
 
         public static Packet ToPacket(this byte[] byteArray)
         {
-            return new Packet(0, byteArray);
+            return new Packet(1, byteArray);
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace L2dotNET.GameService.Model.Inventory
         public Inventory(L2Character owner)
         {
             Owner = owner;
-            Paperdoll = (L2Item[])new ArrayList().ToArray(typeof(L2Item));
+            Paperdoll = new L2Item[PaperdollTotalslots];
         }
 
         protected override L2Character Owner { get; }
@@ -40,7 +40,14 @@ namespace L2dotNET.GameService.Model.Inventory
 
         public L2Item GetPaperdollItem(int slot)
         {
-            return Paperdoll[slot];
+            try
+            {
+                return Paperdoll[slot];
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public List<L2Item> GetPaperdollItems()

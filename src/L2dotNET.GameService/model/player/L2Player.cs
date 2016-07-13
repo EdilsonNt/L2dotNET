@@ -1375,7 +1375,7 @@ namespace L2dotNET.GameService.Model.Player
         public void SendItemList(bool open = false)
         {
             SendPacket(new ItemList(this, open));
-            SendPacket(new ExQuestItemList(this));
+            //SendPacket(new ExQuestItemList(this));
         }
 
         public void UpdateWeight()

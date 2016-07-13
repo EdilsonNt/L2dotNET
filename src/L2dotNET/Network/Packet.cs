@@ -516,11 +516,6 @@ namespace L2dotNET.Network
         /// <returns>String representation of current packet.</returns>
         public override string ToString()
         {
-            //System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            //sb.AppendLine("Packet dump:");
-            //sb.AppendFormat("1s op: {0}{2}2d op: {1}{2}", FirstOpcode, SecondOpcode, Environment.NewLine);
-            //sb.Append(L2Buffer.ToString(m_Buffer));
-            //return sb.ToString();
             return L2Buffer.ToString(_mBuffer);
         }
     }

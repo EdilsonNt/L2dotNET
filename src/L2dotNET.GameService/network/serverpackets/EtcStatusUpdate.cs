@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class EtcStatusUpdate : GameServerNetworkPacket
+    class EtcStatusUpdate
     {
         private readonly int _force;
         private readonly int _weight;

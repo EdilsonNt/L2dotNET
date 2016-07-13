@@ -6,22 +6,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class SendBypassBuildCmd : PacketBase
     {
+        private string _alias;
+        private readonly GameClient _client;
+
         public SendBypassBuildCmd(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private string _alias;
-
-        public override void Read()
-        {
-            _alias = packet.ReadString();
-            _alias = _alias.Trim();
+            _alias = packet.ReadString().Trim();
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             AdminCommandHandler.Instance.Request(player, _alias);
         }

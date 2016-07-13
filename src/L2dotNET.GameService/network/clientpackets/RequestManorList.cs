@@ -6,14 +6,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestManorList : PacketBase
     {
+        private readonly GameClient _client;
         public RequestManorList(Packet packet, GameClient client)
         {
-            Makeme(client, data, 2);
-        }
-
-        public override void Read()
-        {
-            // do nothing
+            packet.MoveOffset(2);
+            _client = client;
         }
 
         public override void RunImpl()
@@ -30,7 +27,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                                           "rune",
                                           "schuttgart"
                                       };
-            GetClient().SendPacket(new ExSendManorList(manorsName));
+            _client.SendPacket(new ExSendManorList(manorsName));
         }
     }
 }

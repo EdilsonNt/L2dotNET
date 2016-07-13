@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class DropItem : GameServerNetworkPacket
+    class DropItem
     {
         private readonly int _id;
         private readonly L2Item _item;

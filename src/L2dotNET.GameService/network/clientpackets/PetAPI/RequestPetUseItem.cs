@@ -9,20 +9,17 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
     class RequestPetUseItem : PacketBase
     {
         private int _sId;
+        private readonly GameClient _client;
 
         public RequestPetUseItem(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _sId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (!(player.Summon is L2Pet))
             {

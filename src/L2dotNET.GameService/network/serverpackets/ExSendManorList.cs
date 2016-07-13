@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExSendManorList : GameServerNetworkPacket
+    class ExSendManorList
     {
         private readonly List<string> _list;
 

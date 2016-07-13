@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class NpcInfoMonrace : GameServerNetworkPacket
+    class NpcInfoMonrace
     {
         //private MonsterRunner runner;
         //public NpcInfoMonrace(MonsterRunner runner)

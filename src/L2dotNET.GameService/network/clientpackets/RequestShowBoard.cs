@@ -7,20 +7,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class RequestShowBoard : PacketBase
     {
         private int _type;
+        private readonly GameClient _client;
 
         public RequestShowBoard(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _type = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            BbsManager.Instance.RequestShow(Client.CurrentPlayer, _type);
+            BbsManager.Instance.RequestShow(_client.CurrentPlayer, _type);
         }
     }
 }

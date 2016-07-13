@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    public class MagicEffectIcons : GameServerNetworkPacket
+    public class MagicEffectIcons
     {
         private readonly List<int[]> _timers = new List<int[]>();
 

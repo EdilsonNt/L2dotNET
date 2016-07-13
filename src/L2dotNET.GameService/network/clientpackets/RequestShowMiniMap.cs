@@ -6,19 +6,15 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestShowMiniMap : PacketBase
     {
+        private readonly GameClient _client;
         public RequestShowMiniMap(Packet packet, GameClient client)
         {
             _client = client;
         }
 
-        public override void Read()
-        {
-            // do nothing
-        }
-
         public override void RunImpl()
         {
-            Client.SendPacket(new ShowMiniMap());
+            _client.SendPacket(new ShowMiniMap());
         }
     }
 }

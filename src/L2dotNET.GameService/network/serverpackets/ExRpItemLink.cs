@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExRpItemLink : GameServerNetworkPacket
+    class ExRpItemLink
     {
         private readonly L2Item _item;
 

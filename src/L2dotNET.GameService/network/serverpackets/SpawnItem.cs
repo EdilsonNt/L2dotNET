@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SpawnItem : GameServerNetworkPacket
+    class SpawnItem
     {
         private readonly L2Item _item;
 

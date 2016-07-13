@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class TargetUnselected : GameServerNetworkPacket
+    class TargetUnselected
     {
         private readonly int _id;
         private readonly int _x;

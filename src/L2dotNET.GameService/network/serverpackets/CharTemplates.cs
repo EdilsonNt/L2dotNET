@@ -4,7 +4,7 @@ using L2dotNET.GameService.Templates;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharTemplates : GameServerNetworkPacket
+    class CharTemplates
     {
         private readonly List<PcTemplate> _templates;
 

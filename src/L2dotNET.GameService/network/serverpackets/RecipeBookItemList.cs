@@ -6,7 +6,7 @@ using L2dotNET.GameService.Tables;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class RecipeBookItemList : GameServerNetworkPacket
+    class RecipeBookItemList
     {
         private readonly int _type;
         private readonly int _mp;

@@ -3,7 +3,7 @@ using L2dotNET.GameService.Model.Structures;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class AgitDecoInfo : GameServerNetworkPacket
+    class AgitDecoInfo
     {
         private readonly Hideout _hideout;
 

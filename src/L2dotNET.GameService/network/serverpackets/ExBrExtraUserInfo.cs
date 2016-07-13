@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExBrExtraUserInfo : GameServerNetworkPacket
+    class ExBrExtraUserInfo
     {
         private readonly int _playerId;
         private readonly int _value;

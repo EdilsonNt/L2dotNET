@@ -3,7 +3,7 @@ using L2dotNET.GameService.World;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    public class MagicSkillUse : GameServerNetworkPacket
+    public class MagicSkillUse
     {
         private readonly int _level;
         private readonly int _id;

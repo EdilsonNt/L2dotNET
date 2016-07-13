@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharMoveToLocation : GameServerNetworkPacket
+    class CharMoveToLocation
     {
         private readonly L2Object _obj;
 

@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class Revive : GameServerNetworkPacket
+    class Revive
     {
         private readonly int _objId;
 

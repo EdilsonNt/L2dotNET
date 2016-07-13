@@ -3,7 +3,7 @@ using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class TutorialShowHtml : GameServerNetworkPacket
+    class TutorialShowHtml
     {
         private string _content;
 

@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class KeyPacket : GameServerNetworkPacket
+    class KeyPacket
     {
         private readonly byte[] _key;
         private byte _next;

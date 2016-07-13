@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExShowPetitionHtml : GameServerNetworkPacket
+    class ExShowPetitionHtml
     {
         private readonly string _content;
 

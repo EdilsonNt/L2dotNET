@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SetupGauge : GameServerNetworkPacket
+    class SetupGauge
     {
         public enum SgColor
         {

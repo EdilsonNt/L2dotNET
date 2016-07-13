@@ -10,20 +10,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class RequestExRqItemLink : PacketBase
     {
         private int _objectId;
+        private readonly GameClient _client;
 
         public RequestExRqItemLink(Packet packet, GameClient client)
         {
-            Makeme(client, data, 2);
-        }
-
-        public override void Read()
-        {
+            packet.MoveOffset(2);
+            _client = client;
             _objectId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             L2Item item = RqItemManager.GetInstance().GetItem(_objectId);
             if (item == null)

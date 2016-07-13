@@ -6,11 +6,6 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class ValidatePosition : PacketBase
     {
-        public ValidatePosition(Packet packet, GameClient client)
-        {
-            _client = client;
-        }
-
         private const int Synctype = 1;
 
         private int _x;
@@ -18,9 +13,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _z;
         private int _heading;
         private int _data;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public ValidatePosition(Packet packet, GameClient client)
         {
+            _client = client;
             _x = packet.ReadInt();
             _y = packet.ReadInt();
             _z = packet.ReadInt();
@@ -30,7 +27,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
             //string prevReg = player.CurrentRegion;
 
             int realX = player.X;

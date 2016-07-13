@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class AutoAttackStop : GameServerNetworkPacket
+    class AutoAttackStop
     {
         private readonly int _sId;
 

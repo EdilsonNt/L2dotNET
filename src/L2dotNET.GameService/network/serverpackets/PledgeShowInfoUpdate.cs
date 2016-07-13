@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PledgeShowInfoUpdate : GameServerNetworkPacket
+    class PledgeShowInfoUpdate
     {
         private readonly L2Clan _clan;
 

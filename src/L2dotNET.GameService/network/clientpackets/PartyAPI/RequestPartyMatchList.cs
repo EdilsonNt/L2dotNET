@@ -7,15 +7,12 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RequestPartyMatchList));
 
+        private int _status;
+        private readonly GameClient _client;
+
         public RequestPartyMatchList(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private int _status;
-
-        public override void Read()
-        {
             _status = packet.ReadInt();
         }
 

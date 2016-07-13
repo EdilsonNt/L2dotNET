@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PledgeReceiveSubPledgeCreated : GameServerNetworkPacket
+    class PledgeReceiveSubPledgeCreated
     {
         private readonly EClanSub _sub;
 

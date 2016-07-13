@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    public class StatusUpdate : GameServerNetworkPacket
+    public class StatusUpdate
     {
         public static int Level = 0x01;
         public static int Exp = 0x02;

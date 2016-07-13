@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class LeaveWorld : GameServerNetworkPacket
+    class LeaveWorld
     {
         protected internal override void Write()
         {

@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class AskJoinParty : GameServerNetworkPacket
+    class AskJoinParty
     {
         private readonly string _asker;
         private readonly int _itemDistribution;

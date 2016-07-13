@@ -11,21 +11,17 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
     {
         private int _sId;
         private long _num;
-
+        private readonly GameClient _client;
         public RequestGiveItemToPet(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _sId = packet.ReadInt();
-            _num = ReadQ();
+            _num = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (!(player.Summon is L2Pet) || (player.EnchantState != 0))
             {

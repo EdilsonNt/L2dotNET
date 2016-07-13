@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharCreateOk : GameServerNetworkPacket
+    class CharCreateOk
     {
         protected internal override void Write()
         {

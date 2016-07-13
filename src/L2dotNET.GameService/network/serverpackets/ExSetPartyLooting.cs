@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExSetPartyLooting : GameServerNetworkPacket
+    class ExSetPartyLooting
     {
         private readonly int _result;
         private readonly int _mode;

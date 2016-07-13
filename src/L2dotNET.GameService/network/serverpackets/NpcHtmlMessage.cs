@@ -3,7 +3,7 @@ using L2dotNET.GameService.Tables;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class NpcHtmlMessage : GameServerNetworkPacket
+    class NpcHtmlMessage
     {
         public string Htm;
         private readonly int _objId;

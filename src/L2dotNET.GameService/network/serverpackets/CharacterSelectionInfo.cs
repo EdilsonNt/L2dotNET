@@ -5,7 +5,7 @@ using L2dotNET.GameService.Model.Player;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharacterSelectionInfo : GameServerNetworkPacket
+    class CharacterSelectionInfo
     {
         private readonly List<L2Player> _players;
         public int CharId = -1;

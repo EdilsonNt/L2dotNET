@@ -3,7 +3,7 @@ using L2dotNET.GameService.Model.Skills2;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PartySmallWindowAll : GameServerNetworkPacket
+    class PartySmallWindowAll
     {
         private readonly L2Party _party;
 

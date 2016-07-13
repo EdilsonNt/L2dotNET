@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class TutorialShowQuestionMark : GameServerNetworkPacket
+    class TutorialShowQuestionMark
     {
         private readonly int _questionId;
 

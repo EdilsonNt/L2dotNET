@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExPartyPetWindowDelete : GameServerNetworkPacket
+    class ExPartyPetWindowDelete
     {
         private readonly int _petId;
         private readonly int _playerId;

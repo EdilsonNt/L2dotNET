@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExShowOwnthingPos : GameServerNetworkPacket
+    class ExShowOwnthingPos
     {
         protected internal override void Write()
         {

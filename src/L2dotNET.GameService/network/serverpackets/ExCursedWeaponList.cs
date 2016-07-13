@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExCursedWeaponList : GameServerNetworkPacket
+    class ExCursedWeaponList
     {
         private readonly int[] _ids;
 

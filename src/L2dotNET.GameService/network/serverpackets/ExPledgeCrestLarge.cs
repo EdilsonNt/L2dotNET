@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExPledgeCrestLarge : GameServerNetworkPacket
+    class ExPledgeCrestLarge
     {
         private readonly int _id;
         private readonly byte[] _picture;

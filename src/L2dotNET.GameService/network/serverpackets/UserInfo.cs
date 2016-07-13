@@ -5,7 +5,7 @@ using L2dotNET.GameService.Model.Skills2;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class UserInfo : GameServerNetworkPacket
+    class UserInfo
     {
         private readonly L2Player _player;
 

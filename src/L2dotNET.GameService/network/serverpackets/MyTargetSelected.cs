@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class MyTargetSelected : GameServerNetworkPacket
+    class MyTargetSelected
     {
         private readonly int _targetId;
         private readonly short _color;

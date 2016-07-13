@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SendTradeRequest : GameServerNetworkPacket
+    class SendTradeRequest
     {
         private readonly int _sId;
 

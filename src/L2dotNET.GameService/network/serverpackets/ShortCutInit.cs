@@ -4,7 +4,7 @@ using L2dotNET.GameService.Model.Player.General;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ShortCutInit : GameServerNetworkPacket
+    class ShortCutInit
     {
         private readonly List<L2Shortcut> _shortcuts;
 

@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class RadarControl : GameServerNetworkPacket
+    class RadarControl
     {
         private readonly int _showRadar;
         private readonly int _type;

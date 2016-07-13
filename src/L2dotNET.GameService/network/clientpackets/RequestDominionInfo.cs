@@ -7,19 +7,16 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestDominionInfo : PacketBase
     {
+        private readonly GameClient _client;
         public RequestDominionInfo(Packet packet, GameClient client)
         {
-            Makeme(client, data, 2);
-        }
-
-        public override void Read()
-        {
-            //nothing
+            packet.MoveOffset(2);
+            _client = client;
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             player.SendPacket(new ExReplyDominionInfo());
             player.SendPacket(new ExShowOwnthingPos());

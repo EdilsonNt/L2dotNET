@@ -4,17 +4,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestSendMsnChatLog : PacketBase
     {
-        public RequestSendMsnChatLog(Packet packet, GameClient client)
-        {
-            _client = client;
-        }
-
         private string _text,
                        _email;
         private int _type;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public RequestSendMsnChatLog(Packet packet, GameClient client)
         {
+            _client = client;
             _text = packet.ReadString();
             _email = packet.ReadString();
             _type = packet.ReadInt();

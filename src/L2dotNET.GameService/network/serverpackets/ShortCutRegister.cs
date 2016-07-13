@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ShortCutRegister : GameServerNetworkPacket
+    class ShortCutRegister
     {
         private readonly L2Shortcut _cut;
 

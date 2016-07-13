@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class StaticObject : GameServerNetworkPacket
+    class StaticObject
     {
         private readonly L2StaticObject _obj;
 

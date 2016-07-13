@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExAutoSoulShot : GameServerNetworkPacket
+    class ExAutoSoulShot
     {
         private readonly int _itemId;
         private readonly int _type;

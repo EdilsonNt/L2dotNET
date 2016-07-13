@@ -9,21 +9,18 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
 {
     class RequestPledgeInfo : PacketBase
     {
+        private int _clanId;
+        private readonly GameClient _client;
+
         public RequestPledgeInfo(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private int _clanId;
-
-        public override void Read()
-        {
             _clanId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             L2Clan clan = ClanTable.Instance.GetClan(_clanId);
             if (clan != null)

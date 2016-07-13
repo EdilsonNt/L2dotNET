@@ -3,7 +3,7 @@ using L2dotNET.GameService.Model.Skills2;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PetInfo : GameServerNetworkPacket
+    class PetInfo
     {
         private readonly L2Summon _pet;
 

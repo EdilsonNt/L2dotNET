@@ -8,21 +8,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestQuestAbort : PacketBase
     {
+        private int _questId;
+        private readonly GameClient _client;
+
         public RequestQuestAbort(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private int _questId;
-
-        public override void Read()
-        {
             _questId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             foreach (QuestInfo qi in player.Quests.Where(qi => qi.Id == _questId))
             {

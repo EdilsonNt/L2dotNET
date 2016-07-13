@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharDeleteFail : GameServerNetworkPacket
+    class CharDeleteFail
     {
         public enum CharDeleteFailReason
         {

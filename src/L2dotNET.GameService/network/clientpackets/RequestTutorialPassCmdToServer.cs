@@ -7,15 +7,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestTutorialPassCmdToServer : PacketBase
     {
+        private string _alias;
+        private readonly GameClient _client;
         public RequestTutorialPassCmdToServer(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private string _alias;
-
-        public override void Read()
-        {
             _alias = packet.ReadString();
             if (_alias.Contains("\n"))
             {
@@ -25,7 +21,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.PBlockAct == 1)
             {

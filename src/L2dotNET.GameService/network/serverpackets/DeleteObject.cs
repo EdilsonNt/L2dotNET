@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class DeleteObject : GameServerNetworkPacket
+    class DeleteObject
     {
         private readonly int _id;
 

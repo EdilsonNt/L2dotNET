@@ -5,7 +5,7 @@ using L2dotNET.GameService.World;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class Die : GameServerNetworkPacket
+    class Die
     {
         private readonly int _sId;
         private int _mNVillage;

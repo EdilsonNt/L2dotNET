@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.LoginAuth.Send
 {
-    class PremiumStatusUpdate : GameServerNetworkPacket
+    class PremiumStatusUpdate
     {
         private readonly string _account;
         private readonly byte _status;

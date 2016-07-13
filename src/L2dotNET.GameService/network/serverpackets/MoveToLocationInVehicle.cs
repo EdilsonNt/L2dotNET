@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class MoveToLocationInVehicle : GameServerNetworkPacket
+    class MoveToLocationInVehicle
     {
         private readonly L2Player _player;
         private readonly int _x;

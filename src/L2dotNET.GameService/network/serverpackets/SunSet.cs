@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SunSet : GameServerNetworkPacket
+    class SunSet
     {
         protected internal override void Write()
         {

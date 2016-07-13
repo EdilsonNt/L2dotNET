@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExStorageMaxCount : GameServerNetworkPacket
+    class ExStorageMaxCount
     {
         private readonly int _inventory;
         private readonly int _warehouse;

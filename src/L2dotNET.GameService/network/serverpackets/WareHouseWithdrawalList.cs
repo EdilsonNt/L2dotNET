@@ -4,7 +4,7 @@ using L2dotNET.GameService.Model.Player;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class WareHouseWithdrawalList : GameServerNetworkPacket
+    class WareHouseWithdrawalList
     {
         public static short WhPrivate = 1;
         public static short WhClan = 2;

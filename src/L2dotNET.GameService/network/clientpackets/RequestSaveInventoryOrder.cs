@@ -11,7 +11,8 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public RequestSaveInventoryOrder(Packet packet, GameClient client)
         {
-            Makeme(client, data, 2);
+            packet.MoveOffset(2);
+            _client = client;
         }
 
         public override void Read()

@@ -5,7 +5,7 @@ using L2dotNET.GameService.Model.Player;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExQuestItemList : GameServerNetworkPacket
+    class ExQuestItemList
     {
         private readonly L2Item[] _items;
         private readonly List<int> _block = new List<int>();

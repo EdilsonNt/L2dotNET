@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExBrBuyProduct : GameServerNetworkPacket
+    class ExBrBuyProduct
     {
         private readonly int _result;
 

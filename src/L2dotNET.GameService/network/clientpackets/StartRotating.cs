@@ -9,21 +9,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         private int _degree;
         private int _side;
+        private readonly GameClient _client;
 
         public StartRotating(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _degree = packet.ReadInt();
             _side = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             player.BroadcastPacket(new StartRotation(player.ObjId, _degree, _side, 0));
         }

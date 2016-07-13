@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.LoginAuth.Send
 {
-    class LoginServPing : GameServerNetworkPacket
+    class LoginServPing
     {
         public string Version;
         private readonly int _build;

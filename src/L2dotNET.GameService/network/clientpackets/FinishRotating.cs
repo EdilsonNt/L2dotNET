@@ -8,20 +8,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class FinishRotating : PacketBase
     {
         private int _degree;
+        private readonly GameClient _client;
 
         public FinishRotating(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _degree = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             player.BroadcastPacket(new StopRotation(player.ObjId, _degree, 0));
         }

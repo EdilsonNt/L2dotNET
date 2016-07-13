@@ -3,7 +3,7 @@ using L2dotNET.GameService.World;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PartySpelled : GameServerNetworkPacket
+    class PartySpelled
     {
         public PartySpelled(L2Character character)
         {

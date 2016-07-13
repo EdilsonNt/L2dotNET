@@ -8,17 +8,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestAcquireSkillInfo : PacketBase
     {
-        public RequestAcquireSkillInfo(Packet packet, GameClient client)
-        {
-            _client = client;
-        }
-
         private int _id;
         private int _level;
         private int _skillType;
+        private readonly GameClient _client;
 
-        public override void Read()
+        public RequestAcquireSkillInfo(Packet packet, GameClient client)
         {
+            _client = client;
             _id = packet.ReadInt();
             _level = packet.ReadInt();
             _skillType = packet.ReadInt();
@@ -26,7 +23,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             SortedList<int, AcquireSkill> seq = player.ActiveSkillTree;
             if (!seq.ContainsKey(_id))

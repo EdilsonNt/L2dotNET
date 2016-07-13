@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SunRise : GameServerNetworkPacket
+    class SunRise
     {
         protected internal override void Write()
         {

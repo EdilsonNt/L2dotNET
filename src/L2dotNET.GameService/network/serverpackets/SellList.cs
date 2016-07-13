@@ -5,7 +5,7 @@ using L2dotNET.GameService.Model.Player;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SellList : GameServerNetworkPacket
+    class SellList
     {
         private readonly List<L2Item> _sells = new List<L2Item>();
         private readonly int _adena;

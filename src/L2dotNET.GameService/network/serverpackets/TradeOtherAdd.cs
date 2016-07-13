@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class TradeOtherAdd : GameServerNetworkPacket
+    class TradeOtherAdd
     {
         private readonly L2Item _item;
         private long _num;

@@ -4,7 +4,7 @@ using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ShowBoard : GameServerNetworkPacket
+    class ShowBoard
     {
         private readonly string _id;
         private readonly string _htmlCode;

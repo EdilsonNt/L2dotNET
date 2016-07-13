@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SocialAction : GameServerNetworkPacket
+    class SocialAction
     {
         private readonly int _social;
         private readonly int _id;

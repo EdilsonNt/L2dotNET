@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.LoginAuth.Send
 {
-    class PlayerCount : GameServerNetworkPacket
+    class PlayerCount
     {
         private readonly short _cnt;
 

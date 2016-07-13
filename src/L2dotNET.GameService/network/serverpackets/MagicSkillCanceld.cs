@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    public class MagicSkillCanceld : GameServerNetworkPacket
+    public class MagicSkillCanceld
     {
         private readonly int _id;
 

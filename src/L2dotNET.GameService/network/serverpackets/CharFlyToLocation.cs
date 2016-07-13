@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharFlyToLocation : GameServerNetworkPacket
+    class CharFlyToLocation
     {
         private readonly L2Object _obj;
         private readonly int _id;

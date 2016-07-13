@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExBuySellListClose : GameServerNetworkPacket
+    class ExBuySellListClose
     {
         protected internal override void Write()
         {

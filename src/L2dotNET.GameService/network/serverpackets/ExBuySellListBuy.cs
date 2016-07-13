@@ -3,7 +3,7 @@ using L2dotNET.GameService.Tables;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExBuySellListBuy : GameServerNetworkPacket
+    class ExBuySellListBuy
     {
         private readonly NdShopList _shop;
         private readonly long _adena;

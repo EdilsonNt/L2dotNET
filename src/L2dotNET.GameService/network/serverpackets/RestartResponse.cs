@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class RestartResponse : GameServerNetworkPacket
+    class RestartResponse
     {
         protected internal override void Write()
         {

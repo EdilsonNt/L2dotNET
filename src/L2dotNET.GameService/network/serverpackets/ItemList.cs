@@ -4,7 +4,7 @@ using L2dotNET.GameService.Model.Player;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ItemList : GameServerNetworkPacket
+    class ItemList
     {
         private readonly bool _showWindow;
         private readonly List<ItemListItem> _items = new List<ItemListItem>();

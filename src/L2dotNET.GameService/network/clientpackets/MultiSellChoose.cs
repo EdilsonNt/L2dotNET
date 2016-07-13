@@ -13,41 +13,22 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private short _enchant;
         private int _unk2;
         private int _unk3;
-        private short _unk4;
-        private short _unk5;
-        private short _unk6;
-        private short _unk7;
-        private short _unk8;
-        private short _unk9;
-        private short _unk10;
-        private short _unk11;
+        private readonly GameClient _client;
 
         public MultiSellChoose(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _listId = packet.ReadInt();
             _entryId = packet.ReadInt();
-            _amount = ReadQ();
+            _amount = packet.ReadInt();
             _enchant = packet.ReadShort();
             _unk2 = packet.ReadInt();
             _unk3 = packet.ReadInt();
-            _unk4 = packet.ReadShort(); // elemental attributes
-            _unk5 = packet.ReadShort(); // elemental attributes
-            _unk6 = packet.ReadShort(); // elemental attributes
-            _unk7 = packet.ReadShort(); // elemental attributes
-            _unk8 = packet.ReadShort(); // elemental attributes
-            _unk9 = packet.ReadShort(); // elemental attributes
-            _unk10 = packet.ReadShort(); // elemental attributes
-            _unk11 = packet.ReadShort(); // elemental attributes
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (_amount < 0)
             {

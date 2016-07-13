@@ -9,21 +9,18 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
 {
     class RequestRecipeItemMakeInfo : PacketBase
     {
+        private int _id;
+        private readonly GameClient _client;
+
         public RequestRecipeItemMakeInfo(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private int _id;
-
-        public override void Read()
-        {
             _id = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.RecipeBook == null)
             {

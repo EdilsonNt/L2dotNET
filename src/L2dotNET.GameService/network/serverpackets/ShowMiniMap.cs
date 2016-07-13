@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ShowMiniMap : GameServerNetworkPacket
+    class ShowMiniMap
     {
         protected internal override void Write()
         {

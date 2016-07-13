@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharacterSelected : GameServerNetworkPacket
+    class CharacterSelected
     {
         private readonly int _session;
         private readonly L2Player _player;

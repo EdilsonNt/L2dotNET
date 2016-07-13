@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PetStatusShow : GameServerNetworkPacket
+    class PetStatusShow
     {
         private readonly byte _objectSummonType;
 

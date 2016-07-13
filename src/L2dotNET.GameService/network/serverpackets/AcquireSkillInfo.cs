@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class AcquireSkillInfo : GameServerNetworkPacket
+    class AcquireSkillInfo
     {
         private readonly int _id;
         private readonly int _level;

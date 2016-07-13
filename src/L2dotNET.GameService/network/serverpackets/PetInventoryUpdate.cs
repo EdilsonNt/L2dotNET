@@ -3,7 +3,7 @@ using L2dotNET.GameService.Model.Items;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PetInventoryUpdate : GameServerNetworkPacket
+    class PetInventoryUpdate
     {
         protected List<object[]> Update = new List<object[]>();
 

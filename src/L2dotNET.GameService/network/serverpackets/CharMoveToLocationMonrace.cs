@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharMoveToLocationMonrace : GameServerNetworkPacket
+    class CharMoveToLocationMonrace
     {
         //private MonsterRunner runner;
         //public CharMoveToLocationMonrace(MonsterRunner runner)

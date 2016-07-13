@@ -9,14 +9,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _listId;
         private int _count;
         private int[] _items;
+        private readonly GameClient _client;
 
         public RequestWearItem(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _unknow = packet.ReadInt();
             _listId = packet.ReadInt(); // List of ItemID to Wear
             _count = packet.ReadInt(); // Number of Item to Wear
@@ -42,7 +39,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             for (int i = 0; i < _count; i++)
             {

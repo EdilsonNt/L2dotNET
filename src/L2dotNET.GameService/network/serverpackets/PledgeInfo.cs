@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PledgeInfo : GameServerNetworkPacket
+    class PledgeInfo
     {
         private readonly int _id;
         private readonly string _name;

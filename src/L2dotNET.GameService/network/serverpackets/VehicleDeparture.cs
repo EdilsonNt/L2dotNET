@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class VehicleDeparture : GameServerNetworkPacket
+    class VehicleDeparture
     {
         private readonly L2Boat _boat;
         private readonly int _speed;

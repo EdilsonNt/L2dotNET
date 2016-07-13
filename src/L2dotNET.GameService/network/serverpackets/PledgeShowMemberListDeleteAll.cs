@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PledgeShowMemberListDeleteAll : GameServerNetworkPacket
+    class PledgeShowMemberListDeleteAll
     {
         protected internal override void Write()
         {

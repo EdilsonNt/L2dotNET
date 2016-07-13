@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ClientSetTime : GameServerNetworkPacket
+    class ClientSetTime
     {
         protected internal override void Write()
         {

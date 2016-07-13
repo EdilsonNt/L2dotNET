@@ -4,7 +4,7 @@ using L2dotNET.GameService.Model.Skills2;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SkillList : GameServerNetworkPacket
+    class SkillList
     {
         private readonly IList<Skill> _skills;
         private readonly int _blockAct;

@@ -9,25 +9,23 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
     {
         private int _size;
         private byte[] _picture;
+        private readonly GameClient _client;
 
         public RequestExSetPledgeCrestLarge(Packet packet, GameClient client)
         {
-            Makeme(client, data, 2);
-        }
-
-        public override void Read()
-        {
+            packet.MoveOffset(2);
+            _client = client;
             _size = packet.ReadInt();
 
             if ((_size > 0) && (_size <= 2176))
             {
-                _picture = ReadB(_size);
+                _picture = packet.ReadByteArrayAlt(_size);
             }
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.ClanId == 0)
             {

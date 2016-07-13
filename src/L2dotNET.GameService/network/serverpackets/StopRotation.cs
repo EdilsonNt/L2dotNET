@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class StopRotation : GameServerNetworkPacket
+    class StopRotation
     {
         private readonly int _sId;
         private readonly int _degree;

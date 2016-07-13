@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExReplyDominionInfo : GameServerNetworkPacket
+    class ExReplyDominionInfo
     {
         private readonly List<string> _names = new List<string>();
 

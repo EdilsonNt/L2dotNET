@@ -7,7 +7,7 @@ using L2dotNET.GameService.World;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    public class SystemMessage : GameServerNetworkPacket
+    public class SystemMessage
     {
         private readonly List<object[]> _data = new List<object[]>();
         public int MessgeId;

@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExBrGamePoint : GameServerNetworkPacket
+    class ExBrGamePoint
     {
         private readonly int _id;
         private readonly long _points;

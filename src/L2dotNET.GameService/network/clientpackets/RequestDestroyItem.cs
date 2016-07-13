@@ -7,23 +7,20 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestDestroyItem : PacketBase
     {
+        private int _sId;
+        private int _num;
+        private readonly GameClient _client;
+
         public RequestDestroyItem(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private int _sId;
-        private int _num;
-
-        public override void Read()
-        {
             _sId = packet.ReadInt();
             _num = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.PBlockAct == 1)
             {

@@ -7,20 +7,18 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
     class AnswerPartyLootModification : PacketBase
     {
         private byte _answer;
+        private readonly GameClient _client;
 
         public AnswerPartyLootModification(Packet packet, GameClient client)
         {
-            Makeme(client, data, 2);
-        }
-
-        public override void Read()
-        {
-            _answer = (byte)ReadD();
+            packet.MoveOffset(2);
+            _client = client;
+            _answer = (byte)packet.ReadByte();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.Party == null)
             {

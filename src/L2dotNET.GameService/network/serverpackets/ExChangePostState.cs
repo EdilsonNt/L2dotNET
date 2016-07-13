@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExChangePostState : GameServerNetworkPacket
+    class ExChangePostState
     {
         private readonly bool _receivedBoard;
         private readonly int[] _msgs;

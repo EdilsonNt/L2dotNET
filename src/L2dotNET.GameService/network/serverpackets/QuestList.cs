@@ -4,7 +4,7 @@ using L2dotNET.GameService.Model.Quests;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class QuestList : GameServerNetworkPacket
+    class QuestList
     {
         private readonly List<QuestInfo> _list;
 

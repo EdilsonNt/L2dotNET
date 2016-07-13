@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PetDelete : GameServerNetworkPacket
+    class PetDelete
     {
         private readonly byte _objectSummonType;
         private readonly int _objId;

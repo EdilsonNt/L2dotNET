@@ -9,21 +9,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class BypassUserCmd : PacketBase
     {
+        private int _command;
+        private readonly GameClient _client;
+
         public BypassUserCmd(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private int _command;
-
-        public override void Read()
-        {
             _command = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             switch (_command)
             {

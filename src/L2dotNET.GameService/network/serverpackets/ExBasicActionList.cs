@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExBasicActionList : GameServerNetworkPacket
+    class ExBasicActionList
     {
         private readonly int[] _defaultActionList;
 

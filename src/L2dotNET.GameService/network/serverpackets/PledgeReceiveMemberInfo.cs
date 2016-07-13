@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PledgeReceiveMemberInfo : GameServerNetworkPacket
+    class PledgeReceiveMemberInfo
     {
         private readonly ClanMember _member;
 

@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CreatureSay : GameServerNetworkPacket
+    class CreatureSay
     {
         private readonly int _objectId;
         private readonly SayIDList _type;

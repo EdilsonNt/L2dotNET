@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class NetPing : GameServerNetworkPacket
+    class NetPing
     {
         private readonly int _request;
 

@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExSetCompassZoneCode : GameServerNetworkPacket
+    class ExSetCompassZoneCode
     {
         public static int Alteredzone = 0x08;
         public static int Siegewarzone1 = 0x0A;

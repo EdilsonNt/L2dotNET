@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    public class ShowTownMap : GameServerNetworkPacket
+    public class ShowTownMap
     {
         private readonly string _texture;
         private readonly int _x;

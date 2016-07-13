@@ -9,20 +9,17 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
     class RequestChangePetName : PacketBase
     {
         private string _name;
+        private readonly GameClient _client;
 
         public RequestChangePetName(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _name = packet.ReadString();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.Summon == null)
             {

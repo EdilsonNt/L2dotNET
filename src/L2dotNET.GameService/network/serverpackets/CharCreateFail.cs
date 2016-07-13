@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class CharCreateFail : GameServerNetworkPacket
+    class CharCreateFail
     {
         public enum CharCreateFailReason
         {

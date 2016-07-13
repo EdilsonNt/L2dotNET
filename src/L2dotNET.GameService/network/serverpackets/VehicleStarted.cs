@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class VehicleStarted : GameServerNetworkPacket
+    class VehicleStarted
     {
         private readonly int _sId;
         private readonly int _type;

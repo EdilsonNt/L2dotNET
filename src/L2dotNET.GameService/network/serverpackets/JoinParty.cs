@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class JoinParty : GameServerNetworkPacket
+    class JoinParty
     {
         private readonly int _response;
 

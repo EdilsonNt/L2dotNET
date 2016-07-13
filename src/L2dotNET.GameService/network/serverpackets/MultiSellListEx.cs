@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class MultiSellListEx : GameServerNetworkPacket
+    class MultiSellListEx
     {
         private readonly MultiSellList _list;
 

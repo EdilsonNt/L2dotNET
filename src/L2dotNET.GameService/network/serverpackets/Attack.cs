@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class Attack : GameServerNetworkPacket
+    class Attack
     {
         protected int AttackerObjId;
         public bool Soulshot;

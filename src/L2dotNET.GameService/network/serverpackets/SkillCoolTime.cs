@@ -4,7 +4,7 @@ using L2dotNET.GameService.Model.Skills;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class SkillCoolTime : GameServerNetworkPacket
+    class SkillCoolTime
     {
         private readonly ICollection<L2SkillCoolTime> _list;
 

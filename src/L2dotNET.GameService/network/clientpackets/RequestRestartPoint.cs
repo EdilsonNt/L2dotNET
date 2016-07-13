@@ -8,14 +8,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         private int _type;
         private int _keyItem = -1;
+        private readonly GameClient _client;
 
         public RequestRestartPoint(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        public override void Read()
-        {
             _type = packet.ReadInt();
 
             if (_type == 22)
@@ -26,7 +23,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             switch (_type)
             {

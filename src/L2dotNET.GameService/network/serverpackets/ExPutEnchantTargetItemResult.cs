@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExPutEnchantTargetItemResult : GameServerNetworkPacket
+    class ExPutEnchantTargetItemResult
     {
         private readonly int _result;
 

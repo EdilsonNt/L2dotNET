@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class Ride : GameServerNetworkPacket
+    class Ride
     {
         private readonly int _id;
         private readonly int _bRide;

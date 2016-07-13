@@ -9,21 +9,19 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         private int _itemId;
         private int _type;
+        private readonly GameClient _client;
 
         public RequestAutoSoulShot(Packet packet, GameClient client)
         {
-            Makeme(client, data, 2);
-        }
-
-        public override void Read()
-        {
+            packet.MoveOffset(2);
+            _client = client;
             _itemId = packet.ReadInt();
             _type = packet.ReadInt(); //1 - enable
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             L2Item item = player.Inventory.GetItemByItemId(_itemId);
         }

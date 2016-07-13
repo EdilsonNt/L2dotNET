@@ -28,6 +28,7 @@ using L2dotNET.GameService.Templates;
 using L2dotNET.GameService.Tools;
 using L2dotNET.GameService.World;
 using L2dotNET.Models;
+using L2dotNET.Network;
 using L2dotNET.Services.Contracts;
 using L2dotNET.Utility;
 using Ninject;
@@ -1198,7 +1199,7 @@ namespace L2dotNET.GameService.Model.Player
             SendPacket(new DeleteObject(obj.ObjId));
         }
 
-        public override void OnAddObject(L2Object obj, GameServerNetworkPacket pk, string msg = null)
+        public override void OnAddObject(L2Object obj, Packet pk, string msg = null)
         {
             if (obj is L2Npc)
             {

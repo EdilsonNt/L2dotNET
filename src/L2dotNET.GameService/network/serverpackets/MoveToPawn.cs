@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class MoveToPawn : GameServerNetworkPacket
+    class MoveToPawn
     {
         private readonly int _id;
         private readonly int _target;

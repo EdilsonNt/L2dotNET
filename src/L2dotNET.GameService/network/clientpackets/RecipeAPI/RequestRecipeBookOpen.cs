@@ -7,21 +7,18 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
 {
     class RequestRecipeBookOpen : PacketBase
     {
+        private int _type;
+        private readonly GameClient _client;
+
         public RequestRecipeBookOpen(Packet packet, GameClient client)
         {
             _client = client;
-        }
-
-        private int _type;
-
-        public override void Read()
-        {
             _type = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             player.SendPacket(new RecipeBookItemList(player, _type));
         }

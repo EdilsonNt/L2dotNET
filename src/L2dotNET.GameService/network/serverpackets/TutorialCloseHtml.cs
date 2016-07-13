@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class TutorialCloseHtml : GameServerNetworkPacket
+    class TutorialCloseHtml
     {
         protected internal override void Write()
         {

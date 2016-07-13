@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class EnchantResult : GameServerNetworkPacket
+    class EnchantResult
     {
         private readonly EnchantResultVal _result;
         private int _crystal;

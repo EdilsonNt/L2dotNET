@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ChooseInventoryItem : GameServerNetworkPacket
+    class ChooseInventoryItem
     {
         private readonly int _itemId;
 

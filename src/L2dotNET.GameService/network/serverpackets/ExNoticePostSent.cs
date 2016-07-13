@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExNoticePostSent : GameServerNetworkPacket
+    class ExNoticePostSent
     {
         private readonly int _anim;
 

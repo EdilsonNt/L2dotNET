@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class GetOnVehicle : GameServerNetworkPacket
+    class GetOnVehicle
     {
         private readonly L2Player _player;
 

@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ChangeWaitType : GameServerNetworkPacket
+    class ChangeWaitType
     {
         private readonly int _sId;
         private readonly int _type;

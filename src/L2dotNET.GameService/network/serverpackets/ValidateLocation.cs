@@ -2,7 +2,7 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ValidateLocation : GameServerNetworkPacket
+    class ValidateLocation
     {
         private readonly int _x;
         private readonly int _id;

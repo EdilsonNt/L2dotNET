@@ -3,7 +3,7 @@ using L2dotNET.GameService.Model.Communities;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PledgeShowMemberListAll : GameServerNetworkPacket
+    class PledgeShowMemberListAll
     {
         private readonly L2Clan _clan;
         private readonly EClanType _type;

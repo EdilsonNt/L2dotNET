@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ObservationReturn : GameServerNetworkPacket
+    class ObservationReturn
     {
         private readonly int _x;
         private readonly int _y;

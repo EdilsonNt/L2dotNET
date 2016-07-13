@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class TradeDone : GameServerNetworkPacket
+    class TradeDone
     {
         private readonly bool _done;
 

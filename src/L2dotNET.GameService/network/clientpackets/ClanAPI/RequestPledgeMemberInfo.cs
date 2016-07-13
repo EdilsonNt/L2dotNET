@@ -9,23 +9,22 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
 {
     class RequestPledgeMemberInfo : PacketBase
     {
-        public RequestPledgeMemberInfo(Packet packet, GameClient client)
-        {
-            Makeme(client, data, 2);
-        }
+        private readonly GameClient _client;
 
         private int _unk1;
         private string _player;
 
-        public override void Read()
+        public RequestPledgeMemberInfo(Packet packet, GameClient client)
         {
+            packet.MoveOffset(2);
+            _client = client;
             _unk1 = packet.ReadInt();
             _player = packet.ReadString();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.Clan == null)
             {

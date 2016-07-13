@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ChairSit : GameServerNetworkPacket
+    class ChairSit
     {
         private readonly int _sId;
         private readonly int _staticId;

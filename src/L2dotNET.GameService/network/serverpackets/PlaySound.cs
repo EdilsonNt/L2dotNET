@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PlaySound : GameServerNetworkPacket
+    class PlaySound
     {
         private readonly string _file;
         private readonly int _type;

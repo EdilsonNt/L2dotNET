@@ -4,7 +4,7 @@ using L2dotNET.GameService.Model.Player;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class TradeStart : GameServerNetworkPacket
+    class TradeStart
     {
         private L2Player _player;
         private readonly List<L2Item> _trade = new List<L2Item>();

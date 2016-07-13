@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.LoginAuth.Send
 {
-    class LoginAuth : GameServerNetworkPacket
+    class LoginAuth
     {
         protected internal override void Write()
         {

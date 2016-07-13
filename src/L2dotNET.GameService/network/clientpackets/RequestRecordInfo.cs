@@ -8,19 +8,15 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestRecordInfo : PacketBase
     {
+        private readonly GameClient _client;
         public RequestRecordInfo(Packet packet, GameClient client)
         {
             _client = client;
         }
 
-        public override void Read()
-        {
-            // nothing
-        }
-
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             player.SendPacket(new UserInfo(player));
             player.SendPacket(new ExBrExtraUserInfo(player.ObjId, player.AbnormalBitMaskEvent));

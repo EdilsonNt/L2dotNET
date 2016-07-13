@@ -4,7 +4,7 @@ using L2dotNET.GameService.Tables;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class RecipeItemMakeInfo : GameServerNetworkPacket
+    class RecipeItemMakeInfo
     {
         private readonly int _recipeId;
         private readonly int _type;

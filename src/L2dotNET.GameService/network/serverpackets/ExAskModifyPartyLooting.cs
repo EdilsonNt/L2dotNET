@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExAskModifyPartyLooting : GameServerNetworkPacket
+    class ExAskModifyPartyLooting
     {
         private readonly string _leader;
         private readonly byte _mode;

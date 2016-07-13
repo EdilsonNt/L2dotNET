@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class PartySmallWindowDelete : GameServerNetworkPacket
+    class PartySmallWindowDelete
     {
         private readonly int _id;
         private readonly string _name;

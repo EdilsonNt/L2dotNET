@@ -1,6 +1,6 @@
 ﻿namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class GetItem : GameServerNetworkPacket
+    class GetItem
     {
         private readonly int _id;
         private readonly int _itemId;

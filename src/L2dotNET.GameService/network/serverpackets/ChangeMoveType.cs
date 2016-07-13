@@ -3,7 +3,7 @@ using L2dotNET.GameService.World;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ChangeMoveType : GameServerNetworkPacket
+    class ChangeMoveType
     {
         public static readonly int Walk = 0;
         public static readonly int Run = 1;

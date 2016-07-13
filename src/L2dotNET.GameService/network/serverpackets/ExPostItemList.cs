@@ -3,7 +3,7 @@ using L2dotNET.GameService.Model.Items;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ExPostItemList : GameServerNetworkPacket
+    class ExPostItemList
     {
         private readonly List<L2Item> _list;
 

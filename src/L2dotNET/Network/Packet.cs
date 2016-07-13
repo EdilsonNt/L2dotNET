@@ -11,22 +11,22 @@ namespace L2dotNET.Network
         /// <summary>
         /// Default <see cref="Packet"/> overflow value.
         /// </summary>
-        private const int m_DefaultOverflowValue = 128;
+        private const int MDefaultOverflowValue = 128;
 
         /// <summary>
         /// <see cref="Packet"/> buffer.
         /// </summary>
-        private byte[] m_Buffer;
+        private byte[] _mBuffer;
 
         /// <summary>
         /// <see cref="Packet"/> reader / writer offset.
         /// </summary>
-        private int m_Offset;
+        private int _mOffset;
 
         /// <summary>
         /// Indicates if <see cref="Packet"/> was received or created to be sent.
         /// </summary>
-        private readonly bool m_ReceivedPacket;
+        private readonly bool _mReceivedPacket;
 
         /// <summary>
         /// Initializes new instance of <see cref="Packet"/> (received packet).
@@ -35,9 +35,9 @@ namespace L2dotNET.Network
         /// <param name="buffer"><see cref="Packet"/> buffer.</param>
         public Packet(int headerOffset, byte[] buffer)
         {
-            m_ReceivedPacket = true;
-            m_Buffer = buffer;
-            m_Offset = headerOffset;
+            _mReceivedPacket = true;
+            _mBuffer = buffer;
+            _mOffset = headerOffset;
         }
 
         /// <summary>
@@ -46,9 +46,9 @@ namespace L2dotNET.Network
         /// <param name="opcodes">Packet opcodes.</param>
         public Packet(params byte[] opcodes)
         {
-            m_ReceivedPacket = false;
-            m_Buffer = opcodes;
-            m_Offset = opcodes.Length;
+            _mReceivedPacket = false;
+            _mBuffer = opcodes;
+            _mOffset = opcodes.Length;
         }
 
         /// <summary>
@@ -59,8 +59,10 @@ namespace L2dotNET.Network
         {
             ValidateBufferSize(sizeof(byte));
 
-            fixed (byte* buf = m_Buffer)
-                *(buf + m_Offset++) = v;
+            fixed (byte* buf = _mBuffer)
+            {
+                *(buf + _mOffset++) = v;
+            }
         }
 
         /// <summary>
@@ -76,14 +78,14 @@ namespace L2dotNET.Network
         /// Writes array of <see cref="byte"/> into packet buffer.
         /// </summary>
         /// <param name="v">Array of <see cref="byte"/> values.</param>
-        public unsafe void WriteBytesArray(byte[] v)
+        public void WriteBytesArray(byte[] v)
         {
             int length = v.Length;
 
             ValidateBufferSize(length);
 
-            L2Buffer.Copy(v, 0, m_Buffer, m_Offset, length);
-            m_Offset += length;
+            L2Buffer.Copy(v, 0, _mBuffer, _mOffset, length);
+            _mOffset += length;
         }
 
         /// <summary>
@@ -94,10 +96,12 @@ namespace L2dotNET.Network
         {
             ValidateBufferSize(sizeof(short));
 
-            fixed (byte* buf = m_Buffer)
-                *((short*)(buf + m_Offset)) = v;
+            fixed (byte* buf = _mBuffer)
+            {
+                *(short*)(buf + _mOffset) = v;
+            }
 
-            m_Offset += sizeof(short);
+            _mOffset += sizeof(short);
         }
 
         /// <summary>
@@ -110,9 +114,13 @@ namespace L2dotNET.Network
 
             ValidateBufferSize(length);
 
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
+            {
                 fixed (short* w = v)
-                    L2Buffer.UnsafeCopy(w, length, buf, ref m_Offset);
+                {
+                    L2Buffer.UnsafeCopy(w, length, buf, ref _mOffset);
+                }
+            }
         }
 
         /// <summary>
@@ -123,10 +131,12 @@ namespace L2dotNET.Network
         {
             ValidateBufferSize(sizeof(int));
 
-            fixed (byte* buf = m_Buffer)
-                *(int*)(buf + m_Offset) = v;
+            fixed (byte* buf = _mBuffer)
+            {
+                *(int*)(buf + _mOffset) = v;
+            }
 
-            m_Offset += sizeof(int);
+            _mOffset += sizeof(int);
         }
 
         /// <summary>
@@ -139,9 +149,13 @@ namespace L2dotNET.Network
 
             ValidateBufferSize(Length);
 
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
+            {
                 fixed (int* w = v)
-                    L2Buffer.UnsafeCopy(w, length, buf, ref m_Offset);
+                {
+                    L2Buffer.UnsafeCopy(w, length, buf, ref _mOffset);
+                }
+            }
         }
 
         /// <summary>
@@ -152,10 +166,12 @@ namespace L2dotNET.Network
         {
             ValidateBufferSize(sizeof(double));
 
-            fixed (byte* buf = m_Buffer)
-                *(double*)(buf + m_Offset) = v;
+            fixed (byte* buf = _mBuffer)
+            {
+                *(double*)(buf + _mOffset) = v;
+            }
 
-            m_Offset += sizeof(double);
+            _mOffset += sizeof(double);
         }
 
         /// <summary>
@@ -168,9 +184,13 @@ namespace L2dotNET.Network
 
             ValidateBufferSize(length);
 
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
+            {
                 fixed (double* w = v)
-                    L2Buffer.UnsafeCopy(w, length, buf, ref m_Offset);
+                {
+                    L2Buffer.UnsafeCopy(w, length, buf, ref _mOffset);
+                }
+            }
         }
 
         /// <summary>
@@ -181,10 +201,12 @@ namespace L2dotNET.Network
         {
             ValidateBufferSize(sizeof(long));
 
-            fixed (byte* buf = m_Buffer)
-                *((long*)(buf + m_Offset)) = v;
+            fixed (byte* buf = _mBuffer)
+            {
+                *(long*)(buf + _mOffset) = v;
+            }
 
-            m_Offset += sizeof(long);
+            _mOffset += sizeof(long);
         }
 
         /// <summary>
@@ -197,9 +219,13 @@ namespace L2dotNET.Network
 
             ValidateBufferSize(length);
 
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
+            {
                 fixed (long* w = v)
-                    L2Buffer.UnsafeCopy(w, length, buf, ref m_Offset);
+                {
+                    L2Buffer.UnsafeCopy(w, length, buf, ref _mOffset);
+                }
+            }
         }
 
         /// <summary>
@@ -213,9 +239,13 @@ namespace L2dotNET.Network
 
             ValidateBufferSize(length);
 
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
+            {
                 fixed (char* w = s)
-                    L2Buffer.UnsafeCopy(w, length, buf, ref m_Offset);
+                {
+                    L2Buffer.UnsafeCopy(w, length, buf, ref _mOffset);
+                }
+            }
         }
 
         /// <summary>
@@ -227,15 +257,21 @@ namespace L2dotNET.Network
             string v = string.Empty;
 
             foreach (string t in s)
+            {
                 v += t + '\0';
+            }
 
             int length = v.Length * sizeof(char);
 
             ValidateBufferSize(length);
 
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
+            {
                 fixed (char* w = v)
-                    L2Buffer.UnsafeCopy(w, length, buf, ref m_Offset);
+                {
+                    L2Buffer.UnsafeCopy(w, length, buf, ref _mOffset);
+                }
+            }
         }
 
         /// <summary>
@@ -262,8 +298,10 @@ namespace L2dotNET.Network
         /// <returns><see cref="byte"/> value.</returns>
         public unsafe byte ReadByte()
         {
-            fixed (byte* buf = m_Buffer)
-                return *(buf + m_Offset++);
+            fixed (byte* buf = _mBuffer)
+            {
+                return *(buf + _mOffset++);
+            }
         }
 
         /// <summary>
@@ -275,16 +313,18 @@ namespace L2dotNET.Network
         {
             byte[] dest = new byte[length];
 
-            fixed (byte* buf = m_Buffer, dst = dest)
-                L2Buffer.Copy(buf, length, dst, ref m_Offset);
+            fixed (byte* buf = _mBuffer, dst = dest)
+            {
+                L2Buffer.Copy(buf, length, dst, ref _mOffset);
+            }
             return dest;
         }
 
         public byte[] ReadByteArrayAlt(int length)
         {
             byte[] result = new byte[length];
-            Array.Copy(this.GetBuffer(), m_Offset, result, 0, length);
-            m_Offset += length;
+            Array.Copy(GetBuffer(), _mOffset, result, 0, length);
+            _mOffset += length;
             return result;
         }
 
@@ -294,10 +334,10 @@ namespace L2dotNET.Network
         /// <returns><see cref="short"/> value.</returns>
         public unsafe short ReadShort()
         {
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
             {
-                short v = *((short*)(buf + m_Offset));
-                m_Offset += sizeof(short);
+                short v = *(short*)(buf + _mOffset);
+                _mOffset += sizeof(short);
                 return v;
             }
         }
@@ -308,10 +348,10 @@ namespace L2dotNET.Network
         /// <returns><see cref="int"/> value.</returns>
         public unsafe int ReadInt()
         {
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
             {
-                int v = *((int*)(buf + m_Offset));
-                m_Offset += sizeof(int);
+                int v = *(int*)(buf + _mOffset);
+                _mOffset += sizeof(int);
                 return v;
             }
         }
@@ -322,10 +362,10 @@ namespace L2dotNET.Network
         /// <returns><see cref="double"/> value.</returns>
         public unsafe double ReadDouble()
         {
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
             {
-                double v = *((double*)(buf + m_Offset));
-                m_Offset += sizeof(double);
+                double v = *(double*)(buf + _mOffset);
+                _mOffset += sizeof(double);
                 return v;
             }
         }
@@ -336,10 +376,10 @@ namespace L2dotNET.Network
         /// <returns><see cref="long"/> value.</returns>
         public unsafe long ReadLong()
         {
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
             {
-                long v = *((long*)(buf + m_Offset));
-                m_Offset += sizeof(long);
+                long v = *(long*)(buf + _mOffset);
+                _mOffset += sizeof(long);
                 return v;
             }
         }
@@ -350,8 +390,10 @@ namespace L2dotNET.Network
         /// <returns><see cref="string"/> value.</returns>
         public unsafe string ReadString()
         {
-            fixed (byte* buf = m_Buffer)
-                return L2Buffer.GetTrimmedString(buf, ref m_Offset, m_Buffer.Length);
+            fixed (byte* buf = _mBuffer)
+            {
+                return L2Buffer.GetTrimmedString(buf, ref _mOffset, _mBuffer.Length);
+            }
         }
 
         /// <summary>
@@ -378,8 +420,10 @@ namespace L2dotNET.Network
         /// <param name="nextValueLength">length of next bytes sequence to write into buffer.</param>
         private void ValidateBufferSize(int nextValueLength)
         {
-            if (m_Offset + nextValueLength > m_Buffer.Length)
-                L2Buffer.Extend(ref m_Buffer, nextValueLength + m_DefaultOverflowValue);
+            if ((_mOffset + nextValueLength) > _mBuffer.Length)
+            {
+                L2Buffer.Extend(ref _mBuffer, nextValueLength + MDefaultOverflowValue);
+            }
         }
 
         /// <summary>
@@ -388,16 +432,20 @@ namespace L2dotNET.Network
         /// <param name="headerSize"><see cref="Packet"/> header (opcodes) capacity.</param>
         public unsafe void Prepare(int headerSize)
         {
-            m_Offset += headerSize;
+            _mOffset += headerSize;
 
-            L2Buffer.Extend(ref m_Buffer, headerSize, m_Offset);
+            L2Buffer.Extend(ref _mBuffer, headerSize, _mOffset);
 
-            fixed (byte* buf = m_Buffer)
+            fixed (byte* buf = _mBuffer)
             {
                 if (headerSize == sizeof(short))
-                    *((short*)(buf)) = (short)m_Offset;
+                {
+                    *(short*)buf = (short)_mOffset;
+                }
                 else
-                    *((int*)(buf)) = m_Offset;
+                {
+                    *(int*)buf = _mOffset;
+                }
             }
         }
 
@@ -407,7 +455,7 @@ namespace L2dotNET.Network
         /// <returns>Packet buffer.</returns>
         public byte[] GetBuffer()
         {
-            return m_Buffer;
+            return _mBuffer;
         }
 
         /// <summary>
@@ -417,7 +465,7 @@ namespace L2dotNET.Network
         /// <returns>Buffer without provided amount of first bytes.</returns>
         public byte[] GetBuffer(int skipFirstBytesCount)
         {
-            return L2Buffer.Copy(m_Buffer, skipFirstBytesCount, new byte[m_Buffer.Length - skipFirstBytesCount], 0, m_Buffer.Length - skipFirstBytesCount);
+            return L2Buffer.Copy(_mBuffer, skipFirstBytesCount, new byte[_mBuffer.Length - skipFirstBytesCount], 0, _mBuffer.Length - skipFirstBytesCount);
         }
 
         /// <summary>
@@ -426,7 +474,7 @@ namespace L2dotNET.Network
         /// <param name="size">Additional offset length.</param>
         public void MoveOffset(int size)
         {
-            m_Offset += size;
+            _mOffset += size;
         }
 
         /// <summary>
@@ -436,8 +484,10 @@ namespace L2dotNET.Network
         {
             get
             {
-                fixed (byte* buf = m_Buffer)
-                    return *(buf);
+                fixed (byte* buf = _mBuffer)
+                {
+                    return *buf;
+                }
             }
         }
 
@@ -448,18 +498,17 @@ namespace L2dotNET.Network
         {
             get
             {
-                fixed (byte* buf = m_Buffer)
-                    return *(byte*)(buf + 1);
+                fixed (byte* buf = _mBuffer)
+                {
+                    return *(buf + 1);
+                }
             }
         }
 
         /// <summary>
         /// Gets packet capacity.
         /// </summary>
-        public int Length
-        {
-            get { return m_ReceivedPacket ? m_Buffer.Length : m_Offset; }
-        }
+        public int Length => _mReceivedPacket ? _mBuffer.Length : _mOffset;
 
         /// <summary>
         /// Returns string representation of current packet.
@@ -472,7 +521,7 @@ namespace L2dotNET.Network
             //sb.AppendFormat("1s op: {0}{2}2d op: {1}{2}", FirstOpcode, SecondOpcode, Environment.NewLine);
             //sb.Append(L2Buffer.ToString(m_Buffer));
             //return sb.ToString();
-            return L2Buffer.ToString(m_Buffer);
+            return L2Buffer.ToString(_mBuffer);
         }
     }
 }

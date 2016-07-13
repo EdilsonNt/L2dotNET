@@ -7,17 +7,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestLinkHtml(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private string _link;
 
-        public override void read()
+        public override void Read()
         {
-            _link = readS();
+            _link = ReadS();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
@@ -31,11 +31,13 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 id = int.Parse(_link.Split('#')[1]);
             }
             else
+            {
                 file = _link;
+            }
 
-            int idx = player.CurrentTarget != null ? player.CurrentTarget.ObjID : player.ObjID;
+            int idx = player.CurrentTarget?.ObjId ?? player.ObjId;
 
-            player.sendPacket(new NpcHtmlMessage(player, file, idx, id));
+            player.SendPacket(new NpcHtmlMessage(player, file, idx, id));
         }
     }
 }

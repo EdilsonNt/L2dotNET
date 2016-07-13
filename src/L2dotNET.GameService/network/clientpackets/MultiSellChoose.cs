@@ -1,5 +1,4 @@
-﻿using L2dotNET.GameService.Model.Items;
-using L2dotNET.GameService.Model.Player;
+﻿using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.Tables.Multisell;
 
@@ -24,38 +23,40 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public MultiSellChoose(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            _listId = readD();
-            _entryId = readD();
-            _amount = readQ();
-            _enchant = readH();
-            _unk2 = readD();
-            _unk3 = readD();
-            _unk4 = readH(); // elemental attributes
-            _unk5 = readH(); // elemental attributes
-            _unk6 = readH(); // elemental attributes
-            _unk7 = readH(); // elemental attributes
-            _unk8 = readH(); // elemental attributes
-            _unk9 = readH(); // elemental attributes
-            _unk10 = readH(); // elemental attributes
-            _unk11 = readH(); // elemental attributes
+            _listId = ReadD();
+            _entryId = ReadD();
+            _amount = ReadQ();
+            _enchant = ReadH();
+            _unk2 = ReadD();
+            _unk3 = ReadD();
+            _unk4 = ReadH(); // elemental attributes
+            _unk5 = ReadH(); // elemental attributes
+            _unk6 = ReadH(); // elemental attributes
+            _unk7 = ReadH(); // elemental attributes
+            _unk8 = ReadH(); // elemental attributes
+            _unk9 = ReadH(); // elemental attributes
+            _unk10 = ReadH(); // elemental attributes
+            _unk11 = ReadH(); // elemental attributes
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
             if (_amount < 0)
+            {
                 _amount = 1;
+            }
 
             if (player.LastRequestedMultiSellId != _listId)
             {
-                player.sendMessage("You are not authorized to use this list now.");
-                player.sendActionFailed();
+                player.SendMessage("You are not authorized to use this list now.");
+                player.SendActionFailed();
                 return;
             }
 
@@ -63,101 +64,79 @@ namespace L2dotNET.GameService.Network.Clientpackets
             if (player.CustomMultiSellList != null)
             {
                 list = player.CustomMultiSellList;
-                if (list.id != _listId)
-                    list = MultiSell.Instance.getList(_listId);
+                if (list.Id != _listId)
+                {
+                    list = MultiSell.Instance.GetList(_listId);
+                }
             }
             else
-                list = MultiSell.Instance.getList(_listId);
-
-            if (list == null || list.container.Count < _entryId)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.TRADE_ATTEMPT_FAILED);
-                player.sendActionFailed();
+                list = MultiSell.Instance.GetList(_listId);
+            }
+
+            if ((list == null) || (list.Container.Count < _entryId))
+            {
+                player.SendSystemMessage(SystemMessage.SystemMessageId.TradeAttemptFailed);
+                player.SendActionFailed();
                 return;
             }
 
-            MultiSellEntry entry = list.container[_entryId];
+            MultiSellEntry entry = list.Container[_entryId];
 
             bool ok = true;
-            foreach (MultiSellItem i in entry.take)
-            {
-                if (i.id > 0)
+            foreach (MultiSellItem i in entry.Take)
+                if (i.Id > 0)
                 {
-                    if (!player.hasItem(i.id, i.count))
+                    if (player.HasItem(i.Id, i.Count))
                     {
-                        ok = false;
-                        break;
+                        continue;
                     }
+
+                    ok = false;
+                    break;
                 }
                 else
                 {
-                    switch (i.id)
+                    switch (i.Id)
                     {
                         case -100: //pvppoint
-                            if (player.Fame < i.count * _amount)
+                            if (player.Fame < (i.Count * _amount))
+                            {
                                 ok = false;
+                            }
                             break;
                     }
                 }
-            }
 
             if (!ok)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.NOT_ENOUGH_REQUIRED_ITEMS);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.NotEnoughRequiredItems);
+                player.SendActionFailed();
                 return;
             }
 
-            foreach (MultiSellItem i in entry.take)
-            {
-                if (i.l2item != null)
-                    player.Inventory.destroyItem(i.l2item, 1, true, true);
+            foreach (MultiSellItem i in entry.Take)
+                if (i.L2Item != null)
+                {
+                    player.DestroyItem(i.L2Item, 1);
+                }
                 else
                 {
-                    if (i.id > 0)
-                        player.Inventory.destroyItem(i.id, i.count, true, true);
+                    if (i.Id > 0)
+                    {
+                        player.DestroyItemById(i.Id, i.Count);
+                    }
                     else
                     {
-                        switch (i.id)
+                        switch (i.Id)
                         {
                             case -100: //pvppoint
                                 break;
                         }
                     }
                 }
-            }
 
-            foreach (MultiSellItem i in entry.give)
-            {
-                if (i.id > 0)
-                {
-                    if (i.l2item != null)
-                    {
-                        L2Item item = new L2Item(i.template);
-                        item.Enchant = i.l2item.Enchant;
-                        player.Inventory.addItem(item, true, true);
-                    }
-                    else
-                    {
-                        if (i.template.isStackable())
-                            player.Inventory.addItem(i.id, i.count * _amount, i.enchant, true, true);
-                        else
-                        {
-                            player.Inventory.addItem(i.id, 1, i.enchant, true, true);
-                        }
-                    }
-                }
-                else
-                {
-                    switch (i.id)
-                    {
-                        case -100: //pvppoint
-                            break;
-                    }
-                }
-            }
-
-            player.sendSystemMessage(SystemMessage.SystemMessageId.SUCCESSFULLY_TRADED_WITH_NPC);
+            player.SendSystemMessage(SystemMessage.SystemMessageId.SuccessfullyTradedWithNpc);
         }
     }
 }

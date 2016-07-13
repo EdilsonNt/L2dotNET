@@ -7,17 +7,17 @@ namespace L2dotNET.GameService.Model.Zones.Classes
     {
         public instant_buff()
         {
-            ZoneID = IdFactory.Instance.nextId();
+            ZoneId = IdFactory.Instance.NextId();
         }
 
-        public override void onInit()
+        public override void OnInit()
         {
-            _enabled = true;
+            Enabled = true;
         }
 
         private void affect(L2Character target)
         {
-            target.sendMessage("u can feel defence.");
+            target.SendMessage("u can feel defence.");
             //Random rn = new Random();
             //if (Zone._skills != null)
             //{
@@ -39,33 +39,37 @@ namespace L2dotNET.GameService.Model.Zones.Classes
             //}
         }
 
-        public override void onEnter(L2Object obj)
+        public override void OnEnter(L2Object obj)
         {
-            if (!_enabled)
+            if (!Enabled)
+            {
                 return;
+            }
 
-            base.onEnter(obj);
+            base.OnEnter(obj);
 
-            obj.onEnterZone(this);
+            obj.OnEnterZone(this);
 
             if (obj is L2Character)
             {
-                ((L2Character)obj).sendMessage("u can feel defence.");
+                ((L2Character)obj).SendMessage("u can feel defence.");
             }
         }
 
-        public override void onExit(L2Object obj, bool cls)
+        public override void OnExit(L2Object obj, bool cls)
         {
-            if (!_enabled)
+            if (!Enabled)
+            {
                 return;
+            }
 
-            base.onExit(obj, cls);
+            base.OnExit(obj, cls);
 
-            obj.onExitZone(this, cls);
+            obj.OnExitZone(this, cls);
 
             if (obj is L2Character)
             {
-                ((L2Character)obj).sendMessage("u lost effect defence.");
+                ((L2Character)obj).SendMessage("u lost effect defence.");
             }
         }
     }

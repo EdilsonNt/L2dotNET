@@ -7,38 +7,38 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public Appearing(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
             // nothing
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
             int x = player.X;
             int y = player.Y;
 
-            if (player._obsx != -1)
+            if (player.Obsx != -1)
             {
-                x = player._obsx;
-                y = player._obsy;
+                x = player.Obsx;
+                y = player.Obsy;
             }
 
-            player.sendPacket(new UserInfo(player));
-            player.validateVisibleObjects(x, y, false);
-            player.updateVisibleStatus();
+            player.SendPacket(new UserInfo(player));
+            player.ValidateVisibleObjects(x, y, false);
+            player.UpdateVisibleStatus();
 
             if (player.Summon != null)
             {
-                player.Summon.validateVisibleObjects(x, y, false);
-                player.Summon.isTeleporting = false;
+                player.Summon.ValidateVisibleObjects(x, y, false);
+                player.Summon.IsTeleporting = false;
             }
 
-            player.sendActionFailed();
+            player.SendActionFailed();
         }
     }
 }

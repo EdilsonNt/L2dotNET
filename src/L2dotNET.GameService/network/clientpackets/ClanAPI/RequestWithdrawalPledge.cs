@@ -6,22 +6,26 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
     {
         public RequestWithdrawalPledge(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
             // not actions
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
             if (player.Clan != null)
+            {
                 player.Clan.Leave(player);
+            }
             else
-                player.sendActionFailed();
+            {
+                player.SendActionFailed();
+            }
         }
     }
 }

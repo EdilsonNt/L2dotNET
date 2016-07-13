@@ -3,38 +3,39 @@ using System.IO;
 using System.Linq;
 using log4net;
 using L2dotNET.LoginService.Network;
+using L2dotNET.Utility;
 
 namespace L2dotNET.LoginService.Managers
 {
     class NetworkRedirect
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(NetworkRedirect));
-        private static volatile NetworkRedirect instance;
-        private static readonly object syncRoot = new object();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(NetworkRedirect));
+        private static volatile NetworkRedirect _instance;
+        private static readonly object SyncRoot = new object();
 
-        protected List<NetRedClass> redirects = new List<NetRedClass>();
+        protected List<NetRedClass> Redirects = new List<NetRedClass>();
         public NetRedClass GlobalRedirection { get; set; }
 
         public static NetworkRedirect Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new NetworkRedirect();
-                        }
+                        _instance = new NetworkRedirect();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
-
-        public NetworkRedirect() { }
 
         public void Initialize()
         {
@@ -43,22 +44,29 @@ namespace L2dotNET.LoginService.Managers
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine() ?? string.Empty;
-                    if (line.Length == 0 || line.StartsWith("//"))
+                    if ((line.Length == 0) || line.StartsWithIgnoreCase("//"))
+                    {
                         continue;
+                    }
 
                     NetRedClass i = new NetRedClass();
                     string[] sp = line.Split(' ');
-                    i.serverId = short.Parse(sp[0]);
-                    i.mask = sp[1];
-                    i.setRedirect(sp[2]);
+                    i.ServerId = short.Parse(sp[0]);
+                    i.Mask = sp[1];
+                    i.SetRedirect(sp[2]);
 
-                    if (i.serverId == -1)
+                    if (i.ServerId == -1)
+                    {
                         GlobalRedirection = i;
+                    }
                     else
-                        redirects.Add(i);
+                    {
+                        Redirects.Add(i);
+                    }
                 }
             }
-            log.Info($"NetworkRedirect: {redirects.Count} redirects. Global is {(GlobalRedirection == null ? "disabled" : "enabled")}");
+
+            Log.Info($"NetworkRedirect: {Redirects.Count} redirects. Global is {(GlobalRedirection == null ? "disabled" : "enabled")}");
         }
 
         public byte[] GetRedirect(LoginClient client, short serverId)
@@ -66,64 +74,76 @@ namespace L2dotNET.LoginService.Managers
             if (GlobalRedirection != null)
             {
                 string[] a = client.Address.ToString().Split(':')[0].Split('.'),
-                         b = GlobalRedirection.mask.Split('.');
+                         b = GlobalRedirection.Mask.Split('.');
                 byte[] d = new byte[4];
                 for (byte c = 0; c < 4; c++)
                 {
                     d[c] = 0;
 
                     if (b[c] == "*")
+                    {
                         d[c] = 1;
+                    }
                     else if (b[c] == a[c])
+                    {
                         d[c] = 1;
+                    }
                     else if (b[c].Contains("/"))
                     {
                         byte n = byte.Parse(b[c].Split('/')[0]),
                              x = byte.Parse(b[c].Split('/')[1]);
                         byte t = byte.Parse(a[c]);
-                        d[c] = (t >= n && t <= x) ? (byte)1 : (byte)0;
+                        d[c] = (t >= n) && (t <= x) ? (byte)1 : (byte)0;
                     }
                 }
 
-                if (d.Min() == 1)
+                if (d.Min() != 1)
                 {
-                    log.Info($"Redirecting client to global {GlobalRedirection.redirect} on #{serverId}");
-                    return GlobalRedirection.redirectBits;
-                }
-            }
-            else
-            {
-                if (redirects.Count == 0)
                     return null;
+                }
 
-                foreach (NetRedClass nr in redirects.Where(nr => nr.serverId == serverId))
+                Log.Info($"Redirecting client to global {GlobalRedirection.Redirect} on #{serverId}");
+                return GlobalRedirection.RedirectBits;
+            }
+
+            if (Redirects.Count == 0)
+            {
+                return null;
+            }
+
+            foreach (NetRedClass nr in Redirects.Where(nr => nr.ServerId == serverId))
+            {
+                string[] a = client.Address.ToString().Split(':')[0].Split('.'),
+                         b = nr.Mask.Split('.');
+                byte[] d = new byte[4];
+                for (byte c = 0; c < 4; c++)
                 {
-                    string[] a = client.Address.ToString().Split(':')[0].Split('.'),
-                             b = nr.mask.Split('.');
-                    byte[] d = new byte[4];
-                    for (byte c = 0; c < 4; c++)
-                    {
-                        d[c] = 0;
+                    d[c] = 0;
 
-                        if (b[c] == "*")
-                            d[c] = 1;
-                        else if (b[c] == a[c])
-                            d[c] = 1;
-                        else if (b[c].Contains("/"))
-                        {
-                            byte n = byte.Parse(b[c].Split('/')[0]),
-                                 x = byte.Parse(b[c].Split('/')[1]);
-                            byte t = byte.Parse(a[c]);
-                            d[c] = (t >= n && t <= x) ? (byte)1 : (byte)0;
-                        }
+                    if (b[c] == "*")
+                    {
+                        d[c] = 1;
                     }
-
-                    if (d.Min() == 1)
+                    else if (b[c] == a[c])
                     {
-                        log.Info($"Redirecting client to {nr.redirect} on #{serverId}");
-                        return nr.redirectBits;
+                        d[c] = 1;
+                    }
+                    else if (b[c].Contains("/"))
+                    {
+                        byte n = byte.Parse(b[c].Split('/')[0]),
+                             x = byte.Parse(b[c].Split('/')[1]);
+                        byte t = byte.Parse(a[c]);
+                        d[c] = (t >= n) && (t <= x) ? (byte)1 : (byte)0;
                     }
                 }
+
+                if (d.Min() != 1)
+                {
+                    continue;
+                }
+
+                Log.Info($"Redirecting client to {nr.Redirect} on #{serverId}");
+                return nr.RedirectBits;
             }
 
             return null;

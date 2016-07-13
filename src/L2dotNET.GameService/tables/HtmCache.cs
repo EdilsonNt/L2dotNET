@@ -4,63 +4,66 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using log4net;
+using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Tables
 {
     public class HtmCache
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(HtmCache));
-        private static volatile HtmCache instance;
-        private static readonly object syncRoot = new object();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(HtmCache));
+        private static volatile HtmCache _instance;
+        private static readonly object SyncRoot = new object();
 
-        private List<L2Html> htmCache;
-        private List<string> htmFiles;
+        private List<L2Html> _htmCache;
+        private List<string> _htmFiles;
 
         public static HtmCache Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new HtmCache();
-                        }
+                        _instance = new HtmCache();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
-        public HtmCache() { }
-
         public void Initialize()
         {
-            htmCache = new List<L2Html>();
-            htmFiles = DirSearch("./html/");
+            _htmCache = new List<L2Html>();
+            _htmFiles = DirSearch("./html/");
             BuildHtmCache();
-            log.Info($"HtmCache: Cache Built. Loaded {htmCache.Count} files.");
+            Log.Info($"HtmCache: Cache Built. Loaded {_htmCache.Count} files.");
         }
 
         public void BuildHtmCache()
         {
-            foreach (string file in htmFiles)
+            foreach (string file in _htmFiles)
             {
                 string content = File.ReadAllText(file, Encoding.UTF8);
                 content = content.Replace("\r\n", "\n");
-                htmCache.Add(new L2Html(Path.GetFileNameWithoutExtension(file), content, file));
+                _htmCache.Add(new L2Html(Path.GetFileNameWithoutExtension(file), content, file));
             }
         }
 
         public string GetHtmByFilename(string filename)
         {
             if (string.IsNullOrEmpty(filename))
+            {
                 return string.Empty;
+            }
 
-            L2Html html = htmCache.FirstOrDefault(x => x.Filename.Equals(filename, StringComparison.InvariantCultureIgnoreCase));
+            L2Html html = _htmCache.FirstOrDefault(x => x.Filename.EqualsIgnoreCase(filename));
             return html != null ? html.Content : string.Empty;
         }
 
@@ -77,7 +80,7 @@ namespace L2dotNET.GameService.Tables
             }
             catch (Exception excpt)
             {
-                log.Error(excpt.Message);
+                Log.Error(excpt.Message);
             }
 
             return files;

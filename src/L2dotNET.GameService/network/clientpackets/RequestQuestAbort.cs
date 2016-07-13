@@ -8,39 +8,37 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestQuestAbort(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private int _questId;
 
-        public override void read()
+        public override void Read()
         {
-            _questId = readD();
+            _questId = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
-            foreach (QuestInfo qi in player._quests.Where(qi => qi.id == _questId))
+            foreach (QuestInfo qi in player.Quests.Where(qi => qi.Id == _questId))
             {
-                if (qi.completed)
+                if (qi.Completed)
                 {
-                    player.sendActionFailed();
+                    player.SendActionFailed();
                     return;
                 }
 
-                foreach (int id in qi._template.actItems)
-                {
-                    player.Inventory.destroyItemAll(id, true, false);
-                }
+                //foreach (int id in qi._template.actItems)
+                //    player.Inventory.Dest(id, true, false);
 
-                player.sendMessage("Quest " + qi._template.questName + " aborted.");
-                player.stopQuest(qi, true);
+                player.SendMessage("Quest " + qi.Template.QuestName + " aborted.");
+                player.StopQuest(qi, true);
                 return;
             }
 
-            player.sendActionFailed();
+            player.SendActionFailed();
         }
     }
 }

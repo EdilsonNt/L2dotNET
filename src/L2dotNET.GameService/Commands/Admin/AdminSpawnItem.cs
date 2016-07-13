@@ -6,7 +6,7 @@ namespace L2dotNET.GameService.Commands.Admin
 {
     class AdminSpawnItem : AAdminCommand
     {
-        private readonly ILog log = LogManager.GetLogger(typeof(AAdminCommand));
+        private readonly ILog _log = LogManager.GetLogger(typeof(AAdminCommand));
 
         public AdminSpawnItem()
         {
@@ -26,10 +26,10 @@ namespace L2dotNET.GameService.Commands.Admin
             }
             catch (Exception e)
             {
-                log.Error($"AdminSpawnItem: {e.Message}");
+                _log.Error($"AdminSpawnItem: {e.Message}");
             }
 
-            admin.Inventory.addItem(id, count, true, true);
+            admin.AddItem(id, count);
         }
     }
 }

@@ -14,30 +14,30 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public RequestBuyItem(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            _listId = readD();
-            _count = readD();
+            _listId = ReadD();
+            _count = ReadD();
 
             _items = new long[_count * 2];
 
             for (int i = 0; i < _count; i++)
             {
-                _items[i * 2] = readD();
-                _items[i * 2 + 1] = readQ();
+                _items[i * 2] = ReadD();
+                _items[(i * 2) + 1] = ReadQ();
             }
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
             if (_count <= 0)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
@@ -45,30 +45,30 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             if (trader == null)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.TRADE_ATTEMPT_FAILED);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.TradeAttemptFailed);
+                player.SendActionFailed();
                 return;
             }
 
-            ND_shop shop = NpcData.Instance._shops[trader.Template.NpcId];
+            NDShop shop = NpcData.Instance.Shops[trader.Template.NpcId];
 
             if (shop == null)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.TRADE_ATTEMPT_FAILED);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.TradeAttemptFailed);
+                player.SendActionFailed();
                 return;
             }
 
-            ND_shopList list = shop.lists[(short)_listId];
+            NdShopList list = shop.Lists[(short)_listId];
 
             if (list == null)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.TRADE_ATTEMPT_FAILED);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.TradeAttemptFailed);
+                player.SendActionFailed();
                 return;
             }
 
-            long adena = 0;
+            int adena = 0;
             int slots = 0,
                 weight = 0;
 
@@ -77,49 +77,53 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 int itemId = (int)_items[i * 2];
 
                 bool notfound = true;
-                foreach (ND_shopItem item in list.items.Where(item => item.item.ItemID == itemId))
+                foreach (NDShopItem item in list.Items.Where(item => item.Item.ItemId == itemId))
                 {
-                    adena += item.item.Price * _items[i * 2 + 1];
+                    adena += item.Item.ReferencePrice * (int)_items[(i * 2) + 1];
 
-                    if (!item.item.isStackable())
-                        slots++;
-                    else
+                    if (!item.Item.Stackable)
                     {
-                        if (!player.hasItem(item.item.ItemID))
-                            slots++;
+                        slots++;
                     }
+                    //else
+                    //{
+                    //    if (!player.HasItem(item.item.ItemID))
+                    //        slots++;
+                    //}
 
-                    weight += (int)(item.item.Weight * _items[i * 2 + 1]);
+                    weight += (int)(item.Item.Weight * _items[(i * 2) + 1]);
 
                     notfound = false;
                     break;
                 }
 
-                if (notfound)
+                if (!notfound)
                 {
-                    player.sendSystemMessage(SystemMessage.SystemMessageId.TRADE_ATTEMPT_FAILED);
-                    player.sendActionFailed();
-                    return;
+                    continue;
                 }
-            }
 
-            if (adena > player.getAdena())
-            {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.YOU_NOT_ENOUGH_ADENA);
+                player.SendSystemMessage(SystemMessage.SystemMessageId.TradeAttemptFailed);
+                player.SendActionFailed();
                 return;
             }
 
-            player.reduceAdena(adena, false, false);
+            if (adena > player.GetAdena())
+            {
+                player.SendSystemMessage(SystemMessage.SystemMessageId.YouNotEnoughAdena);
+                return;
+            }
+
+            player.ReduceAdena(adena);
 
             for (int i = 0; i < _count; i++)
             {
                 int itemId = (int)_items[i * 2];
-                long count = _items[i * 2 + 1];
+                int count = (int)_items[(i * 2) + 1];
 
-                player.Inventory.addItem(itemId, count, false, false);
+                player.AddItem(itemId, count);
             }
 
-            player.sendPacket(new ExBuySellList_Close());
+            player.SendPacket(new ExBuySellListClose());
         }
     }
 }

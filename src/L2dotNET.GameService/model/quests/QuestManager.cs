@@ -4,33 +4,34 @@ using System.Text;
 using log4net;
 using L2dotNET.GameService.Model.Npcs;
 using L2dotNET.GameService.Model.Player;
-using L2dotNET.GameService.Model.Quests.Data;
 using L2dotNET.GameService.Scripting;
 
 namespace L2dotNET.GameService.Model.Quests
 {
     public class QuestManager
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(QuestManager));
-        private static volatile QuestManager instance;
-        private static readonly object syncRoot = new object();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(QuestManager));
+        private static volatile QuestManager _instance;
+        private static readonly object SyncRoot = new object();
 
         public static QuestManager Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new QuestManager();
-                        }
+                        _instance = new QuestManager();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
@@ -39,41 +40,31 @@ namespace L2dotNET.GameService.Model.Quests
             object[] items = ScriptCompiler.Instance.CompileFolder(@"cmpl\quests");
 
             if (items == null)
+            {
                 return;
+            }
 
             foreach (object obj in items)
             {
-                register((QuestOrigin)obj);
+                Register((QuestOrigin)obj);
             }
 
-            register(new _0003_will_the_seal_be_broken());
-            register(new _0005_miners_favor());
-            register(new _0006_step_into_the_future());
-            register(new _0007_a_trip_begins());
-            register(new _0008_an_adventure_begins());
-            register(new _0009_into_the_city_of_humans());
-            register(new _0010_into_the_world());
-            register(new _0011_secret_meeting_with_ketra_orcs());
-            register(new _0246_PossessorOfAPreciousSoul());
-            register(new _0605_alliance_with_ketra_orcs());
-            register(new _0606_war_with_varka_silenos());
+            //register(new _0003_will_the_seal_be_broken());
 
-            log.Info($"QuestManager: loaded {_quests.Count} quests.");
+            Log.Info($"QuestManager: loaded {Quests.Count} quests.");
         }
 
-        public readonly SortedList<int, QuestOrigin> _quests = new SortedList<int, QuestOrigin>();
+        public readonly SortedList<int, QuestOrigin> Quests = new SortedList<int, QuestOrigin>();
 
-        public QuestManager() { }
-
-        private void register(QuestOrigin qo)
+        private void Register(QuestOrigin qo)
         {
-            _quests.Add(qo.questId, qo);
+            Quests.Add(qo.QuestId, qo);
         }
 
         public void QuestAccept(L2Player player, L2Npc npc, int questId)
         {
-            QuestOrigin qo = _quests[questId];
-            qo.onAccept(player, npc);
+            QuestOrigin qo = Quests[questId];
+            qo.OnAccept(player, npc);
         }
 
         public void TalkSelection(L2Player player, L2Npc npc)
@@ -82,48 +73,46 @@ namespace L2dotNET.GameService.Model.Quests
             List<int> ilist = new List<int>();
             List<int> clist = new List<int>();
             bool nullex = false;
-            foreach (QuestInfo qi in player._quests)
+            foreach (QuestInfo qi in player.Quests)
             {
-                if (qi.completed)
+                if (qi.Completed)
                 {
-                    clist.Add(qi.id);
+                    clist.Add(qi.Id);
                     continue;
                 }
 
-                if (qi._template.canTalk(player, npc))
+                if (!qi.Template.CanTalk(player, npc))
                 {
-                    qlist.Add(new object[] { qi._template, "<a action=\"bypass -h quest_continue?quest_id=" + qi.id + "\">[" + qi._template.questName + " (In Progress)]</a><br1>", qi._template.questId });
-                    ilist.Add(qi.id);
-                }
-            }
-
-            foreach (QuestOrigin qo in _quests.Values)
-            {
-                if (ilist.Contains(qo.questId))
                     continue;
-
-                if (qo.startNpc == npc.Template.NpcId)
-                {
-                    if (clist.Contains(qo.questId))
-                    {
-                        qlist.Add(new object[] { null, "[" + qo.questName + " (Completed)]<br1>", 0 });
-                        nullex = true;
-                        continue;
-                    }
-
-                    qlist.Add(new object[] { qo, "<a action=\"bypass -h quest_tryaccept?quest_id=" + qo.questId + "\">[" + qo.questName + "]</a><br1>", qo.questId });
                 }
+
+                qlist.Add(new object[] { qi.Template, "<a action=\"bypass -h quest_continue?quest_id=" + qi.Id + "\">[" + qi.Template.QuestName + " (In Progress)]</a><br1>", qi.Template.QuestId });
+                ilist.Add(qi.Id);
             }
 
-            if (!nullex && qlist.Count == 1)
+            foreach (QuestOrigin qo in Quests.Values.Where(qo => !ilist.Contains(qo.QuestId)).Where(qo => qo.StartNpc == npc.Template.NpcId))
+            {
+                if (clist.Contains(qo.QuestId))
+                {
+                    qlist.Add(new object[] { null, "[" + qo.QuestName + " (Completed)]<br1>", 0 });
+                    nullex = true;
+                    continue;
+                }
+
+                qlist.Add(new object[] { qo, "<a action=\"bypass -h quest_tryaccept?quest_id=" + qo.QuestId + "\">[" + qo.QuestName + "]</a><br1>", qo.QuestId });
+            }
+
+            if (!nullex && (qlist.Count == 1))
             {
                 foreach (object[] o in qlist)
-                {
                     if (((string)o[1]).Contains("(In Progress)"))
-                        player.quest_Talk(npc, ((QuestOrigin)o[0]).questId);
+                    {
+                        player.quest_Talk(npc, ((QuestOrigin)o[0]).QuestId);
+                    }
                     else
-                        ((QuestOrigin)o[0]).tryAccept(player, npc);
-                }
+                    {
+                        ((QuestOrigin)o[0]).TryAccept(player, npc);
+                    }
 
                 return;
             }
@@ -150,9 +139,9 @@ namespace L2dotNET.GameService.Model.Quests
 
         public void OnQuestTalk(L2Player player, L2Npc npc, int ask, int reply)
         {
-            foreach (QuestInfo qo in player._quests.Where(qo => qo.id == ask))
+            foreach (QuestInfo qo in player.Quests.Where(qo => qo.Id == ask))
             {
-                qo._template.onTalkToNpcQM(player, npc, reply);
+                qo.Template.OnTalkToNpcQm(player, npc, reply);
                 break;
             }
         }
@@ -164,8 +153,8 @@ namespace L2dotNET.GameService.Model.Quests
 
         public void Quest_tryaccept(L2Player player, L2Npc npc, int qid)
         {
-            QuestOrigin qo = _quests[qid];
-            qo.tryAccept(player, npc);
+            QuestOrigin qo = Quests[qid];
+            qo.TryAccept(player, npc);
         }
     }
 }

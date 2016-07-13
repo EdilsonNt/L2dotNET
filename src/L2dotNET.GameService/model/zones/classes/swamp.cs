@@ -9,51 +9,59 @@ namespace L2dotNET.GameService.Model.Zones.Classes
     {
         public swamp()
         {
-            ZoneID = IdFactory.Instance.nextId();
+            ZoneId = IdFactory.Instance.NextId();
         }
 
-        public override void onInit()
+        public override void OnInit()
         {
-            base.onInit();
-            _enabled = Template.DefaultStatus;
+            base.OnInit();
+            Enabled = Template.DefaultStatus;
         }
 
-        public override void onEnter(L2Object obj)
+        public override void OnEnter(L2Object obj)
         {
-            if (!_enabled)
-                return;
-
-            base.onEnter(obj);
-
-            obj.onEnterZone(this);
-
-            if (obj is L2Player)
+            if (!Enabled)
             {
-                L2Player p = (L2Player)obj;
-                p.isInDanger = true;
-                p.sendPacket(new EtcStatusUpdate(p));
-                //  p._stats.base_p_speed += Template._move_bonus;
-                p.broadcastUserInfo();
+                return;
             }
+
+            base.OnEnter(obj);
+
+            obj.OnEnterZone(this);
+
+            if (!(obj is L2Player))
+            {
+                return;
+            }
+
+            L2Player p = (L2Player)obj;
+            p.IsInDanger = true;
+            p.SendPacket(new EtcStatusUpdate(p));
+            //  p._stats.base_p_speed += Template._move_bonus;
+            p.BroadcastUserInfo();
         }
 
-        public override void onExit(L2Object obj, bool cls)
+        public override void OnExit(L2Object obj, bool cls)
         {
-            if (!_enabled)
-                return;
-
-            base.onExit(obj, cls);
-
-            obj.onExitZone(this, cls);
-
-            if (obj is L2Player)
+            if (!Enabled)
             {
-                L2Player p = (L2Player)obj;
-                p.isInDanger = false;
-                p.sendPacket(new EtcStatusUpdate(p));
-                //  p._stats.base_p_speed -= Template._move_bonus;
-                p.broadcastUserInfo();
+                return;
             }
+
+            base.OnExit(obj, cls);
+
+            obj.OnExitZone(this, cls);
+
+            if (!(obj is L2Player))
+            {
+                return;
+            }
+
+            L2Player p = (L2Player)obj;
+            p.IsInDanger = false;
+            p.SendPacket(new EtcStatusUpdate(p));
+            //  p._stats.base_p_speed -= Template._move_bonus;
+            p.BroadcastUserInfo();
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml.Linq;
+﻿using System.Collections.Generic;
 using log4net;
 using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Npcs;
@@ -12,27 +9,29 @@ namespace L2dotNET.GameService.Tables.Multisell
 {
     public class MultiSell
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(MultiSell));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MultiSell));
 
-        private static volatile MultiSell instance;
-        private static readonly object syncRoot = new object();
+        private static volatile MultiSell _instance;
+        private static readonly object SyncRoot = new object();
 
         public static MultiSell Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new MultiSell();
-                        }
+                        _instance = new MultiSell();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
@@ -41,137 +40,79 @@ namespace L2dotNET.GameService.Tables.Multisell
             LoadXml();
         }
 
-        public MultiSell() { }
-
-        public SortedList<int, MultiSellList> lists = new SortedList<int, MultiSellList>();
+        public SortedList<int, MultiSellList> Lists = new SortedList<int, MultiSellList>();
 
         public void ShowList(L2Player player, L2Npc npc, int listId)
         {
-            if (!lists.ContainsKey(listId))
+            if (!Lists.ContainsKey(listId))
             {
-                player.sendMessage("Multsell list #" + listId + " was not found");
-                player.sendActionFailed();
+                player.SendMessage("Multsell list #" + listId + " was not found");
+                player.SendActionFailed();
                 return;
             }
 
-            MultiSellList list = lists[listId];
+            MultiSellList list = Lists[listId];
 
             player.LastRequestedMultiSellId = listId;
 
-            if (list.all == 1)
+            if (list.All == 1)
             {
-                player.sendPacket(new MultiSellListEx(player, list));
-                if (player.CustomMultiSellList != null)
-                    player.CustomMultiSellList = null;
+                player.SendPacket(new MultiSellListEx(list));
+                player.CustomMultiSellList = null;
             }
             else
             {
-                MultiSellList newlist = new MultiSellList();
-                newlist.id = list.id;
-                L2Item[] pitems = player.getAllWeaponArmorNonQuestItems();
-                foreach (MultiSellEntry entry in list.container)
+                MultiSellList newlist = new MultiSellList
+                                        {
+                                            Id = list.Id
+                                        };
+                L2Item[] pitems = player.GetAllItems().ToArray();
+                foreach (MultiSellEntry entry in list.Container)
                 {
-                    MultiSellItem msitem = entry.take[0];
+                    MultiSellItem msitem = entry.Take[0];
 
-                    if (msitem.template == null)
+                    if (msitem.Template == null)
+                    {
                         continue;
+                    }
 
                     foreach (L2Item item in pitems)
                     {
-                        if (item._isEquipped == 1)
-                            continue;
-
-                        if (item.Template.ItemID == msitem.id)
+                        if (item.IsEquipped == 1)
                         {
-                            MultiSellEntry edentry = new MultiSellEntry();
-                            edentry.take.AddRange(entry.take);
-                            edentry.give.AddRange(entry.give);
-
-                            edentry.take[0].l2item = item;
-                            edentry.give[0].l2item = item;
-
-                            newlist.container.Add(edentry);
+                            continue;
                         }
+
+                        if (item.Template.ItemId != msitem.Id)
+                        {
+                            continue;
+                        }
+
+                        MultiSellEntry edentry = new MultiSellEntry();
+                        edentry.Take.AddRange(entry.Take);
+                        edentry.Give.AddRange(entry.Give);
+
+                        edentry.Take[0].L2Item = item;
+                        edentry.Give[0].L2Item = item;
+
+                        newlist.Container.Add(edentry);
                     }
                 }
 
-                MultiSellListEx mlist = new MultiSellListEx(player, newlist);
+                MultiSellListEx mlist = new MultiSellListEx(newlist);
                 player.CustomMultiSellList = newlist;
-                player.sendPacket(mlist);
+                player.SendPacket(mlist);
             }
         }
 
         public void LoadXml()
         {
-            XElement xml = XElement.Parse(File.ReadAllText(@"scripts\multisell.xml"));
-            XElement ex = xml.Element("list");
-
-            if (ex != null)
-            {
-                foreach (XElement m in ex.Elements())
-                {
-                    if (m.Name == "multisell")
-                    {
-                        MultiSellList mlist = new MultiSellList();
-                        mlist.id = Convert.ToInt32(m.Attribute("id").Value);
-                        mlist.dutyf = Convert.ToByte(m.Attribute("dutyf").Value);
-                        mlist.save = Convert.ToByte(m.Attribute("save").Value);
-                        mlist.all = Convert.ToByte(m.Attribute("all").Value);
-
-                        foreach (XElement stp in m.Elements())
-                        {
-                            if (stp.Name == "entry")
-                            {
-                                MultiSellEntry entry = new MultiSellEntry();
-                                foreach (XElement its in stp.Elements())
-                                {
-                                    switch (its.Name.LocalName)
-                                    {
-                                        case "give":
-                                        {
-                                            MultiSellItem item = new MultiSellItem();
-                                            item.id = Convert.ToInt32(its.Attribute("id").Value);
-                                            item.count = Convert.ToInt64(its.Attribute("count").Value);
-                                            if (item.id > 0)
-                                            {
-                                                item.template = ItemTable.Instance.GetItem(item.id);
-                                                if (!item.template.isStackable())
-                                                    entry.Stackable = 0;
-                                            }
-                                            entry.give.Add(item);
-                                        }
-                                            break;
-                                        case "take":
-                                        {
-                                            MultiSellItem item = new MultiSellItem();
-                                            item.id = Convert.ToInt32(its.Attribute("id").Value);
-                                            item.count = Convert.ToInt64(its.Attribute("count").Value);
-                                            if (item.id > 0)
-                                                item.template = ItemTable.Instance.GetItem(item.id);
-                                            entry.take.Add(item);
-                                        }
-                                            break;
-                                        case "duty":
-                                            entry.dutyCount = Convert.ToInt64(its.Attribute("count").Value);
-                                            break;
-                                    }
-                                }
-
-                                mlist.container.Add(entry);
-                            }
-                        }
-
-                        lists.Add(mlist.id, mlist);
-                    }
-                }
-            }
-
-            log.Info($"MultiSell: {lists.Count} lists");
+            Log.Info($"MultiSell: {Lists.Count} lists");
         }
 
-        public MultiSellList getList(int listId)
+        public MultiSellList GetList(int listId)
         {
-            return lists.ContainsKey(listId) ? lists[listId] : null;
+            return Lists.ContainsKey(listId) ? Lists[listId] : null;
         }
     }
 }

@@ -8,66 +8,75 @@ namespace L2dotNET.GameService.Tables.Ndextend
 {
     class NDTeleport
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(NDTeleport));
-        public SortedList<int, ab_teleport_npc> npcs = new SortedList<int, ab_teleport_npc>();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(NDTeleport));
+        public SortedList<int, ABTeleportNpc> Npcs = new SortedList<int, ABTeleportNpc>();
 
         public NDTeleport()
         {
-            reload();
+            Reload();
         }
 
-        private void reload()
+        private void Reload()
         {
             XElement xml = XElement.Parse(File.ReadAllText(@"scripts\nd_teleports.xml"));
             XElement ex = xml.Element("list");
             if (ex != null)
             {
                 foreach (XElement m in ex.Elements())
-                {
                     if (m.Name == "npc")
                     {
-                        ab_teleport_npc npc = new ab_teleport_npc();
-                        npc.id = int.Parse(m.Attribute("id").Value);
+                        ABTeleportNpc npc = new ABTeleportNpc
+                                            {
+                                                Id = int.Parse(m.Attribute("id").Value)
+                                            };
 
                         foreach (XElement x in m.Elements())
-                        {
                             if (x.Name == "group")
                             {
-                                ab_teleport_group ab = new ab_teleport_group();
-                                ab.id = int.Parse(x.Attribute("id").Value);
+                                ABTeleportGroup ab = new ABTeleportGroup
+                                                     {
+                                                         Id = int.Parse(x.Attribute("id").Value)
+                                                     };
 
                                 foreach (XElement e in x.Elements())
-                                {
                                     if (e.Name == "e")
                                     {
-                                        ab_teleport_entry ae = new ab_teleport_entry();
-                                        ae.name = e.Attribute("name").Value;
-                                        ae.x = int.Parse(e.Attribute("x").Value);
-                                        ae.y = int.Parse(e.Attribute("y").Value);
-                                        ae.z = int.Parse(e.Attribute("z").Value);
-                                        ae.id = ab._teles.Count;
+                                        ABTeleportEntry ae = new ABTeleportEntry
+                                                             {
+                                                                 Name = e.Attribute("name").Value,
+                                                                 X = int.Parse(e.Attribute("x").Value),
+                                                                 Y = int.Parse(e.Attribute("y").Value),
+                                                                 Z = int.Parse(e.Attribute("z").Value),
+                                                                 Id = ab.Teles.Count
+                                                             };
 
                                         if (e.Attribute("cost") != null)
-                                            ae.cost = long.Parse(e.Attribute("cost").Value);
+                                        {
+                                            ae.Cost = int.Parse(e.Attribute("cost").Value);
+                                        }
                                         if (e.Attribute("itemId") != null)
-                                            ae.itemId = int.Parse(e.Attribute("itemId").Value);
+                                        {
+                                            ae.ItemId = int.Parse(e.Attribute("itemId").Value);
+                                        }
 
-                                        ab._teles.Add(ae.id, ae);
+                                        ab.Teles.Add(ae.Id, ae);
                                     }
-                                }
 
-                                npc.groups.Add(ab.id, ab);
+                                npc.Groups.Add(ab.Id, ab);
                             }
+
+                        if (Npcs.ContainsKey(npc.Id))
+                        {
+                            Log.Error($"NpcData(Teleporter) dublicate npc str {npc.Id}");
                         }
-                        if (npcs.ContainsKey(npc.id))
-                            log.Error($"NpcData(Teleporter) dublicate npc str {npc.id}");
                         else
-                            npcs.Add(npc.id, npc);
+                        {
+                            Npcs.Add(npc.Id, npc);
+                        }
                     }
-                }
             }
 
-            log.Info("NpcData(Teleporter): loaded " + npcs.Count + " npcs.");
+            Log.Info("NpcData(Teleporter): loaded " + Npcs.Count + " npcs.");
         }
     }
 }

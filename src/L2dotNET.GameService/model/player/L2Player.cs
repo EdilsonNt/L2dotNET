@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
@@ -14,7 +13,7 @@ using L2dotNET.GameService.Model.Npcs.Cubic;
 using L2dotNET.GameService.Model.Npcs.Decor;
 using L2dotNET.GameService.Model.Playable;
 using L2dotNET.GameService.Model.Player.AI;
-using L2dotNET.GameService.Model.Player.Partials;
+using L2dotNET.GameService.Model.Player.General;
 using L2dotNET.GameService.Model.Player.Transformation;
 using L2dotNET.GameService.Model.Quests;
 using L2dotNET.GameService.Model.Skills;
@@ -30,20 +29,18 @@ using L2dotNET.GameService.Tools;
 using L2dotNET.GameService.World;
 using L2dotNET.Models;
 using L2dotNET.Services.Contracts;
+using L2dotNET.Utility;
 using Ninject;
 
 namespace L2dotNET.GameService.Model.Player
 {
     [Synchronization]
-    public partial class L2Player : L2Character
+    public class L2Player : L2Character
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(L2Player));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(L2Player));
 
         [Inject]
-        public IPlayerService playerService
-        {
-            get { return GameServer.Kernel.Get<IPlayerService>(); }
-        }
+        public IPlayerService PlayerService => GameServer.Kernel.Get<IPlayerService>();
 
         public string AccountName { get; set; }
         public ClassId ClassId { get; set; }
@@ -56,16 +53,16 @@ namespace L2dotNET.GameService.Model.Player
         public bool WhisperBlock { get; set; } = false;
         public GameClient Gameclient { get; set; }
         public long Exp { get; set; }
-        public long ExpOnDeath { get; set; } = 0;
-        public long ExpAfterLogin { get; set; } = 0;
-        public int SP { get; set; }
-        public override int MaxHP { get; set; }
-        public override double CurHP { get; set; }
-        public override int MaxCP { get; set; }
-        public override double CurCP { get; set; }
-        public override int MaxMP { get; set; }
-        public override double CurMP { get; set; }
-        public int Karma = 0;
+        public long ExpOnDeath { get; set; }
+        public long ExpAfterLogin { get; set; }
+        public int Sp { get; set; }
+        public override int MaxHp { get; set; }
+        public override double CurHp { get; set; }
+        public override int MaxCp { get; set; }
+        public override double CurCp { get; set; }
+        public override int MaxMp { get; set; }
+        public override double CurMp { get; set; }
+        public int Karma;
         public int PvpKills { get; set; }
         public long DeleteTime { get; set; }
         public int CanCraft { get; set; }
@@ -85,7 +82,7 @@ namespace L2dotNET.GameService.Model.Player
         public long LastAccess { get; set; }
         public int ClanPrivs { get; set; }
         public int WantsPeace { get; set; }
-        public int IsIn7sDungeon { get; set; }
+        public int IsIn7SDungeon { get; set; }
         public int PunishLevel { get; set; }
         public int PunishTimer { get; set; }
         public int PowerGrade { get; set; }
@@ -99,191 +96,179 @@ namespace L2dotNET.GameService.Model.Player
         public int VarkaKetraAlly { get; set; }
         public long ClanJoinExpiryTime { get; set; }
         public int ClanCreateExpiryTime { get; set; }
+        public PcInventory Inventory { get; set; }
+        public dynamic SessionData { get; set; }
 
         public L2Player RestorePlayer(int id, GameClient client)
         {
-            L2Player player = new L2Player();
-            player.ObjID = id;
-
-            player.Gameclient = client;
-
-            PlayerModel playerModel = playerService.GetAccountByLogin(id);
-
-            player.Name = playerModel.Name;
-            player.Title = playerModel.Title;
-            player.Level = (byte)playerModel.Level;
-            player.CurHP = playerModel.CurHp;
-            player.CurMP = playerModel.CurMp;
-            player.CurCP = playerModel.CurCp;
-
-            player.Face = playerModel.Face;
-            player.HairStyle = playerModel.HairStyle;
-            player.HairColor = playerModel.HairColor;
-            player.Sex = (byte)playerModel.Sex;
-
-            player.X = playerModel.X;
-            player.Y = playerModel.Y;
-            player.Z = playerModel.Z;
-            player.Heading = playerModel.Heading;
-
-            player.Exp = playerModel.Exp;
-            player.ExpOnDeath = playerModel.ExpBeforeDeath;
-
-            player.SP = playerModel.Sp;
-            player.Karma = playerModel.Karma;
-            player.PvpKills = playerModel.PvpKills;
-            player.PkKills = playerModel.PkKills;
-            byte bclass = (byte)playerModel.BaseClass;
-            byte aclass = (byte)playerModel.ClassId;
-
-            player.BaseClass = CharTemplateTable.Instance.GetTemplate(playerModel.BaseClass);
-            player.ActiveClass = CharTemplateTable.Instance.GetTemplate(playerModel.ClassId);
-
-            player.RecLeft = playerModel.RecLeft;
-            player.RecHave = playerModel.RecHave;
-
-            player.CharSlot = playerModel.CharSlot;
-            player.DeathPenaltyLevel = playerModel.DeathPenaltyLevel;
-            player.ClanId = playerModel.ClanId;
-            player.ClanPrivs = playerModel.ClanPrivs;
-
-            player.Penalty_ClanCreate = playerModel.ClanCreateExpiryTime.ToString();
-            player.Penalty_ClanJoin = playerModel.ClanJoinExpiryTime.ToString();
-
-            player.Inventory = new InvPC();
-            player.Inventory._owner = player;
-            player.Refund = new InvRefund(player);
+            PlayerModel playerModel = PlayerService.GetAccountByLogin(id);
+            L2Player player = new L2Player
+                              {
+                                  ObjId = id,
+                                  Gameclient = client,
+                                  Name = playerModel.Name,
+                                  Title = playerModel.Title,
+                                  Level = (byte)playerModel.Level,
+                                  CurHp = playerModel.CurHp,
+                                  CurMp = playerModel.CurMp,
+                                  CurCp = playerModel.CurCp,
+                                  Face = playerModel.Face,
+                                  HairStyle = playerModel.HairStyle,
+                                  HairColor = playerModel.HairColor,
+                                  Sex = (byte)playerModel.Sex,
+                                  X = playerModel.X,
+                                  Y = playerModel.Y,
+                                  Z = playerModel.Z,
+                                  Heading = playerModel.Heading,
+                                  Exp = playerModel.Exp,
+                                  ExpOnDeath = playerModel.ExpBeforeDeath,
+                                  Sp = playerModel.Sp,
+                                  Karma = playerModel.Karma,
+                                  PvpKills = playerModel.PvpKills,
+                                  PkKills = playerModel.PkKills,
+                                  BaseClass = CharTemplateTable.Instance.GetTemplate(playerModel.BaseClass),
+                                  ActiveClass = CharTemplateTable.Instance.GetTemplate(playerModel.ClassId),
+                                  RecLeft = playerModel.RecLeft,
+                                  RecHave = playerModel.RecHave,
+                                  CharSlot = playerModel.CharSlot,
+                                  DeathPenaltyLevel = playerModel.DeathPenaltyLevel,
+                                  ClanId = playerModel.ClanId,
+                                  ClanPrivs = playerModel.ClanPrivs,
+                                  PenaltyClanCreate = playerModel.ClanCreateExpiryTime.ToString(),
+                                  PenaltyClanJoin = playerModel.ClanJoinExpiryTime.ToString(),
+                                  Inventory = new PcInventory(this)
+                              };
 
             player.CStatsInit();
-
-            restoreItems(player);
+            SessionData = new PlayerBag();
 
             return player;
         }
 
-        public static L2Player create()
+        public static L2Player Create()
         {
-            L2Player player = new L2Player();
-            player.ObjID = IdFactory.Instance.nextId();
+            L2Player player = new L2Player
+                              {
+                                  ObjId = IdFactory.Instance.NextId()
+                              };
 
-            player.Inventory = new InvPC();
-            player.Inventory._owner = player;
+            //player.Inventory = new InvPC();
+            //player.Inventory._owner = player;
 
             return player;
         }
 
         public void UpdatePlayer()
         {
-            PlayerModel playerModel = new PlayerModel() { ObjectId = ObjID, Level = Level, MaxHp = MaxHP, CurHp = (int)CurHP, MaxCp = MaxCP, CurCp = (int)CurCP, MaxMp = MaxMP, CurMp = (int)CurMP, Face = Face, HairStyle = HairStyle, HairColor = HairColor, Sex = Sex, Heading = Heading, X = X, Y = Y, Z = Z, Exp = Exp, ExpBeforeDeath = ExpOnDeath, Sp = SP, Karma = Karma, PvpKills = PvpKills, PkKills = PkKills, ClanId = ClanId, Race = (int)BaseClass.ClassId.ClassRace, ClassId = (int)ActiveClass.ClassId.Id, BaseClass = (int)BaseClass.ClassId.Id, DeleteTime = DeleteTime, CanCraft = CanCraft, Title = Title, RecHave = RecHave, RecLeft = RecLeft, AccessLevel = AccessLevel, ClanPrivs = ClanPrivs, WantsPeace = WantsPeace, IsIn7sDungeon = IsIn7sDungeon, PunishLevel = PunishLevel, PunishTimer = PunishTimer, PowerGrade = PowerGrade, Nobless = Nobless, Sponsor = Sponsor, VarkaKetraAlly = VarkaKetraAlly, ClanCreateExpiryTime = ClanCreateExpiryTime, ClanJoinExpiryTime = ClanJoinExpiryTime, DeathPenaltyLevel = DeathPenaltyLevel };
+            PlayerModel playerModel = new PlayerModel
+                                      {
+                                          ObjectId = ObjId,
+                                          Level = Level,
+                                          MaxHp = MaxHp,
+                                          CurHp = (int)CurHp,
+                                          MaxCp = MaxCp,
+                                          CurCp = (int)CurCp,
+                                          MaxMp = MaxMp,
+                                          CurMp = (int)CurMp,
+                                          Face = Face,
+                                          HairStyle = HairStyle,
+                                          HairColor = HairColor,
+                                          Sex = Sex,
+                                          Heading = Heading,
+                                          X = X,
+                                          Y = Y,
+                                          Z = Z,
+                                          Exp = Exp,
+                                          ExpBeforeDeath = ExpOnDeath,
+                                          Sp = Sp,
+                                          Karma = Karma,
+                                          PvpKills = PvpKills,
+                                          PkKills = PkKills,
+                                          ClanId = ClanId,
+                                          Race = (int)BaseClass.ClassId.ClassRace,
+                                          ClassId = (int)ActiveClass.ClassId.Id,
+                                          BaseClass = (int)BaseClass.ClassId.Id,
+                                          DeleteTime = DeleteTime,
+                                          CanCraft = CanCraft,
+                                          Title = Title,
+                                          RecHave = RecHave,
+                                          RecLeft = RecLeft,
+                                          AccessLevel = AccessLevel,
+                                          ClanPrivs = ClanPrivs,
+                                          WantsPeace = WantsPeace,
+                                          IsIn7SDungeon = IsIn7SDungeon,
+                                          PunishLevel = PunishLevel,
+                                          PunishTimer = PunishTimer,
+                                          PowerGrade = PowerGrade,
+                                          Nobless = Nobless,
+                                          Sponsor = Sponsor,
+                                          VarkaKetraAlly = VarkaKetraAlly,
+                                          ClanCreateExpiryTime = ClanCreateExpiryTime,
+                                          ClanJoinExpiryTime = ClanJoinExpiryTime,
+                                          DeathPenaltyLevel = DeathPenaltyLevel
+                                      };
 
-            playerService.UpdatePlayer(playerModel);
+            PlayerService.UpdatePlayer(playerModel);
         }
 
         public void Termination()
         {
-            if (IsRestored)
+            if (!IsRestored)
             {
-                if (Party != null)
-                    Party.Leave(this);
-
-                if (Summon != null)
-                    Summon.unSummon();
-
-                UpdatePlayer();
-                saveInventory();
-
-                L2World.Instance.RemoveObject(this);
+                return;
             }
+
+            Party?.Leave(this);
+
+            Summon?.UnSummon();
+
+            UpdatePlayer();
+            //saveInventory();
+
+            L2World.Instance.RemoveObject(this);
         }
 
-        public int getPaperdollObjectId(int p)
-        {
-            return Inventory.getPaperdollObjectId(p);
-        }
+        public int Int => ActiveClass.BaseInt;
 
-        public int getPaperdollItemId(int p)
-        {
-            return Inventory.getPaperdollId(p);
-        }
+        public int Str => ActiveClass.BaseStr;
 
-        public int getWeaponAugmentation()
-        {
-            return Inventory.getWeaponAugmentation();
-        }
+        public int Con => ActiveClass.BaseCon;
 
-        public int INT
-        {
-            get { return ActiveClass.BaseINT; }
-        }
+        public int Men => ActiveClass.BaseMen;
 
-        public int STR
-        {
-            get { return ActiveClass.BaseSTR; }
-        }
+        public int Dex => ActiveClass.BaseDex;
 
-        public int CON
-        {
-            get { return ActiveClass.BaseCON; }
-        }
-
-        public int MEN
-        {
-            get { return ActiveClass.BaseMEN; }
-        }
-
-        public int DEX
-        {
-            get { return ActiveClass.BaseDEX; }
-        }
-
-        public int WIT
-        {
-            get { return ActiveClass.BaseWIT; }
-        }
-
-        public int getPaperdollAugmentationId(int p)
-        {
-            return Inventory.getPaperdollAugmentId(p);
-        }
+        public int Wit => ActiveClass.BaseWit;
 
         public byte Builder = 1;
         public byte Noblesse = 0;
         public byte Heroic = 0;
 
-        public byte _privateStoreType = 0;
+        public byte PrivateStoreType = 0;
 
-        public byte getPrivateStoreType()
+        public byte GetPrivateStoreType()
         {
-            return _privateStoreType;
+            return PrivateStoreType;
         }
 
-        public override int AllianceCrestId
-        {
-            get { return Clan == null ? 0 : Clan.AllianceCrestId; }
-        }
+        public override int AllianceCrestId => Clan?.AllianceCrestId ?? 0;
 
-        public override int AllianceId
-        {
-            get { return Clan == null ? 0 : Clan.AllianceID; }
-        }
+        public override int AllianceId => Clan?.AllianceId ?? 0;
 
         public override int ClanId
         {
-            get { return Clan == null ? 0 : Clan.ClanID; }
+            get { return Clan?.ClanId ?? 0; }
             set { Clan = ClanTable.Instance.GetClan(value); }
         }
 
-        public override int ClanCrestId
-        {
-            get { return Clan == null ? 0 : Clan.CrestID; }
-        }
+        public override int ClanCrestId => Clan?.CrestId ?? 0;
 
-        public int getTitleColor()
+        public int GetTitleColor()
         {
             return 0xFFFF77;
         }
 
-        public int getNameColor()
+        public int GetNameColor()
         {
             return 0xFFFFFF;
         }
@@ -303,56 +288,37 @@ namespace L2dotNET.GameService.Model.Player
             return 0;
         }
 
-        internal bool isFishing()
+        internal bool IsFishing()
         {
             return false;
         }
 
-        public InvPC Inventory;
-        public InvRefund Refund;
-
-        public L2Item getItemByObjId(int itemobj)
+        public override void SendPacket(GameServerNetworkPacket pk)
         {
-            try
+            Gameclient.SendPacket(pk);
+        }
+
+        private ActionFailed _af;
+
+        public override void SendActionFailed()
+        {
+            if (_af == null)
             {
-                return Inventory.getByObject(itemobj);
+                _af = new ActionFailed();
             }
-            catch
-            {
-                log.Info($"player: cant find item obj {itemobj}");
-                return null;
-            }
+
+            SendPacket(_af);
         }
 
-        public void setPaperdoll(int pdollId, L2Item item, bool update)
+        public override void SendSystemMessage(SystemMessage.SystemMessageId msgId)
         {
-            Inventory.setPaperdoll(pdollId, item, update);
+            SendPacket(new SystemMessage(msgId));
         }
 
-        public override void sendPacket(GameServerNetworkPacket pk)
-        {
-            Gameclient.sendPacket(pk);
-        }
+        public int PenaltyWeight;
+        public int PenaltyGrade = 0;
 
-        private ActionFailed af;
-
-        public override void sendActionFailed()
-        {
-            if (af == null)
-                af = new ActionFailed();
-
-            sendPacket(af);
-        }
-
-        public override void sendSystemMessage(SystemMessage.SystemMessageId msgId)
-        {
-            sendPacket(new SystemMessage(msgId));
-        }
-
-        public int _penaltyWeight = 0;
-        public int _penalty_grade = 0;
-
-        public override void onAction(L2Player player)
+        public override void OnAction(L2Player player)
         {
             bool newtarget = false;
             if (player.CurrentTarget == null)
@@ -362,7 +328,7 @@ namespace L2dotNET.GameService.Model.Player
             }
             else
             {
-                if (player.CurrentTarget.ObjID != this.ObjID)
+                if (player.CurrentTarget.ObjId != ObjId)
                 {
                     player.CurrentTarget = this;
                     newtarget = true;
@@ -371,542 +337,420 @@ namespace L2dotNET.GameService.Model.Player
 
             if (newtarget)
             {
-                player.sendPacket(new MyTargetSelected(this.ObjID, 0));
+                player.SendPacket(new MyTargetSelected(ObjId, 0));
             }
             else
-                player.sendActionFailed();
-        }
-
-        public long getAdena()
-        {
-            long adena = 0;
-
-            foreach (L2Item item in Inventory.Items.Values)
             {
-                if (item.Template.ItemID == 57)
-                {
-                    adena = item.Count;
-                    break;
-                }
-            }
-
-            return adena;
-        }
-
-        public void addAdena(long count, bool msg, bool update)
-        {
-            this.Inventory.addItem(57, count, msg, update);
-        }
-
-        public override void broadcastUserInfo()
-        {
-            sendPacket(new UserInfo(this));
-            //updateAbnormalEventEffect();
-
-            broadcastPacket(new CharInfo(this), true);
-        }
-
-        public override void sendMessage(string p)
-        {
-            sendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1).AddString(p));
-        }
-
-        public int _currentFocusEnergy = 0;
-
-        public int getForceIncreased()
-        {
-            return _currentFocusEnergy;
-        }
-
-        public static void restoreItems(L2Player player)
-        {
-            //MySqlConnection connection = SQLjec.getInstance().conn();
-            //MySqlCommand cmd = connection.CreateCommand();
-
-            //connection.Open();
-
-            //cmd.CommandText = "SELECT * FROM user_items WHERE ownerId=" + player.ObjID;
-            //cmd.CommandType = CommandType.Text;
-
-            //MySqlDataReader reader = cmd.ExecuteReader();
-
-            //while (reader.Read())
-            //{
-            //    int itemId = reader.GetInt32("itemId");
-            //    ItemTemplate template = ItemTable.getInstance().getItem(itemId);
-            //    if (template == null)
-            //        continue;
-
-            //    L2Item item = new L2Item(template, true);
-            //    item.ObjID = reader.GetInt32("iobjectId");
-            //    item.Count = reader.GetInt32("icount");
-            //    item.Enchant = reader.GetInt16("ienchant");
-            //    item.AugmentationID = reader.GetInt32("iaugment");
-            //    item.Durability = reader.GetInt32("imana");
-            //    item.SetLimitedHour(reader.GetString("lifetime"));
-            //    item._isEquipped = reader.GetInt16("iequipped");
-            //    item._paperdollSlot = reader.GetInt32("iequip_data");
-
-            //    string location = reader.GetString("ilocation");
-            //    item.Location = (L2Item.L2ItemLocation)Enum.Parse(typeof(L2Item.L2ItemLocation), location);
-
-            //    switch (item.Location)
-            //    {
-            //        case L2Item.L2ItemLocation.paperdoll:
-            //        case L2Item.L2ItemLocation.inventory:
-            //            {
-            //                item.SlotLocation = reader.GetInt32("iloc_data");
-            //                player.Inventory.Items.Add(item.ObjID, item);
-            //                if (item._isEquipped == 1)
-            //                {
-            //                    player.Inventory.setPaperdollDirect(item._paperdollSlot, item);
-            //                }
-            //            }
-            //            break;
-            //        case L2Item.L2ItemLocation.warehouse:
-            //            {
-            //                if (player._warehouse == null)
-            //                {
-            //                    player._warehouse = new InvPrivateWarehouse(player);
-            //                }
-
-            //                player._warehouse.dbLoad(item);
-            //            }
-            //            break;
-            //        case L2Item.L2ItemLocation.pet:
-            //            {
-            //                item._petId = reader.GetInt32("iloc_data");
-            //                player.Inventory.Items.Add(item.ObjID, item);
-            //            }
-            //            break;
-            //    }
-
-            //    //item.CustomType1 = reader.GetInt32("ict1");
-            //    //item.CustomType2 = reader.GetInt32("ict2");
-            //}
-
-            //reader.Close();
-            //connection.Close();
-        }
-
-        public void saveInventory()
-        {
-            foreach (L2Item item in Inventory.Items.Values)
-            {
-                item.sql_update();
+                player.SendActionFailed();
             }
         }
 
-        public TSkill getSkill(int _magicId)
+        public override void SendMessage(string p)
         {
-            return _skills.ContainsKey(_magicId) ? _skills[_magicId] : null;
+            SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1).AddString(p));
         }
 
-        public override bool isCastingNow()
+        public int CurrentFocusEnergy = 0;
+
+        public int GetForceIncreased()
         {
-            if (petSummonTime != null)
-                return petSummonTime.Enabled;
-
-            if (nonpetSummonTime != null)
-                return nonpetSummonTime.Enabled;
-
-            return base.isCastingNow();
+            return CurrentFocusEnergy;
         }
 
-        public void updateReuse()
+        public Skill GetSkill(int magicId)
         {
-            sendPacket(new SkillCoolTime(this));
+            return Skills.ContainsKey(magicId) ? Skills[magicId] : null;
         }
 
-        public void castSkill(TSkill skill, bool _ctrlPressed, bool _shiftPressed)
+        public override bool IsCastingNow()
         {
-            if (isCastingNow())
+            if (_petSummonTime != null)
             {
-                sendActionFailed();
+                return _petSummonTime.Enabled;
+            }
+
+            if (_nonpetSummonTime != null)
+            {
+                return _nonpetSummonTime.Enabled;
+            }
+
+            return base.IsCastingNow();
+        }
+
+        public void UpdateReuse()
+        {
+            SendPacket(new SkillCoolTime(this));
+        }
+
+        public void CastSkill(Skill skill, bool ctrlPressed, bool shiftPressed)
+        {
+            if (IsCastingNow())
+            {
+                SendActionFailed();
                 return;
             }
 
-            if (isSittingInProgress() || isSitting())
+            if (IsSittingInProgress() || IsSitting())
             {
-                sendActionFailed();
+                SendActionFailed();
                 return;
             }
 
             if (!skill.ConditionOk(this))
             {
-                sendActionFailed();
+                SendActionFailed();
                 return;
             }
 
-            L2Character target = skill.getTargetCastId(this);
+            L2Character target = skill.GetTargetCastId(this);
 
             if (target == null)
             {
-                sendSystemMessage(SystemMessage.SystemMessageId.TARGET_CANT_FOUND);
-                sendActionFailed();
+                SendSystemMessage(SystemMessage.SystemMessageId.TargetCantFound);
+                SendActionFailed();
                 return;
             }
 
-            if (skill.cast_range != -1)
+            if (skill.CastRange != -1)
             {
-                double dis = Calcs.calculateDistance(this, target, true);
-                if (dis > skill.cast_range)
+                double dis = Calcs.CalculateDistance(this, target, true);
+                if (dis > skill.CastRange)
                 {
-                    tryMoveTo(target.X, target.Y, target.Z);
-                    sendActionFailed();
+                    TryMoveTo(target.X, target.Y, target.Z);
+                    SendActionFailed();
                     return;
                 }
             }
 
-            if (skill.reuse_delay > 0)
+            if (skill.ReuseDelay > 0)
             {
-                if (_reuse.ContainsKey(skill.skill_id))
+                if (Reuse.ContainsKey(skill.SkillId))
                 {
-                    TimeSpan ts = _reuse[skill.skill_id].stopTime - DateTime.Now;
+                    TimeSpan ts = Reuse[skill.SkillId].StopTime - DateTime.Now;
 
                     if (ts.TotalMilliseconds > 0)
                     {
                         if (ts.TotalHours > 0)
                         {
-                            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2_HOURS_S3_MINUTES_S4_SECONDS_REMAINING_IN_S1_REUSE_TIME);
-                            sm.AddSkillName(skill.skill_id, skill.level);
-                            sm.AddNumber((int)ts.Hours);
-                            sm.AddNumber((int)ts.Minutes);
-                            sm.AddNumber((int)ts.Seconds);
-                            sendPacket(sm);
+                            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2HoursS3MinutesS4SecondsRemainingInS1ReuseTime);
+                            sm.AddSkillName(skill.SkillId, skill.Level);
+                            sm.AddNumber(ts.Hours);
+                            sm.AddNumber(ts.Minutes);
+                            sm.AddNumber(ts.Seconds);
+                            SendPacket(sm);
                         }
                         else if (ts.TotalMinutes > 0)
                         {
-                            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2_MINUTES_S3_SECONDS_REMAINING_IN_S1_REUSE_TIME);
-                            sm.AddSkillName(skill.skill_id, skill.level);
-                            sm.AddNumber((int)ts.Minutes);
-                            sm.AddNumber((int)ts.Seconds);
-                            sendPacket(sm);
+                            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2MinutesS3SecondsRemainingInS1ReuseTime);
+                            sm.AddSkillName(skill.SkillId, skill.Level);
+                            sm.AddNumber(ts.Minutes);
+                            sm.AddNumber(ts.Seconds);
+                            SendPacket(sm);
                         }
                         else
                         {
-                            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2_SECONDS_REMAINING_IN_S1_REUSE_TIME);
-                            sm.AddSkillName(skill.skill_id, skill.level);
-                            sm.AddNumber((int)ts.Seconds);
-                            sendPacket(sm);
+                            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2SecondsRemainingInS1ReuseTime);
+                            sm.AddSkillName(skill.SkillId, skill.Level);
+                            sm.AddNumber(ts.Seconds);
+                            SendPacket(sm);
                         }
 
-                        sendActionFailed();
+                        SendActionFailed();
                         return;
                     }
                 }
             }
 
-            if (skill.mp_consume1 > 0 || skill.mp_consume2 > 0)
+            if ((skill.MpConsume1 > 0) || (skill.MpConsume2 > 0))
             {
-                if (CurMP < skill.mp_consume1 + skill.mp_consume2)
+                if (CurMp < (skill.MpConsume1 + skill.MpConsume2))
                 {
-                    sendSystemMessage(SystemMessage.SystemMessageId.NOT_ENOUGH_MP);
-                    sendActionFailed();
+                    SendSystemMessage(SystemMessage.SystemMessageId.NotEnoughMp);
+                    SendActionFailed();
                     return;
                 }
             }
 
-            if (skill.hp_consume > 0)
+            if (skill.HpConsume > 0)
             {
-                if (CurHP < skill.hp_consume)
+                if (CurHp < skill.HpConsume)
                 {
-                    sendSystemMessage(SystemMessage.SystemMessageId.NOT_ENOUGH_HP);
-                    sendActionFailed();
+                    SendSystemMessage(SystemMessage.SystemMessageId.NotEnoughHp);
+                    SendActionFailed();
                     return;
                 }
             }
 
-            if (skill.ConsumeItemId != 0)
-            {
-                long count = Inventory.getItemCount(skill.ConsumeItemId);
-                if (count < skill.ConsumeItemCount)
-                {
-                    sendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1_CANNOT_BE_USED).AddSkillName(skill.skill_id, skill.level));
-                    sendActionFailed();
-                    return;
-                }
-            }
+            //if (skill.ConsumeItemId != 0)
+            //{
+            //    long count = Inventory.getItemCount(skill.ConsumeItemId);
+            //    if (count < skill.ConsumeItemCount)
+            //    {
+            //        sendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1_CANNOT_BE_USED).AddSkillName(skill.skill_id, skill.level));
+            //        sendActionFailed();
+            //        return;
+            //    }
+            //}
 
             byte blowOk = 0;
-            if (skill.effects.Count > 0)
+            if (skill.Effects.Count > 0)
             {
                 bool fail = false;
-                foreach (TEffect ef in skill.effects)
+                foreach (Effect ef in skill.Effects)
                 {
-                    if (!ef.canUse(this))
+                    if (!ef.CanUse(this))
                     {
-                        sendActionFailed();
+                        SendActionFailed();
                         fail = true;
                         break;
                     }
 
-                    if (ef is i_fatal_blow && blowOk == 0)
-                        blowOk = ((i_fatal_blow)ef).success(target);
+                    if (ef is FatalBlow && (blowOk == 0))
+                    {
+                        blowOk = ((FatalBlow)ef).Success(target);
+                    }
                 }
 
                 if (fail)
+                {
                     return;
+                }
             }
 
-            if (skill.reuse_delay > 0)
+            if (skill.ReuseDelay > 0)
             {
-                L2SkillCoolTime reuse = new L2SkillCoolTime();
-                reuse.id = skill.skill_id;
-                reuse.lvl = skill.level;
-                reuse.total = (int)skill.reuse_delay;
-                reuse.delay = reuse.total;
-                reuse._owner = this;
-                reuse.timer();
-                _reuse.Add(reuse.id, reuse);
-                updateReuse();
+                L2SkillCoolTime reuse = new L2SkillCoolTime
+                                        {
+                                            Id = skill.SkillId,
+                                            Lvl = skill.Level,
+                                            Total = (int)skill.ReuseDelay,
+                                            Owner = this
+                                        };
+                reuse.Delay = reuse.Total;
+                reuse.Timer();
+                Reuse.Add(reuse.Id, reuse);
+                UpdateReuse();
             }
 
-            sendPacket(new SystemMessage(SystemMessage.SystemMessageId.USE_S1).AddSkillName(skill.skill_id, skill.level));
+            //SendPacket(new SystemMessage(SystemMessage.SystemMessageId.UseS1).AddSkillName(skill.skill_id, skill.level));
 
-            if (skill.hp_consume > 0)
+            if (skill.HpConsume > 0)
             {
-                CurHP -= skill.hp_consume;
+                CurHp -= skill.HpConsume;
 
-                StatusUpdate su = new StatusUpdate(ObjID);
-                su.add(StatusUpdate.CUR_HP, (int)CurHP);
-                broadcastPacket(su);
+                StatusUpdate su = new StatusUpdate(ObjId);
+                su.Add(StatusUpdate.CurHp, (int)CurHp);
+                BroadcastPacket(su);
             }
 
-            if (skill.mp_consume1 > 0)
+            if (skill.MpConsume1 > 0)
             {
-                CurMP -= skill.mp_consume1;
+                CurMp -= skill.MpConsume1;
 
-                StatusUpdate su = new StatusUpdate(ObjID);
-                su.add(StatusUpdate.CUR_MP, (int)CurMP);
-                broadcastPacket(su);
+                StatusUpdate su = new StatusUpdate(ObjId);
+                su.Add(StatusUpdate.CurMp, (int)CurMp);
+                BroadcastPacket(su);
             }
 
-            if (skill.ConsumeItemId != 0)
-            {
-                Inventory.destroyItem(skill.ConsumeItemId, skill.ConsumeItemCount, true, true);
-            }
+            //if (skill.ConsumeItemId != 0)
+            //   Inventory.destroyItem(skill.ConsumeItemId, skill.ConsumeItemCount, true, true);
 
-            int hitTime = (int)skill.skill_hit_time;
+            int hitTime = skill.SkillHitTime;
 
             int hitT = hitTime > 0 ? (int)(hitTime * 0.95) : 0;
-            currentCast = skill;
+            CurrentCast = skill;
 
             if (hitTime > 0)
             {
-                sendPacket(new SetupGauge(ObjID, SetupGauge.SG_color.blue, hitTime - 20));
+                SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Blue, hitTime - 20));
             }
 
-            broadcastPacket(new MagicSkillUse(this, target, skill, hitTime == 0 ? 20 : hitTime, blowOk));
+            BroadcastPacket(new MagicSkillUse(this, target, skill, hitTime == 0 ? 20 : hitTime, blowOk));
             if (hitTime > 50)
             {
-                if (castTime == null)
+                if (CastTime == null)
                 {
-                    castTime = new System.Timers.Timer();
-                    castTime.Elapsed += new ElapsedEventHandler(castEnd);
+                    CastTime = new Timer();
+                    CastTime.Elapsed += castEnd;
                 }
 
-                castTime.Interval = hitT;
-                castTime.Enabled = true;
+                CastTime.Interval = hitT;
+                CastTime.Enabled = true;
             }
             else
+            {
                 castEnd();
+            }
         }
 
         private void castEnd(object sender = null, ElapsedEventArgs e = null)
         {
-            if (currentCast.mp_consume2 > 0)
+            if (CurrentCast.MpConsume2 > 0)
             {
-                if (CurMP < currentCast.mp_consume2)
+                if (CurMp < CurrentCast.MpConsume2)
                 {
-                    sendSystemMessage(SystemMessage.SystemMessageId.NOT_ENOUGH_MP);
-                    sendActionFailed();
+                    SendSystemMessage(SystemMessage.SystemMessageId.NotEnoughMp);
+                    SendActionFailed();
 
-                    currentCast = null;
-                    castTime.Enabled = false;
+                    CurrentCast = null;
+                    CastTime.Enabled = false;
                     return;
                 }
-                else
-                {
-                    CurMP -= currentCast.mp_consume2;
 
-                    StatusUpdate su = new StatusUpdate(ObjID);
-                    su.add(StatusUpdate.CUR_MP, (int)CurMP);
-                    broadcastPacket(su);
-                }
+                CurMp -= CurrentCast.MpConsume2;
+
+                StatusUpdate su = new StatusUpdate(ObjId);
+                su.Add(StatusUpdate.CurMp, (int)CurMp);
+                BroadcastPacket(su);
             }
 
-            if (currentCast.cast_range != -1)
+            if (CurrentCast.CastRange != -1)
             {
                 bool block = false;
                 if (CurrentTarget != null)
                 {
-                    double dis = Calcs.calculateDistance(this, CurrentTarget, true);
-                    if (dis > currentCast.effective_range)
+                    double dis = Calcs.CalculateDistance(this, CurrentTarget, true);
+                    if (dis > CurrentCast.EffectiveRange)
+                    {
                         block = true;
+                    }
                 }
                 else
+                {
                     block = true;
+                }
 
                 if (block)
                 {
-                    sendSystemMessage(SystemMessage.SystemMessageId.DIST_TOO_FAR_CASTING_STOPPED);
-                    sendActionFailed();
+                    SendSystemMessage(SystemMessage.SystemMessageId.DistTooFarCastingStopped);
+                    SendActionFailed();
 
-                    currentCast = null;
-                    castTime.Enabled = false;
+                    CurrentCast = null;
+                    CastTime.Enabled = false;
                     return;
                 }
             }
 
-            SortedList<int, L2Object> arr = currentCast.getAffectedTargets(this);
+            SortedList<int, L2Object> arr = CurrentCast.GetAffectedTargets(this);
             List<int> broadcast = new List<int>();
             broadcast.AddRange(arr.Keys);
 
-            broadcastPacket(new MagicSkillLaunched(this, broadcast, currentCast.skill_id, currentCast.level));
+            BroadcastPacket(new MagicSkillLaunched(this, broadcast, CurrentCast.SkillId, CurrentCast.Level));
 
-            addEffects(this, currentCast, arr);
-            currentCast = null;
-            if (castTime != null)
-                castTime.Enabled = false;
+            AddEffects(this, CurrentCast, arr);
+            CurrentCast = null;
+            if (CastTime != null)
+            {
+                CastTime.Enabled = false;
+            }
         }
 
-        public bool _diet = false;
+        public bool Diet = false;
 
-        public override void updateMagicEffectIcons()
+        public override void UpdateMagicEffectIcons()
         {
             MagicEffectIcons m = new MagicEffectIcons();
             PartySpelled p = null;
 
             if (Party != null)
-                p = new PartySpelled(this);
-
-            List<AbnormalEffect> nulled = new List<AbnormalEffect>();
-            foreach (AbnormalEffect ei in _effects.Where(ei => ei != null))
             {
-                if (ei.active == 1)
-                {
-                    int time = ei.getTime();
-                    m.addIcon(ei.id, ei.lvl, time);
-
-                    if (p != null)
-                        p.addIcon(ei.id, ei.lvl, time);
-                }
-                else
-                    nulled.Add(ei);
+                p = new PartySpelled(this);
             }
 
-            lock (_effects)
+            List<AbnormalEffect> nulled = new List<AbnormalEffect>();
+            lock (Effects)
+            {
+                foreach (AbnormalEffect ei in Effects.Where(ei => ei != null))
+                    if (ei.Active == 1)
+                    {
+                        int time = ei.GetTime();
+                        m.AddIcon(ei.Id, ei.Lvl, time);
+
+                        p?.AddIcon(ei.Id, ei.Lvl, time);
+                    }
+                    else
+                    {
+                        nulled.Add(ei);
+                    }
+
                 foreach (AbnormalEffect ei in nulled)
-                    _effects.Remove(ei);
+                {
+                    Effects.Remove(ei);
+                }
+            }
 
             nulled.Clear();
-            sendPacket(m);
+            SendPacket(m);
 
-            if (p != null && Party != null)
-                Party.broadcastToMembers(p);
+            if (p != null)
+            {
+                Party?.BroadcastToMembers(p);
+            }
         }
 
-        public void onGameInit()
+        public void OnGameInit()
         {
             CStatsInit();
-            CharacterStat.setTemplate(ActiveClass);
+            CharacterStat.SetTemplate(ActiveClass);
             ExpAfterLogin = 0;
         }
 
-        public List<QuestInfo> _quests = new List<QuestInfo>();
+        public List<QuestInfo> Quests = new List<QuestInfo>();
 
         public void quest_Talk(L2Npc npc, int questId)
         {
-            foreach (QuestInfo qi in _quests.Where(qi => !qi.completed))
+            foreach (QuestInfo qi in Quests.Where(qi => !qi.Completed))
             {
-                qi._template.onTalkToNpc(this, npc, qi.stage);
+                qi.Template.OnTalkToNpc(this, npc, qi.Stage);
             }
-        }
-
-        public bool hasAllOfThisItems(params int[] id)
-        {
-            return Inventory.hasAllOfThis(id);
-        }
-
-        public bool hasSomeOfThisItems(params int[] id)
-        {
-            return Inventory.hasSomeOfThis(id);
-        }
-
-        public bool hasItem(int id, long count = 1)
-        {
-            return Inventory.getItemCount(id) >= count;
-        }
-
-        public void addItem(int id, long count)
-        {
-            Inventory.addItem(id, count, true, true);
-        }
-
-        public void addItemQuest(int id, long count)
-        {
-            sendPacket(new PlaySound("ItemSound.quest_itemget"));
-            Inventory.addItem(id, count, true, true);
-        }
-
-        public void addItem(int id)
-        {
-            Inventory.addItem(id, 1, true, true);
         }
 
         public void ShowHtm(string file, L2Object o)
         {
-            if (file.EndsWith(".htm"))
+            if (file.EndsWithIgnoreCase(".htm"))
             {
-                sendPacket(new NpcHtmlMessage(this, file, o.ObjID, 0));
+                SendPacket(new NpcHtmlMessage(this, file, o.ObjId, 0));
                 if (o is L2Npc)
-                    this.FolkNpc = (L2Npc)o;
+                {
+                    FolkNpc = (L2Npc)o;
+                }
             }
             else
-                this.ShowHtmPlain(file, o);
+            {
+                ShowHtmPlain(file, o);
+            }
         }
 
         public void ShowHtm(string file, L2Npc npc, int questId)
         {
-            if (file.EndsWith(".htm"))
+            if (file.EndsWithIgnoreCase(".htm"))
             {
-                NpcHtmlMessage htm = new NpcHtmlMessage(this, file, npc.ObjID, 0);
-                htm.replace("<?quest_id?>", questId);
-                sendPacket(htm);
+                NpcHtmlMessage htm = new NpcHtmlMessage(this, file, npc.ObjId, 0);
+                htm.Replace("<?quest_id?>", questId);
+                SendPacket(htm);
                 FolkNpc = npc;
             }
             else
+            {
                 ShowHtmPlain(file, npc);
-        }
-
-        public bool questComplete(int questId)
-        {
-            foreach (QuestInfo qi in _quests)
-            {
-                if (qi.id == questId)
-                    return qi.completed;
             }
-
-            return false;
         }
 
-        public bool questInProgress(int questId)
+        public bool QuestComplete(int questId)
         {
-            foreach (QuestInfo qi in _quests)
-            {
-                if (qi.id == questId && !qi.completed)
-                    return true;
-            }
-
-            return false;
+            return Quests.Where(qi => qi.Id == questId).Select(qi => qi.Completed).FirstOrDefault();
         }
 
-        public void questAccept(QuestInfo qi)
+        public bool QuestInProgress(int questId)
         {
-            _quests.Add(qi);
-            sendPacket(new PlaySound("ItemSound.quest_accept"));
-            sendQuestList();
+            return Quests.Any(qi => (qi.Id == questId) && !qi.Completed);
+        }
+
+        public void QuestAccept(QuestInfo qi)
+        {
+            Quests.Add(qi);
+            SendPacket(new PlaySound("ItemSound.quest_accept"));
+            SendQuestList();
 
             //SQL_Block sqb = new SQL_Block("user_quests");
             //sqb.param("ownerId", ObjID);
@@ -916,25 +760,19 @@ namespace L2dotNET.GameService.Model.Player
 
         public void ShowHtmPlain(string plain, L2Object o)
         {
-            sendPacket(new NpcHtmlMessage(this, plain, o == null ? -1 : o.ObjID, true));
+            SendPacket(new NpcHtmlMessage(this, plain, o?.ObjId ?? -1, true));
             if (o is L2Npc)
-                this.FolkNpc = (L2Npc)o;
-        }
-
-        public void takeItem(int id, long count)
-        {
-            if (count > 1)
-                Inventory.destroyItem(id, count, true, true);
-            else
-                Inventory.destroyItemAll(id, true, true);
-        }
-
-        public void changeQuestStage(int questId, int stage)
-        {
-            foreach (QuestInfo qi in _quests.Where(qi => qi.id == questId))
             {
-                qi.stage = stage;
-                sendPacket(new PlaySound("ItemSound.quest_middle"));
+                FolkNpc = (L2Npc)o;
+            }
+        }
+
+        public void ChangeQuestStage(int questId, int stage)
+        {
+            foreach (QuestInfo qi in Quests.Where(qi => qi.Id == questId))
+            {
+                qi.Stage = stage;
+                SendPacket(new PlaySound("ItemSound.quest_middle"));
 
                 //SQL_Block sqb = new SQL_Block("user_quests");
                 //sqb.param("qstage", stage);
@@ -944,53 +782,43 @@ namespace L2dotNET.GameService.Model.Player
                 break;
             }
 
-            sendQuestList();
+            SendQuestList();
         }
 
-        public List<QuestInfo> getAllActiveQuests()
+        public List<QuestInfo> GetAllActiveQuests()
         {
-            List<QuestInfo> qu = new List<QuestInfo>();
-            foreach (QuestInfo qi in _quests)
-            {
-                if (qi.completed)
-                {
-                    continue;
-                }
-                qu.Add(qi);
-            }
-
-            return qu;
+            return Quests.Where(qi => !qi.Completed).ToList();
         }
 
-        public void sendQuestList()
+        public void SendQuestList()
         {
-            sendPacket(new QuestList(this));
+            SendPacket(new QuestList(this));
         }
 
-        public void addExpSp(int exp, int sp, bool msg)
+        public void AddExpSp(int exp, int sp, bool msg)
         {
-            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YOU_EARNED_S1_EXP_AND_S2_SP);
+            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YouEarnedS1ExpAndS2Sp);
             sm.AddNumber(exp);
             sm.AddNumber(sp);
-            sendPacket(sm);
+            SendPacket(sm);
 
             Exp += exp;
-            SP += sp;
+            Sp += sp;
 
-            StatusUpdate su = new StatusUpdate(ObjID);
-            su.add(StatusUpdate.EXP, (int)Exp);
-            su.add(StatusUpdate.SP, SP);
-            sendPacket(su);
+            StatusUpdate su = new StatusUpdate(ObjId);
+            su.Add(StatusUpdate.Exp, (int)Exp);
+            su.Add(StatusUpdate.Sp, Sp);
+            SendPacket(su);
         }
 
-        public void finishQuest(int questId)
+        public void FinishQuest(int questId)
         {
-            foreach (QuestInfo qi in _quests.Where(qi => qi.id == questId))
+            foreach (QuestInfo qi in Quests.Where(qi => qi.Id == questId))
             {
-                if (!qi._template.repeatable)
+                if (!qi.Template.Repeatable)
                 {
-                    qi.completed = true;
-                    qi._template = null;
+                    qi.Completed = true;
+                    qi.Template = null;
 
                     //SQL_Block sqb = new SQL_Block("user_quests");
                     //sqb.param("qfin", 1);
@@ -1001,15 +829,17 @@ namespace L2dotNET.GameService.Model.Player
                 }
                 else
                 {
-                    lock (_quests)
-                        _quests.Remove(qi);
+                    lock (Quests)
+                    {
+                        Quests.Remove(qi);
+                    }
                 }
 
-                sendPacket(new PlaySound("ItemSound.quest_finish"));
+                SendPacket(new PlaySound("ItemSound.quest_finish"));
                 break;
             }
 
-            sendQuestList();
+            SendQuestList();
         }
 
         public void db_restoreSkills()
@@ -1040,12 +870,14 @@ namespace L2dotNET.GameService.Model.Player
             //connection.Close();
         }
 
-        public override void addSkill(TSkill newsk, bool updDb, bool update)
+        public override void AddSkill(Skill newsk, bool updDb, bool update)
         {
-            base.addSkill(newsk, updDb, update);
+            base.AddSkill(newsk, updDb, update);
 
             if (update)
-                updateSkillList();
+            {
+                UpdateSkillList();
+            }
 
             if (updDb)
             {
@@ -1058,12 +890,14 @@ namespace L2dotNET.GameService.Model.Player
             }
         }
 
-        public override void removeSkill(int id, bool updDb, bool update)
+        public override void RemoveSkill(int id, bool updDb, bool update)
         {
-            base.removeSkill(id, updDb, update);
+            base.RemoveSkill(id, updDb, update);
 
             if (update)
-                updateSkillList();
+            {
+                UpdateSkillList();
+            }
 
             if (updDb)
             {
@@ -1075,7 +909,7 @@ namespace L2dotNET.GameService.Model.Player
             }
         }
 
-        public void stopQuest(QuestInfo qi, bool updDb)
+        public void StopQuest(QuestInfo qi, bool updDb)
         {
             if (updDb)
             {
@@ -1086,135 +920,70 @@ namespace L2dotNET.GameService.Model.Player
                 //sqb.sql_delete(false);
             }
 
-            _quests.Remove(qi);
-            sendPacket(new PlaySound("ItemSound.quest_giveup"));
-        }
-
-        public InvPrivateWarehouse _warehouse;
-
-        public void db_restoreQuests()
-        {
-            //MySqlConnection connection = SQLjec.getInstance().conn();
-            //MySqlCommand cmd = connection.CreateCommand();
-
-            //connection.Open();
-
-            //cmd.CommandText = "SELECT qid,qstage,qfin FROM user_quests WHERE ownerId=" + ObjID + " ORDER BY tact ASC";
-            //cmd.CommandType = CommandType.Text;
-
-            //MySqlDataReader reader = cmd.ExecuteReader();
-
-            //while (reader.Read())
-            //{
-            //    int qid = reader.GetInt32("qid");
-            //    int stage = reader.GetInt32("qstage");
-            //    int fin = reader.GetInt32("qfin");
-
-            //    QuestInfo qi = new QuestInfo(qid, stage, fin);
-            //    _quests.Add(qi);
-            //}
-
-            //reader.Close();
-            //connection.Close();
-        }
-
-        public L2Item[] getAllNonQuestItems()
-        {
-            IEnumerable<L2Item> sort = from item in Inventory.Items.Values
-                                       where item.Template.Type != ItemTemplate.L2ItemType.questitem
-                                       select item;
-            return sort.ToArray();
-        }
-
-        public L2Item[] getAllWeaponArmorNonQuestItems()
-        {
-            IEnumerable<L2Item> sort = from item in Inventory.Items.Values
-                                       where item.Template.Type != ItemTemplate.L2ItemType.questitem && (item.Template.Type == ItemTemplate.L2ItemType.armor || item.Template.Type == ItemTemplate.L2ItemType.weapon)
-                                       select item;
-            return sort.ToArray();
-        }
-
-        public L2Item[] getAllQuestItems()
-        {
-            IEnumerable<L2Item> sort = from item in Inventory.Items.Values
-                                       where item.Template.Type == ItemTemplate.L2ItemType.questitem
-                                       select item;
-            return sort.ToArray();
-        }
-
-        public L2Item[] getAllItems()
-        {
-            return Inventory.Items.Values.ToArray();
-        }
-
-        public ICollection getAllWarehouseItems()
-        {
-            return _warehouse.Items;
+            Quests.Remove(qi);
+            SendPacket(new PlaySound("ItemSound.quest_giveup"));
         }
 
         public L2Clan Clan;
 
-        public int ItemLimit_Inventory = 80,
-                   ItemLimit_Selling = 5,
-                   ItemLimit_Buying = 5,
-                   ItemLimit_RecipeDwarven = 50,
-                   ItemLimit_RecipeCommon = 50,
-                   ItemLimit_Warehouse = 120,
-                   ItemLimit_ClanWarehouse = 150,
-                   ItemLimit_Extra = 0,
-                   ItemLimit_Quest = 20;
+        public int ItemLimitInventory = 80,
+                   ItemLimitSelling = 5,
+                   ItemLimitBuying = 5,
+                   ItemLimitRecipeDwarven = 50,
+                   ItemLimitRecipeCommon = 50,
+                   ItemLimitWarehouse = 120,
+                   ItemLimitClanWarehouse = 150,
+                   ItemLimitExtra = 0,
+                   ItemLimitQuest = 20;
 
         public L2Npc FolkNpc;
-        public int last_x1 = -4;
-        public int last_y1;
+        public int LastX1 = -4;
+        public int LastY1;
 
-        public void reduceAdena(long count, bool msg, bool upd)
+        public override void UpdateSkillList()
         {
-            Inventory.destroyItem(57, count, msg, upd);
+            SendPacket(new SkillList(this, PBlockAct, PBlockSpell, PBlockSkill));
         }
 
-        public override void updateSkillList()
-        {
-            sendPacket(new SkillList(this, _p_block_act, _p_block_spell, _p_block_skill));
-        }
+        private Timer _timerTooFar;
+        public string Locale = "en";
 
-        private System.Timers.Timer _timerTooFar;
-        public string _locale = "en";
-
-        public void timer()
+        public void Timer()
         {
-            _timerTooFar = new System.Timers.Timer(30 * 1000);
-            _timerTooFar.Elapsed += new ElapsedEventHandler(_timeToFarTimerTask);
+            _timerTooFar = new Timer(30 * 1000);
+            _timerTooFar.Elapsed += _timeToFarTimerTask;
             _timerTooFar.Interval = 10000;
             _timerTooFar.Enabled = true;
         }
 
         public void _timeToFarTimerTask(object sender, ElapsedEventArgs e)
         {
-            validateVisibleObjects(X, Y, true);
+            ValidateVisibleObjects(X, Y, true);
         }
 
-        public int p_create_common_item = 0;
-        public int p_create_item = 0;
-        public List<L2Recipe> _recipeBook;
+        public int PCreateCommonItem = 0;
+        public int PCreateItem = 0;
+        public List<L2Recipe> RecipeBook = new List<L2Recipe>();
 
-        public void registerRecipe(L2Recipe newr, bool updDb, bool cleanup)
+        public void RegisterRecipe(L2Recipe newr, bool updDb, bool cleanup)
         {
-            if (_recipeBook == null)
-                _recipeBook = new List<L2Recipe>();
-
-            if (cleanup)
-                _recipeBook.Clear();
-
-            _recipeBook.Add(newr);
-
-            if (updDb)
+            lock (RecipeBook)
             {
-                //SQL_Block sqb = new SQL_Block("user_recipes");
-                //sqb.param("ownerId", ObjID);
-                //sqb.param("recid", newr.RecipeID);
-                //sqb.param("iclass", ActiveClass.id);
-                //sqb.sql_insert(false);
+                if (cleanup)
+                {
+                    RecipeBook.Clear();
+                }
+
+                RecipeBook.Add(newr);
+
+                if (updDb)
+                {
+                    //SQL_Block sqb = new SQL_Block("user_recipes");
+                    //sqb.param("ownerId", ObjID);
+                    //sqb.param("recid", newr.RecipeID);
+                    //sqb.param("iclass", ActiveClass.id);
+                    //sqb.sql_insert(false);
+                }
             }
         }
 
@@ -1248,14 +1017,11 @@ namespace L2dotNET.GameService.Model.Player
             //connection.Close();
         }
 
-        public void unregisterRecipe(L2Recipe rec, bool updDb)
+        public void UnregisterRecipe(L2Recipe rec, bool updDb)
         {
-            if (_recipeBook == null)
-                return;
-
-            lock (_recipeBook)
+            lock (RecipeBook)
             {
-                foreach (L2Recipe r in _recipeBook.Where(r => r.RecipeID == rec.RecipeID))
+                foreach (L2Recipe r in RecipeBook.Where(r => r.RecipeId == rec.RecipeId))
                 {
                     if (updDb)
                     {
@@ -1277,37 +1043,37 @@ namespace L2dotNET.GameService.Model.Player
                         //connection.Close();
                     }
 
-                    _recipeBook.Remove(r);
+                    RecipeBook.Remove(r);
 
-                    sendPacket(new RecipeBookItemList(this, rec._iscommonrecipe));
+                    SendPacket(new RecipeBookItemList(this, rec.Iscommonrecipe));
                     break;
                 }
             }
         }
 
-        public bool isAlikeDead()
+        public bool IsAlikeDead()
         {
             return false;
         }
 
-        public int getClanCrestLargeId()
+        public int GetClanCrestLargeId()
         {
-            return Clan == null ? 0 : Clan.LargeCrestID;
+            return Clan?.LargeCrestId ?? 0;
         }
 
-        public List<L2Shortcut> _shortcuts = new List<L2Shortcut>();
-        public int zoneId = -1;
-        public int _obsx = -1;
-        public int _obsy;
-        public int _obsz;
+        public List<L2Shortcut> Shortcuts = new List<L2Shortcut>();
+        public int ZoneId = -1;
+        public int Obsx = -1;
+        public int Obsy;
+        public int Obsz;
 
-        public void registerShortcut(int _slot, int _page, int _type, int _id, int _level, int _characterType)
+        public void RegisterShortcut(int slot, int page, int type, int id, int level, int characterType)
         {
-            lock (_shortcuts)
+            lock (Shortcuts)
             {
-                foreach (L2Shortcut sc in _shortcuts.Where(sc => sc.Slot == _slot && sc.Page == _page))
+                foreach (L2Shortcut sc in Shortcuts.Where(sc => (sc.Slot == slot) && (sc.Page == page)))
                 {
-                    _shortcuts.Remove(sc);
+                    Shortcuts.Remove(sc);
 
                     //SQL_Block sqb = new SQL_Block("user_shortcuts");
                     //sqb.where("ownerId", ObjID);
@@ -1320,10 +1086,13 @@ namespace L2dotNET.GameService.Model.Player
             }
 
             {
-                L2Shortcut sc = new L2Shortcut(_slot, _page, _type, _id, _level, _characterType);
-                _shortcuts.Add(sc);
+                L2Shortcut sc = new L2Shortcut(slot, page, type, id, level, characterType);
+                lock (Shortcuts)
+                {
+                    Shortcuts.Add(sc);
+                }
 
-                sendPacket(new ShortCutRegister(sc));
+                SendPacket(new ShortCutRegister(sc));
 
                 //SQL_Block sqb = new SQL_Block("user_shortcuts");
                 //sqb.param("ownerId", ObjID);
@@ -1338,93 +1107,131 @@ namespace L2dotNET.GameService.Model.Player
             }
         }
 
-        public int Souls = 0;
-        public int TransformID = 0;
+        public int Souls;
+        public int TransformId = 0;
         public L2Transform Transform;
-        public int AgationID;
+        public int AgationId;
 
         public PcTemplate BaseClass;
         public PcTemplate ActiveClass;
 
-        public bool subActive()
+        public bool SubActive()
         {
             return ActiveClass != BaseClass;
         }
 
-        public bool isQuestCompleted(int p)
+        public bool IsQuestCompleted(int p)
         {
-            foreach (QuestInfo qi in _quests)
+            return Quests.Where(qi => qi.Id == p).Select(qi => qi.Completed).FirstOrDefault();
+        }
+
+        public int GetQuestCond(int questId)
+        {
+            return Quests.Where(qi => qi.Id == questId).Select(qi => qi.Stage).FirstOrDefault();
+        }
+
+        public override void OnPickUp(L2Item item)
+        {
+            //item.Location = L2Item.L2ItemLocation.inventory;
+            //Inventory.addItem(item, true, true);
+        }
+
+        public void AddItem(int itemId, int count)
+        {
+            Inventory.AddItem(itemId, count, this);
+        }
+
+        public void DestroyItem(L2Item item, int count)
+        {
+            Inventory.DestroyItem(item, count, this);
+        }
+
+        public void DestroyItemById(int itemId, int count)
+        {
+            Inventory.DestroyItemById(itemId, count, this);
+        }
+
+        public bool ReduceAdena(int count)
+        {
+            return Inventory.ReduceAdena(count, this);
+        }
+
+        public L2Item GetItemByObjId(int objId)
+        {
+            return Inventory.GetItemByObjectId(objId);
+        }
+
+        public List<L2Item> GetAllItems()
+        {
+            return Inventory.Items;
+        }
+
+        public int GetAdena()
+        {
+            return Inventory.AdenaCount();
+        }
+
+        public void AddAdena(int count, bool sendMessage)
+        {
+            if (sendMessage)
             {
-                if (qi.id == p)
-                {
-                    return qi.completed;
-                }
+                SendPacket(new SystemMessage(SystemMessage.SystemMessageId.EarnedS1Adena).AddNumber(count));
             }
 
-            return false;
-        }
-
-        public int getQuestCond(int questId)
-        {
-            foreach (QuestInfo qi in _quests)
+            if (count <= 0)
             {
-                if (qi.id == questId)
-                {
-                    return qi.stage;
-                }
+                return;
             }
 
-            return 0;
+            InventoryUpdate iu = new InventoryUpdate();
+            iu.AddNewItem(Inventory.AddItem(57, count, this));
+            SendPacket(iu);
         }
 
-        public override void onPickUp(L2Item item)
-        {
-            item.Location = L2Item.L2ItemLocation.inventory;
-            Inventory.addItem(item, true, true);
-        }
-
-        public override string asString()
+        public override string AsString()
         {
             return "L2Player:" + Name;
         }
 
-        public override void onRemObject(L2Object obj)
+        public override void OnRemObject(L2Object obj)
         {
-            sendPacket(new DeleteObject(obj.ObjID));
+            SendPacket(new DeleteObject(obj.ObjId));
         }
 
-        public override void onAddObject(L2Object obj, GameServerNetworkPacket pk, string msg = null)
+        public override void OnAddObject(L2Object obj, GameServerNetworkPacket pk, string msg = null)
         {
             if (obj is L2Npc)
             {
-                sendPacket(new NpcInfo((L2Npc)obj));
+                SendPacket(new NpcInfo((L2Npc)obj));
             }
             else if (obj is L2Player)
             {
-                sendPacket(new CharInfo((L2Player)obj));
+                SendPacket(new CharInfo((L2Player)obj));
 
                 if (msg != null)
-                    ((L2Player)obj).sendMessage(msg);
+                {
+                    ((L2Player)obj).SendMessage(msg);
+                }
             }
             else if (obj is L2Item)
             {
-                sendPacket(pk ?? new SpawnItem((L2Item)obj));
+                SendPacket(pk ?? new SpawnItem((L2Item)obj));
             }
             else if (obj is L2Summon)
             {
-                sendPacket(pk ?? new PetInfo((L2Summon)obj));
+                SendPacket(pk ?? new PetInfo((L2Summon)obj));
             }
             else if (obj is L2Chair)
             {
-                sendPacket(new StaticObject((L2Chair)obj));
+                SendPacket(new StaticObject((L2Chair)obj));
             }
             else if (obj is L2StaticObject)
             {
-                sendPacket(new StaticObject((L2StaticObject)obj));
+                SendPacket(new StaticObject((L2StaticObject)obj));
             }
             else if (obj is L2Boat)
             {
-                sendPacket(new VehicleInfo((L2Boat)obj));
+                SendPacket(new VehicleInfo((L2Boat)obj));
             }
         }
 
@@ -1432,13 +1239,13 @@ namespace L2dotNET.GameService.Model.Player
         {
             foreach (L2Player player in L2World.Instance.GetPlayers().Where(player => player != this))
             {
-                player.sendPacket(new CharInfo(this));
+                player.SendPacket(new CharInfo(this));
             }
         }
 
-        public void BroadcastUserInfo()
+        public override void BroadcastUserInfo()
         {
-            sendPacket(new UserInfo(this));
+            SendPacket(new UserInfo(this));
 
             //if (getPolyType() == PolyType.NPC)
             //    Broadcast.toKnownPlayers(this, new AbstractNpcInfo.PcMorphInfo(this, getPolyTemplate()));
@@ -1470,13 +1277,20 @@ namespace L2dotNET.GameService.Model.Player
             //     }
         }
 
-        public void untransform()
+        public void Untransform()
         {
-            if (Transform != null)
+            if (Transform == null)
             {
-                Transform.Template.onTransformEnd(this);
-                Transform = null;
+                return;
             }
+
+            Transform.Template.OnTransformEnd(this);
+            Transform = null;
+        }
+
+        public bool HasItem(int itemId, int count)
+        {
+            return Inventory.Items.Where(item => item.Template.ItemId == itemId).Any(item => item.Count >= count);
         }
 
         public override void SendInfo(L2Player player)
@@ -1488,9 +1302,9 @@ namespace L2dotNET.GameService.Model.Player
             //    activeChar.sendPacket(new AbstractNpcInfo.PcMorphInfo(this, getPolyTemplate()));
             //else
             //{
-            player.sendPacket(new CharInfo(this));
+            player.SendPacket(new CharInfo(this));
 
-            if (IsSitting)
+            if (_isSitting)
             {
                 //               L2Object obj = World.getInstance().getObject(_throneId);
                 //               if (obj is L2StaticObject)
@@ -1532,121 +1346,119 @@ namespace L2dotNET.GameService.Model.Player
             //}
         }
 
-        public void setTransform(L2Transform tr)
+        public void SetTransform(L2Transform tr)
         {
             Transform = tr;
-            Transform.owner = this;
-            Transform.Template.onTransformStart(this);
+            Transform.Owner = this;
+            Transform.Template.OnTransformStart(this);
         }
 
-        public SortedList<int, db_InstanceReuse> InstanceReuse = new SortedList<int, db_InstanceReuse>();
         public int ViewingAdminPage;
         public int ViewingAdminTeleportGroup = -1;
-        public int TeleportPayID;
+        public int TeleportPayId;
         public int LastMinigameScore;
         public short ClanType;
         public int Fame;
 
         public void ShowHtmAdmin(string val, bool plain)
         {
-            if (plain)
-                sendPacket(new TutorialShowHtml(this, val, true, true));
-            else
-                sendPacket(new TutorialShowHtml(this, val, true));
+            SendPacket(new TutorialShowHtml(this, val, true));
 
             ViewingAdminPage = 1;
         }
 
-        public void ShowHtmBBS(string val)
+        public void ShowHtmBbs(string val)
         {
-            ShowBoard.separateAndSend(val, this);
+            ShowBoard.SeparateAndSend(val, this);
         }
 
-        public void sendItemList(bool open = false)
+        public void SendItemList(bool open = false)
         {
-            sendPacket(new ItemList(this, open));
-            sendPacket(new ExQuestItemList(this));
+            SendPacket(new ItemList(this, open));
+            SendPacket(new ExQuestItemList(this));
         }
 
-        public void updateWeight()
+        public void UpdateWeight()
         {
             long oldweight = CurrentWeight;
             long total = 0;
-            if (!_diet)
-            {
-                foreach (L2Item it in Inventory.Items.Values.Where(it => it.Template.Weight != 0))
-                {
-                    if (it.Template.isStackable())
-                    {
-                        total += it.Template.Weight * it.Count;
-                    }
-                    else
-                        total += it.Template.Weight;
-                }
-            }
+            //if (!_diet)
+            //    foreach (L2Item it in Inventory.Items.Values.Where(it => it.Template.Weight != 0))
+            //        if (it.Template.isStackable())
+            //            total += it.Template.Weight * it.Count;
+            //        else
+            //            total += it.Template.Weight;
 
             CurrentWeight = total >= int.MaxValue ? int.MaxValue : (int)total;
 
-            if (oldweight != total)
+            if (oldweight == total)
             {
-                StatusUpdate su = new StatusUpdate(ObjID);
-                su.add(StatusUpdate.CUR_LOAD, CurrentWeight);
-                sendPacket(su);
-
-                long weightproc = total * 1000 / (int)CharacterStat.getStat(TEffectType.b_max_weight);
-
-                int newWeightPenalty;
-                if (weightproc < 500)
-                {
-                    newWeightPenalty = 0;
-                }
-                else if (weightproc < 666)
-                {
-                    newWeightPenalty = 1;
-                }
-                else if (weightproc < 800)
-                {
-                    newWeightPenalty = 2;
-                }
-                else if (weightproc < 1000)
-                {
-                    newWeightPenalty = 3;
-                }
-                else
-                {
-                    newWeightPenalty = 4;
-                }
-
-                if (_penaltyWeight != newWeightPenalty)
-                {
-                    if (newWeightPenalty > 0)
-                    {
-                        addSkill(4270, newWeightPenalty, false, true);
-                    }
-                    else
-                    {
-                        removeSkill(4270, false, true);
-                    }
-
-                    _penaltyWeight = newWeightPenalty;
-
-                    sendPacket(new EtcStatusUpdate(this));
-                }
+                return;
             }
+
+            StatusUpdate su = new StatusUpdate(ObjId);
+            su.Add(StatusUpdate.CurLoad, CurrentWeight);
+            SendPacket(su);
+
+            long weightproc = (total * 1000) / (int)CharacterStat.GetStat(EffectType.BMaxWeight);
+
+            int newWeightPenalty;
+            if (weightproc < 500)
+            {
+                newWeightPenalty = 0;
+            }
+            else if (weightproc < 666)
+            {
+                newWeightPenalty = 1;
+            }
+            else if (weightproc < 800)
+            {
+                newWeightPenalty = 2;
+            }
+            else if (weightproc < 1000)
+            {
+                newWeightPenalty = 3;
+            }
+            else
+            {
+                newWeightPenalty = 4;
+            }
+
+            if (PenaltyWeight == newWeightPenalty)
+            {
+                return;
+            }
+
+            if (newWeightPenalty > 0)
+            {
+                AddSkill(4270, newWeightPenalty, false, true);
+            }
+            else
+            {
+                RemoveSkill(4270, false, true);
+            }
+
+            PenaltyWeight = newWeightPenalty;
+
+            SendPacket(new EtcStatusUpdate(this));
         }
 
         public bool CheckFreeWeight(int weight)
         {
-            if (CurrentWeight + weight >= CharacterStat.getStat(TEffectType.b_max_weight))
+            if ((CurrentWeight + weight) >= CharacterStat.GetStat(EffectType.BMaxWeight))
+            {
                 return false;
+            }
 
             return true;
         }
 
         public bool CheckFreeWeight80(int weight)
         {
-            if (CurrentWeight + weight >= (CharacterStat.getStat(TEffectType.b_max_weight) * .8))
+            if ((CurrentWeight + weight) >= (CharacterStat.GetStat(EffectType.BMaxWeight) * .8))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -1659,84 +1471,21 @@ namespace L2dotNET.GameService.Model.Player
 
             L2World.Instance.AddPlayer(this);
 
-            onSpawn();
-        }
-
-        public override void teleport(int x, int y, int z)
-        {
-            base.teleport(x, y, z);
-        }
-
-        public bool CheckFreeSlotsInventory(ItemTemplate item, int count)
-        {
-            int check = 0;
-
-            if (item.isStackable())
-            {
-                if (Inventory.getItemById(item.ItemID) == null)
-                    check = 1;
-            }
-            else
-                check = count;
-
-            if (getAllNonQuestItems().Length + check >= ItemLimit_Inventory)
-                return false;
-
-            return true;
-        }
-
-        public bool CheckFreeSlotsInventory80(ItemTemplate item, long count)
-        {
-            long check = 0;
-
-            if (item.isStackable())
-            {
-                if (Inventory.getItemById(item.ItemID) == null)
-                    check = 1;
-            }
-            else
-                check = count;
-
-            if (getAllNonQuestItems().Length + check >= (ItemLimit_Inventory * .8))
-                return false;
-
-            return true;
-        }
-
-        public bool CheckFreeSlotsInventory80(int id, long count, bool msg)
-        {
-            long check;
-            L2Item item = Inventory.getItemById(id);
-
-            if (item != null)
-            {
-                if (!item.Template.isStackable())
-                    check = 1;
-                else
-                    check = count;
-            }
-            else
-                check = 1;
-
-            if (getAllNonQuestItems().Length + check >= (ItemLimit_Inventory * .8))
-            {
-                sendSystemMessage(SystemMessage.SystemMessageId.YOU_COULD_NOT_RECEIVE_BECAUSE_YOUR_INVENTORY_IS_FULL);
-                return false;
-            }
-
-            return true;
+            OnSpawn();
         }
 
         public byte ClanRank()
         {
-            if (ClanId == 0 || Clan == null)
+            if ((ClanId == 0) || (Clan == null))
+            {
                 return 0;
+            }
 
-            bool leader = Clan.LeaderID == ObjID;
-            e_ClanRank rank = e_ClanRank.vagabond;
+            bool leader = Clan.LeaderId == ObjId;
+            EClanRank rank = EClanRank.Vagabond;
             switch (ClanType)
             {
-                case (short)e_ClanType.CLAN_MAIN:
+                case (short)EClanType.ClanMain:
                 {
                     switch (Clan.Level)
                     {
@@ -1744,186 +1493,237 @@ namespace L2dotNET.GameService.Model.Player
                         case 1:
                         case 2:
                         case 3:
-                            rank = e_ClanRank._1;
+                            rank = EClanRank._1;
                             break;
                         case 4:
                             if (leader)
-                                rank = e_ClanRank._3;
+                            {
+                                rank = EClanRank._3;
+                            }
                             break;
                         case 5:
-                            rank = leader ? e_ClanRank._4 : e_ClanRank._3;
+                            rank = leader ? EClanRank._4 : EClanRank._3;
                             break;
                         case 6:
                             if (leader)
-                                rank = e_ClanRank._5;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT1, e_ClanType.CLAN_KNIGHT2 }) != e_ClanType.None)
-                                rank = e_ClanRank._4;
+                            {
+                                rank = EClanRank._5;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight1, EClanType.ClanKnight2 }) != EClanType.None)
+                            {
+                                rank = EClanRank._4;
+                            }
                             else
-                                rank = e_ClanRank._3;
+                            {
+                                rank = EClanRank._3;
+                            }
                             break;
                         case 7:
                             if (leader)
-                                rank = e_ClanRank._7;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT1, e_ClanType.CLAN_KNIGHT2 }) != e_ClanType.None)
-                                rank = e_ClanRank._6;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT3, e_ClanType.CLAN_KNIGHT4, e_ClanType.CLAN_KNIGHT5, e_ClanType.CLAN_KNIGHT6 }) != e_ClanType.None)
-                                rank = e_ClanRank._5;
+                            {
+                                rank = EClanRank._7;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight1, EClanType.ClanKnight2 }) != EClanType.None)
+                            {
+                                rank = EClanRank._6;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight3, EClanType.ClanKnight4, EClanType.ClanKnight5, EClanType.ClanKnight6 }) != EClanType.None)
+                            {
+                                rank = EClanRank._5;
+                            }
                             else
-                                rank = e_ClanRank._4;
+                            {
+                                rank = EClanRank._4;
+                            }
                             break;
                         case 8:
                             if (leader)
-                                rank = e_ClanRank._8;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT1, e_ClanType.CLAN_KNIGHT2 }) != e_ClanType.None)
-                                rank = e_ClanRank._7;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT3, e_ClanType.CLAN_KNIGHT4, e_ClanType.CLAN_KNIGHT5, e_ClanType.CLAN_KNIGHT6 }) != e_ClanType.None)
-                                rank = e_ClanRank._6;
+                            {
+                                rank = EClanRank._8;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight1, EClanType.ClanKnight2 }) != EClanType.None)
+                            {
+                                rank = EClanRank._7;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight3, EClanType.ClanKnight4, EClanType.ClanKnight5, EClanType.ClanKnight6 }) != EClanType.None)
+                            {
+                                rank = EClanRank._6;
+                            }
                             else
-                                rank = e_ClanRank._5;
+                            {
+                                rank = EClanRank._5;
+                            }
                             break;
                         case 9:
                             if (leader)
-                                rank = e_ClanRank._9;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT1, e_ClanType.CLAN_KNIGHT2 }) != e_ClanType.None)
-                                rank = e_ClanRank._8;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT3, e_ClanType.CLAN_KNIGHT4, e_ClanType.CLAN_KNIGHT5, e_ClanType.CLAN_KNIGHT6 }) != e_ClanType.None)
-                                rank = e_ClanRank._7;
+                            {
+                                rank = EClanRank._9;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight1, EClanType.ClanKnight2 }) != EClanType.None)
+                            {
+                                rank = EClanRank._8;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight3, EClanType.ClanKnight4, EClanType.ClanKnight5, EClanType.ClanKnight6 }) != EClanType.None)
+                            {
+                                rank = EClanRank._7;
+                            }
                             else
-                                rank = e_ClanRank._6;
+                            {
+                                rank = EClanRank._6;
+                            }
                             break;
                         case 10:
                             if (leader)
-                                rank = e_ClanRank._10;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT1, e_ClanType.CLAN_KNIGHT2 }) != e_ClanType.None)
-                                rank = e_ClanRank._9;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT3, e_ClanType.CLAN_KNIGHT4, e_ClanType.CLAN_KNIGHT5, e_ClanType.CLAN_KNIGHT6 }) != e_ClanType.None)
-                                rank = e_ClanRank._8;
+                            {
+                                rank = EClanRank._10;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight1, EClanType.ClanKnight2 }) != EClanType.None)
+                            {
+                                rank = EClanRank._9;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight3, EClanType.ClanKnight4, EClanType.ClanKnight5, EClanType.ClanKnight6 }) != EClanType.None)
+                            {
+                                rank = EClanRank._8;
+                            }
                             else
-                                rank = e_ClanRank._7;
+                            {
+                                rank = EClanRank._7;
+                            }
                             break;
                         case 11:
                             if (leader)
-                                rank = e_ClanRank._11;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT1, e_ClanType.CLAN_KNIGHT2 }) != e_ClanType.None)
-                                rank = e_ClanRank._10;
-                            else if (Clan.isSubLeader(ObjID, new e_ClanType[] { e_ClanType.CLAN_KNIGHT3, e_ClanType.CLAN_KNIGHT4, e_ClanType.CLAN_KNIGHT5, e_ClanType.CLAN_KNIGHT6 }) != e_ClanType.None)
-                                rank = e_ClanRank._9;
+                            {
+                                rank = EClanRank._11;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight1, EClanType.ClanKnight2 }) != EClanType.None)
+                            {
+                                rank = EClanRank._10;
+                            }
+                            else if (Clan.IsSubLeader(ObjId, new[] { EClanType.ClanKnight3, EClanType.ClanKnight4, EClanType.ClanKnight5, EClanType.ClanKnight6 }) != EClanType.None)
+                            {
+                                rank = EClanRank._9;
+                            }
                             else
-                                rank = e_ClanRank._8;
+                            {
+                                rank = EClanRank._8;
+                            }
                             break;
                     }
                 }
+
                     break;
-                case (short)e_ClanType.CLAN_ACADEMY:
+                case (short)EClanType.ClanAcademy:
                 {
-                    rank = e_ClanRank._1;
+                    rank = EClanRank._1;
                 }
                     break;
-                case (short)e_ClanType.CLAN_KNIGHT1:
-                case (short)e_ClanType.CLAN_KNIGHT2:
+                case (short)EClanType.ClanKnight1:
+                case (short)EClanType.ClanKnight2:
                 {
                     switch (Clan.Level)
                     {
                         case 6:
-                            rank = e_ClanRank._2;
+                            rank = EClanRank._2;
                             break;
                         case 7:
-                            rank = e_ClanRank._3;
+                            rank = EClanRank._3;
                             break;
                         case 8:
-                            rank = e_ClanRank._4;
+                            rank = EClanRank._4;
                             break;
                         case 9:
-                            rank = e_ClanRank._5;
+                            rank = EClanRank._5;
                             break;
                         case 10:
-                            rank = e_ClanRank._6;
+                            rank = EClanRank._6;
                             break;
                         case 11:
-                            rank = e_ClanRank._7;
+                            rank = EClanRank._7;
                             break;
                     }
                 }
+
                     break;
-                case (short)e_ClanType.CLAN_KNIGHT3:
-                case (short)e_ClanType.CLAN_KNIGHT4:
-                case (short)e_ClanType.CLAN_KNIGHT5:
-                case (short)e_ClanType.CLAN_KNIGHT6:
+                case (short)EClanType.ClanKnight3:
+                case (short)EClanType.ClanKnight4:
+                case (short)EClanType.ClanKnight5:
+                case (short)EClanType.ClanKnight6:
                 {
                     switch (Clan.Level)
                     {
                         case 7:
-                            rank = e_ClanRank._2;
+                            rank = EClanRank._2;
                             break;
                         case 8:
-                            rank = e_ClanRank._3;
+                            rank = EClanRank._3;
                             break;
                         case 9:
-                            rank = e_ClanRank._4;
+                            rank = EClanRank._4;
                             break;
                         case 10:
-                            rank = e_ClanRank._5;
+                            rank = EClanRank._5;
                             break;
                         case 11:
-                            rank = e_ClanRank._6;
+                            rank = EClanRank._6;
                             break;
                     }
                 }
+
                     break;
             }
 
-            if (Noblesse == 1 && (byte)rank < 5)
-                rank = e_ClanRank._5;
+            if ((Noblesse == 1) && ((byte)rank < 5))
+            {
+                rank = EClanRank._5;
+            }
 
-            if (Heroic == 1 && (byte)rank < 8)
-                rank = e_ClanRank._8;
+            if ((Heroic == 1) && ((byte)rank < 8))
+            {
+                rank = EClanRank._8;
+            }
 
             return (byte)rank;
         }
 
-        public override void updateAbnormalEventEffect()
+        public override void UpdateAbnormalEventEffect()
         {
-            broadcastPacket(new ExBrExtraUserInfo(ObjID, AbnormalBitMaskEvent));
+            BroadcastPacket(new ExBrExtraUserInfo(ObjId, AbnormalBitMaskEvent));
         }
 
-        public override void updateAbnormalExEffect()
+        public override void UpdateAbnormalExEffect()
         {
-            broadcastUserInfo();
+            BroadcastUserInfo();
         }
 
-        public string Penalty_ClanCreate = "0";
-        public string Penalty_ClanJoin = "0";
+        public string PenaltyClanCreate = "0";
+        public string PenaltyClanJoin = "0";
 
         public void setPenalty_ClanCreate(DateTime time, bool sql)
         {
-            if (DateTime.Now < time)
-                Penalty_ClanCreate = time.ToString("yyyy-MM-dd HH-mm-ss");
-            else
-                Penalty_ClanCreate = "0";
+            PenaltyClanCreate = DateTime.Now < time ? time.ToString("yyyy-MM-dd HH-mm-ss") : "0";
 
             if (sql) { }
         }
 
         public void setPenalty_ClanJoin(DateTime time, bool sql)
         {
-            if (DateTime.Now < time)
-                Penalty_ClanJoin = time.ToString("yyyy-MM-dd HH-mm-ss");
-            else
-                Penalty_ClanJoin = "0";
+            PenaltyClanJoin = DateTime.Now < time ? time.ToString("yyyy-MM-dd HH-mm-ss") : "0";
 
             if (sql) { }
         }
 
-        public bool IsRestored = false;
+        public bool IsRestored;
 
         public void TotalRestore()
         {
             if (IsRestored)
+            {
                 return;
+            }
 
-            onGameInit();
+            OnGameInit();
             db_restoreSkills();
-            db_restoreQuests();
+            //db_restoreQuests();
             db_restoreRecipes();
             // db_restoreShortcuts(); elfo to be added
 
@@ -1962,51 +1762,49 @@ namespace L2dotNET.GameService.Model.Player
         public void ReduceSouls(byte count)
         {
             Souls -= count;
-            sendPacket(new EtcStatusUpdate(this));
+            SendPacket(new EtcStatusUpdate(this));
         }
 
         public void AddSouls(byte count)
         {
             Souls += count;
-            sendPacket(new EtcStatusUpdate(this));
+            SendPacket(new EtcStatusUpdate(this));
 
-            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YOUR_SOUL_COUNT_HAS_INCREASED_BY_S1_NOW_AT_S2);
+            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YourSoulCountHasIncreasedByS1NowAtS2);
             sm.AddNumber(count);
             sm.AddNumber(Souls);
-            sendPacket(sm);
+            SendPacket(sm);
         }
 
         public void IncreaseSouls()
         {
-            byte soul = 1;
-
-            if (Souls + soul > 45 || Souls == 45)
+            if (((Souls + 1) > 45) || (Souls == 45))
             {
-                sendSystemMessage(SystemMessage.SystemMessageId.SOUL_CANNOT_BE_INCREASED_ANYMORE);
+                SendSystemMessage(SystemMessage.SystemMessageId.SoulCannotBeIncreasedAnymore);
                 return;
             }
 
-            AddSouls(soul);
+            AddSouls(1);
         }
 
         public bool IsCursed = false;
 
-        public byte PartyState = 0;
-        public L2Player requester = null;
-        public int itemDistribution;
+        public byte PartyState;
+        public L2Player Requester;
+        public int ItemDistribution;
 
         public void PendToJoinParty(L2Player asker, int askerItemDistribution)
         {
             PartyState = 1;
-            requester = asker;
-            requester.itemDistribution = askerItemDistribution;
-            sendPacket(new AskJoinParty(asker.Name, askerItemDistribution));
+            Requester = asker;
+            Requester.ItemDistribution = askerItemDistribution;
+            SendPacket(new AskJoinParty(asker.Name, askerItemDistribution));
         }
 
         public void ClearPend()
         {
             PartyState = 0;
-            requester = null;
+            Requester = null;
         }
 
         public L2Summon Summon;
@@ -2021,13 +1819,17 @@ namespace L2dotNET.GameService.Model.Player
 
         public byte GetEnchantValue()
         {
-            int val = Inventory.getWeaponEnchanment();
+            int val = 0; //Inventory.getWeaponEnchanment();
 
             if (MountType > 0)
+            {
                 return 0;
+            }
 
             if (val > 127)
+            {
                 val = 127;
+            }
 
             return (byte)val;
         }
@@ -2038,189 +1840,216 @@ namespace L2dotNET.GameService.Model.Player
 
             if (target is L2Summon)
             {
-                if (!(((L2Summon)target).Owner != null && ((L2Summon)target).Owner.ObjID == ObjID))
+                if (!((((L2Summon)target).Owner != null) && (((L2Summon)target).Owner.ObjId == ObjId)))
+                {
                     color = ((L2Summon)target).Level - Level;
+                }
             }
 
-            sendPacket(new MyTargetSelected(target.ObjID, color));
+            SendPacket(new MyTargetSelected(target.ObjId, color));
         }
 
         public override void OnOldTargetSelection(L2Object target)
         {
-            double dis = Calcs.calculateDistance(this, target, true);
+            double dis = Calcs.CalculateDistance(this, target, true);
             if (dis < 151)
+            {
                 target.NotifyAction(this);
+            }
             else
-                tryMoveTo(target.X, target.Y, target.Z);
+            {
+                TryMoveTo(target.X, target.Y, target.Z);
+            }
 
-            sendActionFailed();
+            SendActionFailed();
         }
 
-        private System.Timers.Timer petSummonTime,
-                                    nonpetSummonTime;
-        private int PetID = -1;
-        private L2Item PetControlItem = null;
+        private Timer _petSummonTime,
+                      _nonpetSummonTime;
+        private int _petId = -1;
+        private L2Item _petControlItem;
 
-        public void PetSummon(L2Item item, int NpcID, bool isPet = true)
+        public void PetSummon(L2Item item, int npcId, bool isPet = true)
         {
             if (Summon != null)
             {
-                sendSystemMessage(SystemMessage.SystemMessageId.YOU_ALREADY_HAVE_A_PET);
+                SendSystemMessage(SystemMessage.SystemMessageId.YouAlreadyHaveAPet);
                 return;
             }
 
             if (isPet)
             {
-                if (petSummonTime == null)
+                if (_petSummonTime == null)
                 {
-                    petSummonTime = new System.Timers.Timer();
-                    petSummonTime.Interval = 5000;
-                    petSummonTime.Elapsed += new ElapsedEventHandler(PetSummonEnd);
+                    _petSummonTime = new Timer
+                                     {
+                                         Interval = 5000
+                                     };
+                    _petSummonTime.Elapsed += PetSummonEnd;
                 }
 
-                petSummonTime.Enabled = true;
-                sendSystemMessage(SystemMessage.SystemMessageId.SUMMON_A_PET);
+                _petSummonTime.Enabled = true;
+                SendSystemMessage(SystemMessage.SystemMessageId.SummonAPet);
             }
             else
             {
-                if (nonpetSummonTime == null)
+                if (_nonpetSummonTime == null)
                 {
-                    nonpetSummonTime = new System.Timers.Timer();
-                    nonpetSummonTime.Interval = 5000;
-                    nonpetSummonTime.Elapsed += new ElapsedEventHandler(NonpetSummonEnd);
+                    _nonpetSummonTime = new Timer
+                                        {
+                                            Interval = 5000
+                                        };
+                    _nonpetSummonTime.Elapsed += NonpetSummonEnd;
                 }
 
-                nonpetSummonTime.Enabled = true;
+                _nonpetSummonTime.Enabled = true;
             }
 
-            this.PetID = NpcID;
-            this.PetControlItem = item;
+            _petId = npcId;
+            _petControlItem = item;
 
-            broadcastPacket(new MagicSkillUse(this, this, 1111, 1, 5000));
-            sendPacket(new SetupGauge(ObjID, SetupGauge.SG_color.blue, 4900));
+            BroadcastPacket(new MagicSkillUse(this, this, 1111, 1, 5000));
+            SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Blue, 4900));
         }
 
         private void PetSummonEnd(object sender, ElapsedEventArgs e)
         {
             L2Pet pet = new L2Pet();
             //pet.setTemplate(NpcTable.Instance.GetNpcTemplate(PetID));
-            pet.setOwner(this);
-            pet.ControlItem = PetControlItem;
+            pet.SetOwner(this);
+            pet.ControlItem = _petControlItem;
             // pet.sql_restore();
             pet.SpawmMe();
 
-            petSummonTime.Enabled = false;
+            _petSummonTime.Enabled = false;
         }
 
         private void NonpetSummonEnd(object sender, ElapsedEventArgs e)
         {
             L2Summon summon = new L2Summon();
             //summon.setTemplate(NpcTable.Instance.GetNpcTemplate(PetID));
-            summon.setOwner(this);
-            summon.ControlItem = PetControlItem;
+            summon.SetOwner(this);
+            summon.ControlItem = _petControlItem;
             summon.SpawmMe();
 
-            nonpetSummonTime.Enabled = false;
+            _nonpetSummonTime.Enabled = false;
         }
 
-        public override bool cantMove()
+        public override bool CantMove()
         {
-            if (petSummonTime != null && petSummonTime.Enabled)
-                return true;
-            if (nonpetSummonTime != null && nonpetSummonTime.Enabled)
-                return true;
-
-            return base.cantMove();
-        }
-
-        public override L2Character[] getPartyCharacters()
-        {
-            List<L2Character> chars = new List<L2Character>();
-            chars.Add(this);
-            if (Summon != null)
-                chars.Add(Summon);
-
-            if (Party != null)
+            if ((_petSummonTime != null) && _petSummonTime.Enabled)
             {
-                foreach (L2Player pl in Party.Members.Where(pl => pl.ObjID != this.ObjID))
-                {
-                    chars.Add(pl);
+                return true;
+            }
+            if ((_nonpetSummonTime != null) && _nonpetSummonTime.Enabled)
+            {
+                return true;
+            }
 
-                    if (pl.Summon != null)
-                        chars.Add(pl.Summon);
+            return base.CantMove();
+        }
+
+        public override L2Character[] GetPartyCharacters()
+        {
+            List<L2Character> chars = new List<L2Character>
+                                      {
+                                          this
+                                      };
+            if (Summon != null)
+            {
+                chars.Add(Summon);
+            }
+
+            if (Party == null)
+            {
+                return chars.ToArray();
+            }
+
+            foreach (L2Player pl in Party.Members.Where(pl => pl.ObjId != ObjId))
+            {
+                chars.Add(pl);
+
+                if (pl.Summon != null)
+                {
+                    chars.Add(pl.Summon);
                 }
             }
 
             return chars.ToArray();
         }
 
-        public override void abortCast()
+        public override void AbortCast()
         {
-            if (petSummonTime != null && petSummonTime.Enabled)
-                petSummonTime.Enabled = false;
+            if ((_petSummonTime != null) && _petSummonTime.Enabled)
+            {
+                _petSummonTime.Enabled = false;
+            }
 
-            if (nonpetSummonTime != null && nonpetSummonTime.Enabled)
-                nonpetSummonTime.Enabled = false;
+            if ((_nonpetSummonTime != null) && _nonpetSummonTime.Enabled)
+            {
+                _nonpetSummonTime.Enabled = false;
+            }
 
-            base.abortCast();
+            base.AbortCast();
         }
 
-        public override void StartAI()
+        public override void StartAi()
         {
-            AICharacter = new PlayerAI(this);
+            AiCharacter = new PlayerAi(this);
         }
 
-        public List<TSpecEffect> specEffects = new List<TSpecEffect>();
+        public List<SpecEffect> SpecEffects = new List<SpecEffect>();
 
-        public bool isSittingInProgress()
+        public bool IsSittingInProgress()
         {
-            if (sitTime != null)
-                return sitTime.Enabled;
-
-            return false;
+            return (_sitTime != null) && _sitTime.Enabled;
         }
 
-        public bool isSitting()
+        public bool IsSitting()
         {
-            return IsSitting;
+            return _isSitting;
         }
 
-        private System.Timers.Timer sitTime;
-        private bool IsSitting = false;
+        private Timer _sitTime;
+        private bool _isSitting;
 
         public void Sit()
         {
-            if (sitTime == null)
+            if (_sitTime == null)
             {
-                sitTime = new System.Timers.Timer();
-                sitTime.Interval = 2500;
-                sitTime.Elapsed += new ElapsedEventHandler(SitEnd);
+                _sitTime = new Timer
+                           {
+                               Interval = 2500
+                           };
+                _sitTime.Elapsed += SitEnd;
             }
 
-            sitTime.Enabled = true;
-            broadcastPacket(new ChangeWaitType(this, ChangeWaitType.SIT));
+            _sitTime.Enabled = true;
+            BroadcastPacket(new ChangeWaitType(this, ChangeWaitType.Sit));
         }
 
         public void Stand()
         {
-            sitTime.Enabled = true;
-            broadcastPacket(new ChangeWaitType(this, ChangeWaitType.STAND));
+            _sitTime.Enabled = true;
+            BroadcastPacket(new ChangeWaitType(this, ChangeWaitType.Stand));
             //TODO stop relax effect
         }
 
         private void SitEnd(object sender, ElapsedEventArgs e)
         {
-            sitTime.Enabled = false;
-            IsSitting = !IsSitting;
+            _sitTime.Enabled = false;
+            _isSitting = !_isSitting;
 
-            if (!IsSitting && chair != null)
+            if (_isSitting || (_chair == null))
             {
-                chair.IsUsedAlready = false;
-                chair = null;
+                return;
             }
+
+            _chair.IsUsedAlready = false;
+            _chair = null;
         }
 
-        private L2Chair chair;
+        private L2Chair _chair;
         public L2Boat Boat;
         public int BoatX;
         public int BoatY;
@@ -2228,12 +2057,12 @@ namespace L2dotNET.GameService.Model.Player
 
         public void SetChair(L2Chair chairObj)
         {
-            this.chair = chairObj;
-            this.chair.IsUsedAlready = true;
-            broadcastPacket(new ChairSit(ObjID, chairObj.StaticID));
+            _chair = chairObj;
+            _chair.IsUsedAlready = true;
+            BroadcastPacket(new ChairSit(ObjId, chairObj.StaticId));
         }
 
-        public bool isOnShip()
+        public bool IsOnShip()
         {
             return false;
         }
@@ -2246,262 +2075,234 @@ namespace L2dotNET.GameService.Model.Player
         // arrow, bolt
         public L2Item SecondaryWeaponSupport;
 
-        public override L2Item ActiveWeapon
+        public override L2Item ActiveWeapon => null;
+
+        public override void AbortAttack()
         {
-            get { return Inventory.getWeapon(); }
+            base.AbortAttack();
+            AiCharacter.StopAutoAttack();
         }
 
-        public override void abortAttack()
-        {
-            base.abortAttack();
-            AICharacter.StopAutoAttack();
-        }
-
-        public override void doAttack(L2Character target)
+        public override void DoAttack(L2Character target)
         {
             if (target == null)
             {
-                sendMessage("null");
-                AICharacter.StopAutoAttack();
-                sendActionFailed();
+                SendMessage("null");
+                AiCharacter.StopAutoAttack();
+                SendActionFailed();
                 return;
             }
 
             if (target.Dead)
             {
-                sendMessage("dead");
-                AICharacter.StopAutoAttack();
-                sendActionFailed();
+                SendMessage("dead");
+                AiCharacter.StopAutoAttack();
+                SendActionFailed();
                 return;
             }
 
-            if (attack_ToHit != null && attack_ToHit.Enabled)
+            if ((AttackToHit != null) && AttackToHit.Enabled)
             {
-                sendActionFailed();
+                SendActionFailed();
                 return;
             }
 
-            if (attack_ToEnd != null && attack_ToEnd.Enabled)
+            if ((AttackToEnd != null) && AttackToEnd.Enabled)
             {
-                sendActionFailed();
+                SendActionFailed();
                 return;
             }
+
             double dist = 60,
                    reqMp = 0;
 
             L2Item weapon = ActiveWeapon;
-            double timeAtk = CharacterStat.getStat(TEffectType.b_attack_spd);
+            double timeAtk = CharacterStat.GetStat(EffectType.BAttackSpd);
             bool dual = false,
                  ranged = false,
                  ss = false;
             if (weapon != null)
             {
                 ss = weapon.Soulshot;
-                switch (weapon.Template.WeaponType)
-                {
-                    case ItemTemplate.L2ItemWeaponType.bow:
-                        timeAtk = (1500 * 345 / timeAtk);
-                        ranged = true;
-                        break;
-                    case ItemTemplate.L2ItemWeaponType.crossbow:
-                        timeAtk = (1200 * 345 / timeAtk);
-                        ranged = true;
-                        break;
-                    case ItemTemplate.L2ItemWeaponType.dualdagger:
-                    case ItemTemplate.L2ItemWeaponType.dual:
-                        timeAtk = (1362 * 345 / timeAtk);
-                        dual = true;
-                        break;
-                    default:
-                        timeAtk = (1362 * 345 / timeAtk);
-                        break;
-                }
-                if (weapon.Template.WeaponType == ItemTemplate.L2ItemWeaponType.crossbow || weapon.Template.WeaponType == ItemTemplate.L2ItemWeaponType.bow)
-                {
-                    dist += 740;
-                    reqMp = weapon.Template.MpConsume;
-
-                    if (SecondaryWeaponSupport == null || SecondaryWeaponSupport.Count < weapon.Template.SoulshotCount)
-                    {
-                        if (weapon.Template.WeaponType == ItemTemplate.L2ItemWeaponType.bow)
-                            sendSystemMessage(SystemMessage.SystemMessageId.NOT_ENOUGH_ARROWS);
-                        else
-                            sendSystemMessage(SystemMessage.SystemMessageId.NOT_ENOUGH_BOLTS);
-                        sendActionFailed();
-                        return;
-                    }
-                }
             }
             else
             {
-                timeAtk = (1362 * 345 / timeAtk);
+                timeAtk = (1362 * 345) / timeAtk;
                 dual = true;
             }
 
-            if (!Calcs.checkIfInRange((int)dist, this, target, true))
+            if (!Calcs.CheckIfInRange((int)dist, this, target, true))
             {
-                sendMessage("too far " + dist);
-                tryMoveTo(target.X, target.Y, target.Z);
+                SendMessage("too far " + dist);
+                TryMoveTo(target.X, target.Y, target.Z);
                 return;
             }
 
-            if (reqMp > 0 && reqMp > CurMP)
+            if ((reqMp > 0) && (reqMp > CurMp))
             {
-                sendMessage("no mp " + CurMP + " " + reqMp);
-                sendActionFailed();
+                SendMessage("no mp " + CurMp + " " + reqMp);
+                SendActionFailed();
                 return;
             }
 
             if (ranged)
             {
-                this.sendPacket(new SetupGauge(ObjID, SetupGauge.SG_color.red, (int)timeAtk));
-                Inventory.destroyItem(SecondaryWeaponSupport, 1, false, true);
+                SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Red, (int)timeAtk));
+                //Inventory.destroyItem(SecondaryWeaponSupport, 1, false, true);
             }
 
             Attack atk = new Attack(this, target, ss, 5);
 
             if (dual)
             {
-                hit1 = genHitSimple(dual, ss);
-                atk.addHit(target.ObjID, (int)hit1.damage, hit1.miss, hit1.crit, hit1.shieldDef > 0);
+                Hit1 = GenHitSimple(true, ss);
+                atk.AddHit(target.ObjId, (int)Hit1.Damage, Hit1.Miss, Hit1.Crit, Hit1.ShieldDef > 0);
 
-                hit2 = genHitSimple(dual, ss);
-                atk.addHit(target.ObjID, (int)hit2.damage, hit2.miss, hit2.crit, hit2.shieldDef > 0);
+                Hit2 = GenHitSimple(true, ss);
+                atk.AddHit(target.ObjId, (int)Hit2.Damage, Hit2.Miss, Hit2.Crit, Hit2.ShieldDef > 0);
             }
             else
             {
-                hit1 = genHitSimple(false, ss);
-                atk.addHit(target.ObjID, (int)hit1.damage, hit1.miss, hit1.crit, hit1.shieldDef > 0);
+                Hit1 = GenHitSimple(false, ss);
+                atk.AddHit(target.ObjId, (int)Hit1.Damage, Hit1.Miss, Hit1.Crit, Hit1.ShieldDef > 0);
             }
 
             CurrentTarget = target;
 
-            if (attack_ToHit == null)
+            if (AttackToHit == null)
             {
-                attack_ToHit = new Timer();
-                attack_ToHit.Elapsed += new ElapsedEventHandler(AttackDoHit);
+                AttackToHit = new Timer();
+                AttackToHit.Elapsed += AttackDoHit;
             }
 
             double timeToHit = ranged ? timeAtk * 0.5 : timeAtk * 0.6;
-            attack_ToHit.Interval = timeToHit;
-            attack_ToHit.Enabled = true;
+            AttackToHit.Interval = timeToHit;
+            AttackToHit.Enabled = true;
 
             if (dual)
             {
-                if (attack_toHitBonus == null)
+                if (AttackToHitBonus == null)
                 {
-                    attack_toHitBonus = new Timer();
-                    attack_toHitBonus.Elapsed += new ElapsedEventHandler(AttackDoHit2nd);
+                    AttackToHitBonus = new Timer();
+                    AttackToHitBonus.Elapsed += AttackDoHit2Nd;
                 }
 
-                attack_toHitBonus.Interval = timeAtk * 0.78;
-                attack_toHitBonus.Enabled = true;
+                AttackToHitBonus.Interval = timeAtk * 0.78;
+                AttackToHitBonus.Enabled = true;
             }
 
-            if (attack_ToEnd == null)
+            if (AttackToEnd == null)
             {
-                attack_ToEnd = new Timer();
-                attack_ToEnd.Elapsed += new ElapsedEventHandler(AttackDoEnd);
+                AttackToEnd = new Timer();
+                AttackToEnd.Elapsed += AttackDoEnd;
             }
 
-            attack_ToEnd.Interval = timeAtk;
-            attack_ToEnd.Enabled = true;
+            AttackToEnd.Interval = timeAtk;
+            AttackToEnd.Enabled = true;
 
-            broadcastPacket(atk);
+            BroadcastPacket(atk);
         }
 
         public override void AttackDoHit(object sender, ElapsedEventArgs e)
         {
-            if (CurrentTarget != null && !CurrentTarget.Dead)
+            if ((CurrentTarget != null) && !CurrentTarget.Dead)
             {
-                if (!hit1.miss)
+                if (!Hit1.Miss)
                 {
-                    if (hit1.crit)
-                        sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_LANDED_A_CRITICAL_HIT).AddPlayerName(Name));
+                    if (Hit1.Crit)
+                    {
+                        SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1LandedACriticalHit).AddPlayerName(Name));
+                    }
 
-                    sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_GIVEN_C2_DAMAGE_OF_S3).AddPlayerName(Name).AddName(CurrentTarget).AddNumber(hit1.damage));
-                    CurrentTarget.reduceHp(this, hit1.damage);
-
-                    if (CurrentTarget is L2Player)
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_RECEIVED_S3_DAMAGE_FROM_C2).AddName(CurrentTarget).AddName(this).AddNumber(hit1.damage));
-                }
-                else
-                {
-                    sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_ATTACK_WENT_ASTRAY).AddPlayerName(Name));
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddPlayerName(Name).AddName(CurrentTarget).AddNumber(Hit1.Damage));
+                    CurrentTarget.ReduceHp(this, Hit1.Damage);
 
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_EVADED_C2_ATTACK).AddName(CurrentTarget).AddName(this));
-                        ((L2Player)CurrentTarget).AICharacter.NotifyEvaded(this);
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit1.Damage));
+                    }
+                }
+                else
+                {
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1AttackWentAstray).AddPlayerName(Name));
+
+                    if (CurrentTarget is L2Player)
+                    {
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
             }
 
-            attack_ToHit.Enabled = false;
+            AttackToHit.Enabled = false;
         }
 
-        public override void AttackDoHit2nd(object sender, ElapsedEventArgs e)
+        public override void AttackDoHit2Nd(object sender, ElapsedEventArgs e)
         {
-            if (CurrentTarget != null && !CurrentTarget.Dead)
+            if ((CurrentTarget != null) && !CurrentTarget.Dead)
             {
-                if (!hit2.miss)
+                if (!Hit2.Miss)
                 {
-                    if (hit2.crit)
-                        sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_LANDED_A_CRITICAL_HIT).AddName(this));
+                    if (Hit2.Crit)
+                    {
+                        SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1LandedACriticalHit).AddName(this));
+                    }
 
-                    sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_GIVEN_C2_DAMAGE_OF_S3).AddName(this).AddName(CurrentTarget).AddNumber(hit2.damage));
-                    CurrentTarget.reduceHp(this, hit2.damage);
-
-                    if (CurrentTarget is L2Player)
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_RECEIVED_S3_DAMAGE_FROM_C2).AddName(CurrentTarget).AddName(this).AddNumber(hit2.damage));
-                }
-                else
-                {
-                    sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_ATTACK_WENT_ASTRAY).AddPlayerName(Name));
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddName(this).AddName(CurrentTarget).AddNumber(Hit2.Damage));
+                    CurrentTarget.ReduceHp(this, Hit2.Damage);
 
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_EVADED_C2_ATTACK).AddName(CurrentTarget).AddName(this));
-                        ((L2Player)CurrentTarget).AICharacter.NotifyEvaded(this);
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit2.Damage));
+                    }
+                }
+                else
+                {
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1AttackWentAstray).AddPlayerName(Name));
+
+                    if (CurrentTarget is L2Player)
+                    {
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
             }
 
-            attack_toHitBonus.Enabled = false;
+            AttackToHitBonus.Enabled = false;
         }
 
         public override void AttackDoEnd(object sender, ElapsedEventArgs e)
         {
-            attack_ToEnd.Enabled = false;
+            AttackToEnd.Enabled = false;
 
-            L2Item weapon = Inventory.getWeapon();
-            if (weapon != null)
-            {
-                if (weapon.Soulshot)
-                    weapon.Soulshot = false;
+            //L2Item weapon = Inventory.getWeapon();
+            //if (weapon != null)
+            //{
+            //    if (weapon.Soulshot)
+            //        weapon.Soulshot = false;
 
-                foreach (int sid in weapon.Template.getSoulshots().Where(sid => autoSoulshots.Contains(sid)))
-                {
-                    if (Inventory.getItemCount(sid) < weapon.Template.SoulshotCount)
-                    {
-                        sendPacket(new SystemMessage(SystemMessage.SystemMessageId.AUTO_USE_CANCELLED_LACK_OF_S1).AddItemName(sid));
+            //    foreach (int sid in weapon.Template.getSoulshots().Where(sid => autoSoulshots.Contains(sid)))
+            //    {
+            //        if (Inventory.getItemCount(sid) < weapon.Template.SoulshotCount)
+            //        {
+            //            sendPacket(new SystemMessage(SystemMessage.SystemMessageId.AUTO_USE_CANCELLED_LACK_OF_S1).AddItemName(sid));
 
-                        lock (autoSoulshots)
-                        {
-                            autoSoulshots.Remove(sid);
-                            sendPacket(new ExAutoSoulShot(sid, 0));
-                        }
-                    }
-                    else
-                    {
-                        Inventory.destroyItem(sid, weapon.Template.SoulshotCount, false, true);
-                        weapon.Soulshot = true;
-                        broadcastSoulshotUse(sid);
-                    }
+            //            lock (autoSoulshots)
+            //            {
+            //                autoSoulshots.Remove(sid);
+            //                sendPacket(new ExAutoSoulShot(sid, 0));
+            //            }
+            //        }
+            //        else
+            //        {
+            //            Inventory.destroyItem(sid, weapon.Template.SoulshotCount, false, true);
+            //            weapon.Soulshot = true;
+            //            broadcastSoulshotUse(sid);
+            //        }
 
-                    break;
-                }
-            }
+            //        break;
+            //    }
+            //}
         }
 
         public override double Radius
@@ -2509,7 +2310,9 @@ namespace L2dotNET.GameService.Model.Player
             get
             {
                 if (MountType > 0)
+                {
                     return MountedTemplate.CollisionRadius;
+                }
 
                 return Sex == 0 ? BaseClass.CollisionRadius : BaseClass.CollisionRadiusFemale;
             }
@@ -2519,19 +2322,23 @@ namespace L2dotNET.GameService.Model.Player
         {
             get
             {
-                if (TransformID > 0)
-                    return Transform.Template.getHeight(Sex);
+                if (TransformId > 0)
+                {
+                    return Transform.Template.GetHeight(Sex);
+                }
 
                 if (MountType > 0)
+                {
                     return MountedTemplate.CollisionHeight;
+                }
 
                 return Sex == 0 ? BaseClass.CollisionHeight : BaseClass.CollisionHeightFemale;
             }
         }
 
-        public List<int> autoSoulshots = new List<int>();
-        public List<int> setKeyItems;
-        public int setKeyId;
+        public List<int> AutoSoulshots = new List<int>();
+        public List<int> SetKeyItems;
+        public int SetKeyId;
 
         public int MountType;
         public NpcTemplate MountedTemplate;
@@ -2539,223 +2346,228 @@ namespace L2dotNET.GameService.Model.Player
 
         public void Mount(NpcTemplate npc)
         {
-            broadcastPacket(new Ride(this, true, npc.NpcId));
+            BroadcastPacket(new Ride(this, true, npc.NpcId));
             MountedTemplate = npc;
-            broadcastUserInfo();
+            BroadcastUserInfo();
         }
 
         public void MountPet()
         {
             if (Summon != null)
+            {
                 Mount(Summon.Template);
+            }
         }
 
-        public void unMount()
+        public void UnMount()
         {
-            broadcastPacket(new Ride(this, false));
+            BroadcastPacket(new Ride(this, false));
             MountedTemplate = null;
-            broadcastUserInfo();
+            BroadcastUserInfo();
         }
 
-        public SortedList<int, long> currentTrade;
-        public int sstt;
+        public SortedList<int, long> CurrentTrade;
+        public int Sstt;
 
         public long AddItemToTrade(int objId, long num)
         {
-            if (currentTrade == null)
-                currentTrade = new SortedList<int, long>();
-
-            if (currentTrade.ContainsKey(objId))
+            if (CurrentTrade == null)
             {
-                currentTrade[objId] += num;
-                return currentTrade[objId];
+                CurrentTrade = new SortedList<int, long>();
             }
-            else
-                currentTrade.Add(objId, num);
 
+            if (CurrentTrade.ContainsKey(objId))
+            {
+                CurrentTrade[objId] += num;
+                return CurrentTrade[objId];
+            }
+
+            CurrentTrade.Add(objId, num);
             return num;
         }
 
         public void NotifyDayChange(GameServerNetworkPacket pk)
         {
-            sendPacket(pk);
+            SendPacket(pk);
             if (pk is SunSet) //включаем ночные скилы
-                AICharacter.NotifyOnStartNight();
+            {
+                AiCharacter.NotifyOnStartNight();
+            }
             else
-                AICharacter.NotifyOnStartDay();
+            {
+                AiCharacter.NotifyOnStartDay();
+            }
         }
 
-        public int VehicleId
-        {
-            get { return Boat != null ? Boat.ObjID : 0; }
-        }
+        public int VehicleId => Boat?.ObjId ?? 0;
 
         public void Revive(double percent)
         {
-            broadcastPacket(new Revive(ObjID));
+            BroadcastPacket(new Revive(ObjId));
             Dead = false;
             StartRegeneration();
         }
 
-        private DateTime pingTimeout;
-        private int lastPingId;
+        private DateTime _pingTimeout;
+        private int _lastPingId;
         public int Ping = -1;
         public MultiSellList CustomMultiSellList;
         public int LastRequestedMultiSellId = -1;
         public int AttackingId;
-        public SortedList<int, TAcquireSkill> ActiveSkillTree;
+        public SortedList<int, AcquireSkill> ActiveSkillTree;
 
         public void RequestPing()
         {
-            lastPingId = new Random().Next(int.MaxValue);
-            NetPing ping = new NetPing(lastPingId);
-            pingTimeout = DateTime.Now;
-            sendPacket(ping);
+            _lastPingId = new Random().Next(int.MaxValue);
+            NetPing ping = new NetPing(_lastPingId);
+            _pingTimeout = DateTime.Now;
+            SendPacket(ping);
         }
 
         public void UpdatePing(int id, int ms, int unk)
         {
-            if (lastPingId != id)
+            if (_lastPingId != id)
             {
-                log.Warn($"player fail to ping respond right {id} {lastPingId} at {pingTimeout.ToLocalTime()}");
+                Log.Warn($"player fail to ping respond right {id} {_lastPingId} at {_pingTimeout.ToLocalTime()}");
                 return;
             }
 
             Ping = ms;
-            sendMessage("Your connection latency is " + ms);
+            SendMessage("Your connection latency is " + ms);
         }
 
         public void InstantTeleportWithItem(int x, int y, int z, int id, long cnt)
         {
-            Inventory.destroyItem(id, cnt, true, true);
-            teleport(x, y, z);
+            //Inventory.destroyItem(id, cnt, true, true);
         }
 
         public void RedistExp(L2Warrior mob)
         {
             double expPet = 0.0;
-            if (Summon != null && Summon.ConsumeExp > 0)
-                expPet = Summon.ConsumeExp / 100.0 + 1;
+            if ((Summon != null) && (Summon.ConsumeExp > 0))
+            {
+                expPet = (Summon.ConsumeExp / 100.0) + 1;
+            }
 
-            double expReward = mob.Template.Exp / (1.0);
+            double expReward = mob.Template.Exp / 1.0;
             int sp = mob.Template.Sp;
-            sendMessage("debug: expPet " + expPet);
-            sendMessage("debug: mob.Template " + mob.Template.Exp + " @");
-            sendMessage("debug: expReward " + expReward);
-            sendMessage("debug: sp " + sp);
+            SendMessage("debug: expPet " + expPet);
+            SendMessage("debug: mob.Template " + mob.Template.Exp + " @");
+            SendMessage("debug: expReward " + expReward);
+            SendMessage("debug: sp " + sp);
 
             byte oldLvl = Level;
             Exp += (long)expReward;
-            byte newLvl = Experience.getLevel(Exp);
+            byte newLvl = Experience.GetLevel(Exp);
             bool lvlChanged = oldLvl != newLvl;
 
             Exp += (long)expReward;
             if (lvlChanged)
             {
                 Level = newLvl;
-                broadcastPacket(new SocialAction(ObjID, 2122));
+                BroadcastPacket(new SocialAction(ObjId, 2122));
             }
 
             if (!lvlChanged)
             {
-                sendPacket(new UserInfo(this));
+                SendPacket(new UserInfo(this));
             }
             else
-                broadcastUserInfo();
-        }
-
-        public byte ClanLevel
-        {
-            get { return Clan == null ? (byte)0 : Clan.Level; }
-        }
-
-        public void broadcastSkillUse(int skillId)
-        {
-            TSkill skill = TSkillTable.Instance.Get(skillId);
-            broadcastPacket(new MagicSkillUse(this, this, skill.skill_id, skill.level, skill.skill_hit_time));
-        }
-
-        public bool ClanLeader
-        {
-            get
             {
-                if (Clan == null)
-                    return false;
-                else
-                    return Clan.LeaderID == ObjID;
+                BroadcastUserInfo();
             }
         }
+
+        public byte ClanLevel => Clan?.Level ?? (byte)0;
+
+        public void BroadcastSkillUse(int skillId)
+        {
+            Skill skill = SkillTable.Instance.Get(skillId);
+            BroadcastPacket(new MagicSkillUse(this, this, skill.SkillId, skill.Level, skill.SkillHitTime));
+        }
+
+        public bool ClanLeader => Clan?.LeaderId == ObjId;
 
         public bool HavePledgePower(int bit)
         {
-            return Clan != null && Clan.hasRights(this, bit);
+            return (Clan != null) && Clan.HasRights(this, bit);
         }
 
-        public override L2Item getWeaponItem()
+        public override L2Item GetWeaponItem()
         {
-            return this.Inventory.getWeapon();
+            return null;
         }
 
         public void UpdateAgathionEnergy(int count)
         {
-            sendMessage("@UpdateAgathionEnergy " + count);
+            SendMessage("@UpdateAgathionEnergy " + count);
         }
 
-        public List<Cubic> cubics = new List<Cubic>();
+        public List<Cubic> Cubics = new List<Cubic>();
 
         public void StopCubic(Cubic cubic)
         {
-            foreach (Cubic cub in cubics.Where(cub => cub.template.id == cubic.template.id))
+            foreach (Cubic cub in Cubics.Where(cub => cub.Template.Id == cubic.Template.Id))
             {
-                lock (cubics)
-                    cubics.Remove(cub);
+                lock (Cubics)
+                {
+                    Cubics.Remove(cub);
+                }
 
-                this.broadcastUserInfo();
+                BroadcastUserInfo();
                 break;
             }
         }
 
         public void AddCubic(Cubic cubic, bool update)
         {
-            int max = (int)CharacterStat.getStat(TEffectType.p_cubic_mastery);
+            int max = (int)CharacterStat.GetStat(EffectType.PCubicMastery);
             if (max == 0)
-                max = 1;
-
-            if (cubics.Count == max)
             {
-                Cubic cub = cubics[0];
-                cub.OnEnd(false);
-                lock (cubics)
-                    cubics.RemoveAt(0);
+                max = 1;
             }
 
-            foreach (Cubic cub in cubics.Where(cub => cub.template.id == cubic.template.id))
+            if (Cubics.Count == max)
             {
-                lock (cubics)
+                Cubic cub = Cubics[0];
+                cub.OnEnd(false);
+                lock (Cubics)
+                {
+                    Cubics.RemoveAt(0);
+                }
+            }
+
+            foreach (Cubic cub in Cubics.Where(cub => cub.Template.Id == cubic.Template.Id))
+            {
+                lock (Cubics)
                 {
                     cub.OnEnd(false);
-                    cubics.Remove(cub);
+                    Cubics.Remove(cub);
                 }
                 break;
             }
 
             cubic.OnSummon();
-            cubics.Add(cubic);
+            Cubics.Add(cubic);
             if (update)
-                this.broadcastUserInfo();
+            {
+                BroadcastUserInfo();
+            }
         }
 
-        public override void doDie(L2Character killer, bool bytrigger)
+        public override void DoDie(L2Character killer, bool bytrigger)
         {
-            if (cubics.Count > 0)
+            if (Cubics.Count > 0)
             {
-                foreach (Cubic cub in cubics)
+                foreach (Cubic cub in Cubics)
+                {
                     cub.OnEnd(false);
+                }
 
-                cubics.Clear();
+                Cubics.Clear();
             }
 
-            base.doDie(killer, bytrigger);
+            base.DoDie(killer, bytrigger);
         }
     }
 }

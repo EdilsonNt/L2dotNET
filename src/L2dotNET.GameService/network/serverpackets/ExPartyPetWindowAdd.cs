@@ -9,23 +9,23 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
         public ExPartyPetWindowAdd(L2Summon summon)
         {
-            this._summon = summon;
+            _summon = summon;
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0xfe);
-            writeH(0x18);
-            writeD(_summon.ObjID);
-            writeD(_summon.Template.NpcId + 1000000);
-            writeD(_summon.ObjectSummonType);
-            writeD(_summon.Owner.ObjID);
-            writeS(_summon.Name);
-            writeD(_summon.CurHP);
-            writeD(_summon.CharacterStat.getStat(TEffectType.b_max_hp));
-            writeD(_summon.CurMP);
-            writeD(_summon.CharacterStat.getStat(TEffectType.b_max_mp));
-            writeD(_summon.Level);
+            WriteC(0xfe);
+            WriteH(0x18);
+            WriteD(_summon.ObjId);
+            WriteD(_summon.Template.NpcId + 1000000);
+            WriteD(_summon.ObjectSummonType);
+            WriteD(_summon.Owner.ObjId);
+            WriteS(_summon.Name);
+            WriteD(_summon.CurHp);
+            WriteD(_summon.CharacterStat.GetStat(EffectType.BMaxHp));
+            WriteD(_summon.CurMp);
+            WriteD(_summon.CharacterStat.GetStat(EffectType.BMaxMp));
+            WriteD(_summon.Level);
         }
     }
 }

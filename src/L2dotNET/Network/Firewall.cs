@@ -32,7 +32,7 @@ namespace L2dotNET.Network
         /// <summary>
         /// Indicates if <see cref="Firewall"/> is currently enabled.
         /// </summary>
-        private volatile bool m_Enabled;
+        private volatile bool _mEnabled;
 
         /// <summary>
         /// Raises after firewall was enabled.
@@ -61,21 +61,23 @@ namespace L2dotNET.Network
         /// <returns>True, if socket is valid, otherwise false.</returns>
         public virtual bool ValidateRequest(Socket socket)
         {
-            if (socket == null || !socket.Connected)
-                return false;
-
-            if (!m_Enabled)
-                return true;
-
-            if (ValidateRules(socket))
+            if ((socket == null) || !socket.Connected)
             {
-                if (OnBypassAllowed != null)
-                    OnBypassAllowed(socket);
+                return false;
+            }
+
+            if (!_mEnabled)
+            {
                 return true;
             }
 
-            if (OnBypassRejected != null)
-                OnBypassRejected(socket);
+            if (ValidateRules(socket))
+            {
+                OnBypassAllowed?.Invoke(socket);
+                return true;
+            }
+
+            OnBypassRejected?.Invoke(socket);
 
             return false;
         }
@@ -95,10 +97,9 @@ namespace L2dotNET.Network
         /// </summary>
         public virtual void Enable()
         {
-            m_Enabled = true;
+            _mEnabled = true;
 
-            if (OnEnabled != null)
-                OnEnabled();
+            OnEnabled?.Invoke();
         }
 
         /// <summary>
@@ -106,10 +107,9 @@ namespace L2dotNET.Network
         /// </summary>
         public virtual void Disable()
         {
-            m_Enabled = false;
+            _mEnabled = false;
 
-            if (OnDisabled != null)
-                OnDisabled();
+            OnDisabled?.Invoke();
         }
 
         /// <summary>
@@ -117,15 +117,21 @@ namespace L2dotNET.Network
         /// </summary>
         public bool Enabled
         {
-            get { return m_Enabled; }
+            get { return _mEnabled; }
             set
             {
-                if (m_Enabled != value)
+                if (_mEnabled == value)
                 {
-                    if (value)
-                        Enable();
-                    else
-                        Disable();
+                    return;
+                }
+
+                if (value)
+                {
+                    Enable();
+                }
+                else
+                {
+                    Disable();
                 }
             }
         }

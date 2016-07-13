@@ -17,7 +17,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
         public MoveToPawn(int id, L2Object target, int dist, int x, int y, int z)
         {
             _id = id;
-            _target = target.ObjID;
+            _target = target.ObjId;
             _dist = dist;
             _x = x;
             _y = y;
@@ -27,20 +27,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _tz = target.Z;
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0x60);
+            WriteC(0x60);
 
-            writeD(_id);
-            writeD(_target);
-            writeD(_dist);
+            WriteD(_id);
+            WriteD(_target);
+            WriteD(_dist);
 
             //writeD(_x);
             //writeD(_y);
             //writeD(_z);
-            writeD(_tx);
-            writeD(_ty);
-            writeD(_tz);
+            WriteD(_tx);
+            WriteD(_ty);
+            WriteD(_tz);
         }
     }
 }

@@ -8,38 +8,40 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public Logout(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
             // nothing
         }
 
-        public override void run()
+        public override void Run()
         {
-            AuthThread.Instance.setInGameAccount(Client.AccountName, false);
+            AuthThread.Instance.SetInGameAccount(Client.AccountName);
 
             L2Player player = Client.CurrentPlayer;
 
             if (player == null) //re-login на выборе чаров
-                return;
-
-            if (player._p_block_act == 1)
             {
-                player.sendActionFailed();
+                return;
+            }
+
+            if (player.PBlockAct == 1)
+            {
+                player.SendActionFailed();
                 return;
             }
 
             if (player.isInCombat())
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.CANT_LOGOUT_WHILE_FIGHTING);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.CantLogoutWhileFighting);
+                player.SendActionFailed();
                 return;
             }
 
             player.Termination();
-            player.sendPacket(new LeaveWorld());
+            player.SendPacket(new LeaveWorld());
         }
     }
 }

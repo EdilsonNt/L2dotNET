@@ -5,41 +5,42 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class ProtocolVersion : GameServerNetworkRequest
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ProtocolVersion));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ProtocolVersion));
 
         public ProtocolVersion(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private int _protocol;
 
-        public override void read()
+        public override void Read()
         {
-            _protocol = readD();
+            _protocol = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
-            if (_protocol != 746 && _protocol != 251)
+            if ((_protocol != 746) && (_protocol != 251))
             {
-                log.Error($"Protocol fail {_protocol}");
-                getClient().sendPacket(new KeyPacket(getClient(), 0));
-                getClient().termination();
-                return;
-            }
-            else if (_protocol == -1)
-            {
-                log.Info($"Ping received {_protocol}");
-                getClient().sendPacket(new KeyPacket(getClient(), 0));
-                getClient().termination();
+                Log.Error($"Protocol fail {_protocol}");
+                GetClient().SendPacket(new KeyPacket(GetClient(), 0));
+                GetClient().Termination();
                 return;
             }
 
-            log.Info($"Accepted {_protocol} client");
+            if (_protocol == -1)
+            {
+                Log.Info($"Ping received {_protocol}");
+                GetClient().SendPacket(new KeyPacket(GetClient(), 0));
+                GetClient().Termination();
+                return;
+            }
 
-            getClient().sendPacket(new KeyPacket(getClient(), 1));
-            getClient().Protocol = _protocol;
+            Log.Info($"Accepted {_protocol} client");
+
+            GetClient().SendPacket(new KeyPacket(GetClient(), 1));
+            GetClient().Protocol = _protocol;
         }
     }
 }

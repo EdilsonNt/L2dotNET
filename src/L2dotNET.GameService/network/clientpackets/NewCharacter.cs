@@ -10,22 +10,20 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public NewCharacter(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
             // do nothing
         }
 
-        public override void run()
+        public override void Run()
         {
-            List<PcTemplate> pcTemp = new List<PcTemplate>();
             Dictionary<int, PcTemplate> dict = CharTemplateTable.Instance.Templates;
-            for (int i = 0; i < dict.Count; i++)
-                pcTemp.Add(dict.SingleOrDefault(x => x.Key == i).Value);
+            List<PcTemplate> pcTemp = dict.Select((t, i) => dict.SingleOrDefault(x => x.Key == i).Value).ToList();
 
-            Client.sendPacket(new CharTemplates(pcTemp));
+            Client.SendPacket(new CharTemplates(pcTemp));
         }
     }
 }

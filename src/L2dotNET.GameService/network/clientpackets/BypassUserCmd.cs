@@ -10,33 +10,36 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public BypassUserCmd(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private int _command;
 
-        public override void read()
+        public override void Read()
         {
-            _command = readD();
+            _command = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
             switch (_command)
             {
                 case 0: // [loc]
                     int regId = 0; //MapRegionTable.getInstance().getRegionSysId(player.X, player.Y);
                     if (regId > 0)
-                        player.sendPacket(new SystemMessage((SystemMessage.SystemMessageId)regId).AddNumber(player.X).AddNumber(player.Y).AddNumber(player.Z));
+                    {
+                        player.SendPacket(new SystemMessage((SystemMessage.SystemMessageId)regId).AddNumber(player.X).AddNumber(player.Y).AddNumber(player.Z));
+                    }
                     else
-                        player.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.NOT_IMPLEMENTED_YET_2361).AddString("Nowhere"));
+                    {
+                        player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.NotImplementedYet2361).AddString("Nowhere"));
+                    }
 
                     int x = (player.X >> 15) + 9 + 8;
                     int y = (player.Y >> 15) + 10 + 11;
-                    player.sendMessage($"Current loc is X:{player.X} Y:{player.Y} Z:{player.Z}");
-                    player.teleport(26807, 41123, -3622);
+                    player.SendMessage($"Current loc is X:{player.X} Y:{player.Y} Z:{player.Z}");
                     player.BroadcastUserInfo(); //for debug reasons
                     break;
                 case 52: // /unstuck
@@ -45,17 +48,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     player.SetRegion(worldRegion);
                     List<L2Player> knowns = player.GetKnownPlayers();
                     //player.SpawnMe();
-                    player.sendMessage("Unstuck not implemented yet.");
+                    player.SendMessage("Unstuck not implemented yet.");
                     //player.knownObjects;
                     break;
                 case 62: // /dismount
-                    player.sendMessage("Dismount not implemented yet.");
+                    player.SendMessage("Dismount not implemented yet.");
                     break;
                 case 77: // [time]
                     GameTime.Instance.ShowInfo(player);
                     break;
                 default:
-                    player.sendMessage("cmd alias " + _command);
+                    player.SendMessage("cmd alias " + _command);
                     break;
             }
         }

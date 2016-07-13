@@ -7,17 +7,17 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
     {
         public L2TownMap()
         {
-            ObjID = IdFactory.Instance.nextId();
+            ObjId = IdFactory.Instance.NextId();
         }
 
         public override void NotifyAction(L2Player player)
         {
-            player.sendPacket(townMap);
+            player.SendPacket(TownMap);
         }
 
-        public override string asString()
+        public override string AsString()
         {
-            return "L2TownMap:" + ObjID + " " + StaticID;
+            return "L2TownMap:" + ObjId + " " + StaticId;
         }
     }
 }

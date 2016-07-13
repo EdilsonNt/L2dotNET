@@ -3,40 +3,42 @@ using L2dotNET.GameService.Network.Serverpackets;
 
 namespace L2dotNET.GameService.Managers.BBS
 {
-    public class BBSManager
+    public class BbsManager
     {
-        private static volatile BBSManager instance;
-        private static readonly object syncRoot = new object();
+        private static volatile BbsManager _instance;
+        private static readonly object SyncRoot = new object();
 
-        public static BBSManager Instance
+        public static BbsManager Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new BBSManager();
-                        }
+                        _instance = new BbsManager();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
-        public BBSManager() { }
-
         public void RequestShow(L2Player player, int type)
         {
-            if (Config.Config.Instance.gameplayConfig.CommunityBoard.EnableCommunityBoard)
+            if (Config.Config.Instance.GameplayConfig.Server.CommunityBoard.EnableCommunityBoard)
             {
-                player.ShowHtmBBS("<html><body><br><br><center>Welcome to the community board</center><br><br></body></html>");
+                player.ShowHtmBbs("<html><body><br><br><center>Welcome to the community board</center><br><br></body></html>");
             }
             else
-                player.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.CB_OFFLINE));
+            {
+                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.CbOffline));
+            }
         }
     }
 }

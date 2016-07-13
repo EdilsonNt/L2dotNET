@@ -7,7 +7,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public MoveBackwardToLocation(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private int _targetX;
@@ -18,17 +18,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _originZ;
         private int _moveMovement;
 
-        public override void read()
+        public override void Read()
         {
-            _targetX = readD();
-            _targetY = readD();
-            _targetZ = readD();
-            _originX = readD();
-            _originY = readD();
-            _originZ = readD();
+            _targetX = ReadD();
+            _targetY = ReadD();
+            _targetZ = ReadD();
+            _originX = ReadD();
+            _originY = ReadD();
+            _originZ = ReadD();
             try
             {
-                _moveMovement = readD(); // is 0 if cursor keys are used  1 if mouse is used
+                _moveMovement = ReadD(); // is 0 if cursor keys are used  1 if mouse is used
             }
             catch
             {
@@ -36,44 +36,44 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
-            if (player.isSittingInProgress() || player.isSitting())
+            if (player.IsSittingInProgress() || player.IsSitting())
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.CANT_MOVE_SITTING);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.CantMoveSitting);
+                player.SendActionFailed();
                 return;
             }
 
             if (player.Boat != null)
             {
-                player.sendMessage("cant leave boat.");
-                player.sendActionFailed();
+                player.SendMessage("cant leave boat.");
+                player.SendActionFailed();
                 return;
             }
 
-            if (player.cantMove())
+            if (player.CantMove())
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
             // player.sendMessage("can see: " + GeoData.getInstance().canSeeCoord(player, _targetX, _targetY, _targetZ, true));
 
-            if (player._obsx != -1)
-                player._obsx = -1;
+            player.Obsx = -1;
 
             double dx = _targetX - _originX;
             double dy = _targetY - _originY;
 
-            if ((dx * dx + dy * dy) > 98010000) // 9900*9900
+            if (((dx * dx) + (dy * dy)) > 98010000) // 9900*9900
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
-            player.AICharacter.StopAutoAttack();
+
+            player.AiCharacter.StopAutoAttack();
             player.MoveTo(_targetX, _targetY, _targetZ);
         }
     }

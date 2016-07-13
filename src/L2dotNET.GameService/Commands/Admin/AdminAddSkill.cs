@@ -16,10 +16,12 @@ namespace L2dotNET.GameService.Commands.Admin
             int id = int.Parse(alias.Split(' ')[1]);
             int lvl = int.Parse(alias.Split(' ')[2]);
 
-            TSkill skill = TSkillTable.Instance.Get(id, lvl);
+            Skill skill = SkillTable.Instance.Get(id, lvl);
 
             if (skill == null)
-                admin.sendMessage("Skill " + id + "/" + lvl + " is missing.");
+            {
+                admin.SendMessage("Skill " + id + "/" + lvl + " is missing.");
+            }
             else
             {
                 L2Player target;
@@ -28,10 +30,12 @@ namespace L2dotNET.GameService.Commands.Admin
                     target = (L2Player)admin.CurrentTarget;
                 }
                 else
+                {
                     target = admin;
+                }
 
-                target.addSkill(skill, true, true);
-                admin.sendMessage(target.Name + " has received skill " + id + "/" + lvl);
+                target.AddSkill(skill, true, true);
+                admin.SendMessage(target.Name + " has received skill " + id + "/" + lvl);
             }
         }
     }

@@ -14,20 +14,22 @@ namespace L2dotNET.GameService.Network
     [Synchronization]
     public class PacketHandler
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PacketHandler));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(PacketHandler));
 
         //private static int cnt;
 
-        public static void handlePacket(GameClient client, byte[] buff)
+        public static void HandlePacket(GameClient client, byte[] buff)
         {
             byte id = buff[0];
             string cninfo = "handlepacket: request " + id.ToString("x2") + " size " + buff.Length;
 
             string str = "header: " + buff[0].ToString("x2") + "\n";
             foreach (byte b in buff)
+            {
                 str += b.ToString("x2") + " ";
+            }
 
-            log.Info(str);
+            Log.Info(str);
             GameServerNetworkRequest msg = null;
             switch (id)
             {
@@ -324,7 +326,7 @@ namespace L2dotNET.GameService.Network
                             msg = new RequestDominionInfo(client, buff);
                             break;
                         case 0x76:
-                            msg = new RequestBuySellUIClose(client, buff);
+                            msg = new RequestBuySellUiClose(client, buff);
                             break;
 
                         case 0x78:
@@ -333,24 +335,24 @@ namespace L2dotNET.GameService.Network
                         case 0x79:
                             msg = new AnswerPartyLootModification(client, buff);
                             break;
-                        default:
-                            break;
                     }
-                    break;
-                default:
+
                     break;
             }
+
             if (msg == null)
             {
-                log.Info($"{cninfo}");
+                Log.Info($"{cninfo}");
                 //log.Info($"{cninfo}, {cnt}");
                 return;
             }
 
             if (msg.Client.IsTerminated)
+            {
                 return;
+            }
 
-            new Thread(new ThreadStart(msg.run)).Start();
+            new Thread(new ThreadStart(msg.Run)).Start();
         }
 
         private static void out_debug(byte level, byte[] buff)
@@ -359,14 +361,18 @@ namespace L2dotNET.GameService.Network
             byte d = 0;
 
             if (level > 0)
+            {
                 s = "Header: ";
+            }
             for (byte r = 0; r < level; r++)
             {
                 s += buff[r].ToString("x2");
             }
 
             if (level > 0)
+            {
                 s += "\n";
+            }
 
             for (int a = level; a < buff.Length; a++)
             {
@@ -375,14 +381,16 @@ namespace L2dotNET.GameService.Network
                 d++;
                 s += t + " ";
 
-                if (d == 4)
+                if (d != 4)
                 {
-                    d = 0;
-                    s += "\n";
+                    continue;
                 }
+
+                d = 0;
+                s += "\n";
             }
 
-            log.Info(s);
+            Log.Info(s);
         }
     }
 }

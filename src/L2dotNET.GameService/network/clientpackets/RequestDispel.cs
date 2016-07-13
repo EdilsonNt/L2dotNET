@@ -5,40 +5,44 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestDispel : GameServerNetworkRequest
     {
-        private int ownerId;
-        private int skillId;
-        private int skillLv;
+        private int _ownerId;
+        private int _skillId;
+        private int _skillLv;
 
         public RequestDispel(GameClient client, byte[] data)
         {
-            base.makeme(client, data, 2);
+            Makeme(client, data, 2);
         }
 
-        public override void read()
+        public override void Read()
         {
-            ownerId = readD();
-            skillId = readD();
-            skillLv = readD();
+            _ownerId = ReadD();
+            _skillId = ReadD();
+            _skillLv = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
-            if (ownerId != player.ObjID)
+            if (_ownerId != player.ObjId)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
             AbnormalEffect avestop = null;
-            foreach (AbnormalEffect ave in player._effects)
+            foreach (AbnormalEffect ave in player.Effects)
             {
-                if (ave.id != skillId && ave.lvl != skillLv)
+                if ((ave.Id != _skillId) && (ave.Lvl != _skillLv))
+                {
                     continue;
+                }
 
-                if (ave.skill.debuff == 1 && ave.skill.is_magic > 1)
+                if ((ave.Skill.Debuff == 1) && (ave.Skill.IsMagic > 1))
+                {
                     break;
+                }
 
                 avestop = ave;
                 break;
@@ -46,14 +50,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             if (avestop == null)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            lock (player._effects)
+            lock (player.Effects)
             {
-                avestop.forcedStop(true, true);
-                player._effects.Remove(avestop);
+                avestop.ForcedStop(true, true);
+                player.Effects.Remove(avestop);
             }
         }
     }

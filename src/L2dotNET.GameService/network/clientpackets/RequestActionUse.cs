@@ -10,30 +10,30 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestActionUse : GameServerNetworkRequest
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(RequestActionUse));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(RequestActionUse));
         private int _actionId;
         private bool _ctrlPressed;
         private bool _shiftPressed;
 
         public RequestActionUse(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            _actionId = readD();
-            _ctrlPressed = (readD() == 1);
-            _shiftPressed = (readC() == 1);
+            _actionId = ReadD();
+            _ctrlPressed = ReadD() == 1;
+            _shiftPressed = ReadC() == 1;
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
-            if (player.Dead || player.isCastingNow() || player._p_block_act == 1)
+            if (player.Dead || player.IsCastingNow() || (player.PBlockAct == 1))
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
@@ -44,12 +44,9 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     CheckSit(player);
                     break;
                 case 1:
-                    if (player.IsRunning == 1)
-                        player.IsRunning = 0;
-                    else
-                        player.IsRunning = 1;
+                    player.IsRunning = (byte)(player.IsRunning == 1 ? 0 : 1);
 
-                    player.broadcastUserInfo();
+                    player.BroadcastUserInfo();
                     break;
 
                 case 12: // Greeting
@@ -62,28 +59,22 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     socialId = 4;
                     break;
                 case 15: //pet change node
-                    if (player.Summon != null)
-                        player.Summon.ChangeNode();
+                    player.Summon?.ChangeNode();
                     break;
                 case 16: //pet attack
-                    if (player.Summon != null)
-                        player.Summon.Attack();
+                    player.Summon?.Attack();
                     break;
                 case 17: //pet stop
-                    if (player.Summon != null)
-                        player.Summon.Stop();
+                    player.Summon?.Stop();
                     break;
                 case 19: //pet unsummon
-                    if (player.Summon != null)
-                        player.Summon.unSummon();
+                    player.Summon?.UnSummon();
                     break;
                 case 21: //summon change node
-                    if (player.Summon != null)
-                        player.Summon.ChangeNode();
+                    player.Summon?.ChangeNode();
                     break;
                 case 23: //summon stop
-                    if (player.Summon != null)
-                        player.Summon.Stop();
+                    player.Summon?.Stop();
                     break;
                 case 24: // Yes
                     socialId = 6;
@@ -114,21 +105,22 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     break;
                 case 38: //mount\dismount
                     if (player.MountType > 0)
-                        player.unMount();
+                    {
+                        player.UnMount();
+                    }
                     else
+                    {
                         player.MountPet();
+                    }
                     break;
                 case 52: //summon unsummon
-                    if (player.Summon != null)
-                        player.Summon.unSummon();
+                    player.Summon?.UnSummon();
                     break;
                 case 53: //summon move
-                    if (player.Summon != null)
-                        player.Summon.Move();
+                    player.Summon?.Move();
                     break;
                 case 54: //pet stop
-                    if (player.Summon != null)
-                        player.Summon.Stop();
+                    player.Summon?.Stop();
                     break;
                 case 62: // Charm
                     socialId = 14;
@@ -146,47 +138,47 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     socialId = 18;
                     break;
                 case 1093: //Maguen Strike
-                    petCast(player, 16071, 6618, 1, 7);
+                    PetCast(player, 16071, 6618, 1, 7);
                     break;
                 case 1094: //Maguen Speed Walk
-                    petCast(player, 16071, 6681, 1);
+                    PetCast(player, 16071, 6681, 1);
                     break;
                 case 1095: //Maguen Power Strike
-                    petCast(player, 16072, 6619, 1, 7);
+                    PetCast(player, 16072, 6619, 1, 7);
                     break;
                 case 1096: //Elite Maguen Speed Walk
-                    petCast(player, 16072, 6682, 1);
+                    PetCast(player, 16072, 6682, 1);
                     break;
                 case 1097: //Maguen Recall
-                    petCast(player, 16071, 6683, 1);
+                    PetCast(player, 16071, 6683, 1);
                     break;
                 case 1098: //Maguen Party Recall
-                    petCast(player, 16072, 6684, 1);
+                    PetCast(player, 16072, 6684, 1);
                     break;
                 case 5002: //Critical Seduction
-                    petCast(player, 0, 23168, 1);
+                    PetCast(player, 0, 23168, 1);
                     break;
                 default:
-                    log.Info($"unrecognized action # {_actionId}");
+                    Log.Info($"unrecognized action # {_actionId}");
 
                     break;
             }
 
             if (socialId != -1)
             {
-                player.broadcastPacket(new SocialAction(player.ObjID, socialId));
+                player.BroadcastPacket(new SocialAction(player.ObjId, socialId));
             }
         }
 
         private void CheckSit(L2Player player)
         {
-            if (player.isCastingNow() || player.cantMove() || player.isSittingInProgress())
+            if (player.IsCastingNow() || player.CantMove() || player.IsSittingInProgress())
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            if (player.isSitting())
+            if (player.IsSitting())
             {
                 player.Stand();
                 return;
@@ -196,32 +188,38 @@ namespace L2dotNET.GameService.Network.Clientpackets
             if (player.CurrentTarget is L2Chair)
             {
                 L2Chair chair = (L2Chair)player.CurrentTarget;
-                if (!chair.IsUsedAlready && chair.ClanID != -1 && player.ClanId == chair.ClanID)
+                if (!chair.IsUsedAlready && (chair.ClanID != -1) && (player.ClanId == chair.ClanID))
                 {
-                    double dis = Calcs.calculateDistance(player, chair, true);
+                    double dis = Calcs.CalculateDistance(player, chair, true);
                     if (dis < 150)
-                        staticId = chair.StaticID;
+                    {
+                        staticId = chair.StaticId;
+                    }
                 }
 
                 if (player.Builder == 1)
                 {
-                    double dis = Calcs.calculateDistance(player, chair, true);
+                    double dis = Calcs.CalculateDistance(player, chair, true);
                     if (dis < 150)
-                        staticId = chair.StaticID;
+                    {
+                        staticId = chair.StaticId;
+                    }
                 }
 
                 if (staticId > 0)
+                {
                     player.SetChair(chair);
+                }
             }
 
             player.Sit();
         }
 
-        private void petCast(L2Player player, int npcId, int id, int lv, int maxLv = 1)
+        private void PetCast(L2Player player, int npcId, int id, int lv, int maxLv = 1)
         {
-            if (player.Summon == null || !(player.Summon is L2Pet))
+            if (!(player.Summon is L2Pet))
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
@@ -231,16 +229,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
             //    return;
             //}
 
-            TSkill skill = TSkillTable.Instance.Get(id, lv);
+            Skill skill = SkillTable.Instance.Get(id, lv);
 
             if (skill != null)
             {
                 player.Summon.ChangeTarget(player.CurrentTarget);
-                int result = player.Summon.castSkill(skill);
-                log.Info($"pet cast result {result}");
+                int result = player.Summon.CastSkill(skill);
+                Log.Info($"pet cast result {result}");
             }
             else
-                log.Error($"pet {npcId} used null skill {id}-{lv}");
+            {
+                Log.Error($"pet {npcId} used null skill {id}-{lv}");
+            }
         }
     }
 }

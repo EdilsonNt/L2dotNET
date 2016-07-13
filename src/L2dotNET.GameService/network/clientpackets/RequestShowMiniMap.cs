@@ -6,17 +6,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestShowMiniMap(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
             // do nothing
         }
 
-        public override void run()
+        public override void Run()
         {
-            Client.sendPacket(new ShowMiniMap());
+            Client.SendPacket(new ShowMiniMap());
         }
     }
 }

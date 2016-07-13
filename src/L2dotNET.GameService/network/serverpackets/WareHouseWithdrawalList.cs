@@ -6,10 +6,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
 {
     class WareHouseWithdrawalList : GameServerNetworkPacket
     {
-        public static short WH_PRIVATE = 1;
-        public static short WH_CLAN = 2;
-        public static short WH_CASTLE = 3;
-        public static short WH_FREIGHT = 4;
+        public static short WhPrivate = 1;
+        public static short WhClan = 2;
+        public static short WhCastle = 3;
+        public static short WhFreight = 4;
         private readonly List<L2Item> _items;
         private readonly short _type;
         private readonly long _adena;
@@ -17,32 +17,32 @@ namespace L2dotNET.GameService.Network.Serverpackets
         public WareHouseWithdrawalList(L2Player player, List<L2Item> items, short type)
         {
             _type = type;
-            _adena = player.getAdena();
+            _adena = player.GetAdena();
             _items = items;
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0x42);
-            writeH(_type);
-            writeQ(_adena);
-            writeH(_items.Count);
+            WriteC(0x42);
+            WriteH(_type);
+            WriteQ(_adena);
+            WriteH(_items.Count);
 
             foreach (L2Item item in _items)
             {
-                writeH(item.Template.Type1());
-                writeD(item.ObjID);
-                writeD(item.Template.ItemID);
-                writeD(item.Count);
-                writeH(item.Template.Type2());
-                writeH(0); //custom type 1
-                writeD(item.Template.BodyPartId());
-                writeH(item.Enchant);
-                writeH(0); //custom type 2
-                writeH(0);
+                WriteH(item.Template.Type1);
+                WriteD(item.ObjId);
+                WriteD(item.Template.ItemId);
+                WriteD(item.Count);
+                WriteH(item.Template.Type2);
+                WriteH(0); //custom type 1
+                WriteD(item.Template.BodyPart);
+                WriteH(item.Enchant);
+                WriteH(0); //custom type 2
+                WriteH(0);
                 //writeD(item.AugmentationID);
-                writeD(item.ObjID);
-                writeQ(0x00);
+                WriteD(item.ObjId);
+                WriteQ(0x00);
             }
         }
     }

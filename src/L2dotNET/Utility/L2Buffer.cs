@@ -19,7 +19,9 @@ namespace L2dotNET.Utility
         public static unsafe byte[] Copy(byte[] source, int srcOffset, byte[] destination, int destOffset, int size)
         {
             fixed (byte* src = source, dst = destination)
+            {
                 Copy(src, srcOffset, dst, destOffset, size);
+            }
 
             return destination;
         }
@@ -39,26 +41,28 @@ namespace L2dotNET.Utility
             src += srcOffset;
             dst += dstOffset;
 
-            while (size - index >= sizeof(long))
+            while ((size - index) >= sizeof(long))
             {
-                *((long*)(dst + index)) = *((long*)(src + index));
+                *(long*)(dst + index) = *(long*)(src + index);
                 index += sizeof(long);
             }
 
-            while (size - index >= sizeof(int))
+            while ((size - index) >= sizeof(int))
             {
-                *((int*)(dst + index)) = *((int*)(src + index));
+                *(int*)(dst + index) = *(int*)(src + index);
                 index += sizeof(int);
             }
 
-            while (size - index >= sizeof(short))
+            while ((size - index) >= sizeof(short))
             {
-                *((short*)(dst + index)) = *((short*)(src + index));
+                *(short*)(dst + index) = *(short*)(src + index);
                 index += sizeof(short);
             }
 
             while (index < size)
+            {
                 *(dst + index) = *(src + index++);
+            }
 
             //srcOffset += size;
         }
@@ -77,26 +81,28 @@ namespace L2dotNET.Utility
             dst += offset;
             offset += size;
 
-            while (size - index >= sizeof(long))
+            while ((size - index) >= sizeof(long))
             {
-                *((long*)(dst + index)) = *((long*)(w + index));
+                *(long*)(dst + index) = *(long*)(w + index);
                 index += sizeof(long);
             }
 
-            while (size - index >= sizeof(int))
+            while ((size - index) >= sizeof(int))
             {
-                *((int*)(dst + index)) = *((int*)(w + index));
+                *(int*)(dst + index) = *(int*)(w + index);
                 index += sizeof(int);
             }
 
-            while (size - index >= sizeof(short))
+            while ((size - index) >= sizeof(short))
             {
-                *((short*)(dst + index)) = *((short*)(w + index));
+                *(short*)(dst + index) = *(short*)(w + index);
                 index += sizeof(short);
             }
 
             while (index < size)
+            {
                 *(dst + index) = *(w + index++);
+            }
         }
 
         /// <summary>
@@ -125,20 +131,22 @@ namespace L2dotNET.Utility
             {
                 int index = 0;
 
-                while (length - index >= sizeof(long) / sizeof(short))
+                while ((length - index) >= (sizeof(long) / sizeof(short)))
                 {
-                    *((long*)(dst + index)) = *((long*)(src + index));
+                    *(long*)(dst + index) = *(long*)(src + index);
                     index += sizeof(long) / sizeof(short);
                 }
 
-                while (length - index >= sizeof(int) / sizeof(short))
+                while ((length - index) >= (sizeof(int) / sizeof(short)))
                 {
-                    *((int*)(dst + index)) = *((int*)(src + index));
+                    *(int*)(dst + index) = *(int*)(src + index);
                     index += sizeof(int) / sizeof(short);
                 }
 
-                while (length - index > 0)
+                while ((length - index) > 0)
+                {
                     *(dst + index) = *(src + index++);
+                }
             }
 
             return destiny;
@@ -205,7 +213,7 @@ namespace L2dotNET.Utility
         }
 
         /// <summary>
-        /// Replaces part of buffer with replacement buffer. 
+        /// Replaces part of buffer with replacement buffer.
         /// </summary>
         /// <param name="buffer">Destination buffer.</param>
         /// <param name="index">Destination replacement size.</param>
@@ -252,19 +260,23 @@ namespace L2dotNET.Utility
 
             string hex = string.Empty,
                    data = string.Empty;
-            int i,
-                index = 0;
+            int index = 0;
 
             while (index < buffer.Length)
             {
-                for (i = 0; i < 16 && index + i < buffer.Length; i++)
+                int i;
+                for (i = 0; (i < 16) && ((index + i) < buffer.Length); i++)
                 {
                     hex += buffer[index + i].ToString("x2") + " ";
 
-                    if (buffer[i + index] > 31 && buffer[i + index] < 127)
+                    if ((buffer[i + index] > 31) && (buffer[i + index] < 127))
+                    {
                         data += (char)buffer[i + index];
+                    }
                     else
+                    {
                         data += ".";
+                    }
                 }
 
                 while (i < 16)
@@ -293,12 +305,14 @@ namespace L2dotNET.Utility
         {
             bytesCount = srcOffset + bytesCount;
 
-            while (srcOffset < bytesCount && src[srcOffset] != 0)
+            while ((srcOffset < bytesCount) && (src[srcOffset] != 0))
+            {
                 dst += (char)src[srcOffset++];
+            }
         }
 
         /// <summary>
-        /// Converts <see cref="byte"/> values array to <see cref="char"/> values array (<see cref="string"/>). 
+        /// Converts <see cref="byte"/> values array to <see cref="char"/> values array (<see cref="string"/>).
         /// </summary>
         /// <param name="src">Source <see cref="byte"/> values buffer.</param>
         /// <param name="srcOffset">Source buffer offset.</param>
@@ -307,7 +321,7 @@ namespace L2dotNET.Utility
         {
             string dst = string.Empty;
 
-            while (src[srcOffset] != 0 && srcOffset + sizeof(char) < maxLength)
+            while ((src[srcOffset] != 0) && ((srcOffset + sizeof(char)) < maxLength))
             {
                 dst += (char)src[srcOffset];
                 srcOffset += sizeof(char);
@@ -321,22 +335,26 @@ namespace L2dotNET.Utility
         /// <summary>
         /// Copies array of generic values from one array to an other.
         /// </summary>
-        /// <typeparam name="U">Some generic type.</typeparam>
+        /// <typeparam name="TU">Some generic type.</typeparam>
         /// <param name="source">Source array.</param>
         /// <param name="srcOffset">Source array offset.</param>
         /// <param name="destination">Destination array.</param>
         /// <param name="dstOffset">Destination array offset.</param>
         /// <param name="length">Values to copy count.</param>
         /// <returns>Copied array of generic values.</returns>
-        public static U[] Copy<U>(U[] source, long srcOffset, U[] destination, long dstOffset, long length)
+        public static TU[] Copy<TU>(TU[] source, long srcOffset, TU[] destination, long dstOffset, long length)
         {
-            if (length > source.Length - srcOffset || length > destination.Length - dstOffset)
+            if ((length > (source.Length - srcOffset)) || (length > (destination.Length - dstOffset)))
+            {
                 throw new InvalidOperationException();
+            }
 
             length += srcOffset;
 
             while (srcOffset < length)
+            {
                 destination[dstOffset++] = source[srcOffset++];
+            }
 
             return destination;
         }

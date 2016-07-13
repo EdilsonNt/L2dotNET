@@ -1,4 +1,4 @@
-using L2dotNET.GameService.Model.Items;
+using L2dotNET.GameService.Enums;
 
 namespace L2dotNET.GameService.Managers
 {
@@ -6,22 +6,22 @@ namespace L2dotNET.GameService.Managers
     {
         public EnchantType Type;
         public EnchantTarget Target;
-        public ItemTemplate.L2ItemGrade Crystall;
-        public byte bonus = 0;
+        public CrystalTypeId Crystall;
+        public byte Bonus;
 
-        public EnchantScroll(EnchantType enchantType, EnchantTarget enchantTarget, ItemTemplate.L2ItemGrade enchantCrystall)
+        public EnchantScroll(EnchantType enchantType, EnchantTarget enchantTarget, CrystalTypeId enchantCrystall)
         {
-            this.Type = enchantType;
-            this.Target = enchantTarget;
-            this.Crystall = enchantCrystall;
+            Type = enchantType;
+            Target = enchantTarget;
+            Crystall = enchantCrystall;
         }
 
-        public EnchantScroll(EnchantType enchantType, EnchantTarget enchantTarget, ItemTemplate.L2ItemGrade enchantCrystall, byte bonus)
+        public EnchantScroll(EnchantType enchantType, EnchantTarget enchantTarget, CrystalTypeId enchantCrystall, byte bonus)
         {
-            this.Type = enchantType;
-            this.Target = enchantTarget;
-            this.Crystall = enchantCrystall;
-            this.bonus = bonus;
+            Type = enchantType;
+            Target = enchantTarget;
+            Crystall = enchantCrystall;
+            Bonus = bonus;
         }
     }
 }

@@ -5,42 +5,42 @@ namespace L2dotNET.GameService.Network.Clientpackets.VehicleAPI
 {
     class RequestGetOffVehicle : GameServerNetworkRequest
     {
-        private int boatId;
-        private int x;
-        private int y;
-        private int z;
+        private int _boatId;
+        private int _x;
+        private int _y;
+        private int _z;
 
         public RequestGetOffVehicle(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            boatId = readD();
-            x = readD();
-            y = readD();
-            z = readD();
+            _boatId = ReadD();
+            _x = ReadD();
+            _y = ReadD();
+            _z = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
-            if (player.Boat == null || player.Boat.ObjID != boatId)
+            if ((player.Boat == null) || (player.Boat.ObjId != _boatId))
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
             if (player.Boat.OnRoute)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            player.broadcastPacket(new StopMoveInVehicle(player, x, y, z));
-            player.broadcastPacket(new GetOffVehicle(player, x, y, z));
+            player.BroadcastPacket(new StopMoveInVehicle(player, _x, _y, _z));
+            player.BroadcastPacket(new GetOffVehicle(player, _x, _y, _z));
             player.Boat = null;
         }
     }

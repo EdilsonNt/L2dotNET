@@ -10,14 +10,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class CharacterSelected : GameServerNetworkRequest
     {
         [Inject]
-        public IPlayerService playerService
-        {
-            get { return GameServer.Kernel.Get<IPlayerService>(); }
-        }
+        public IPlayerService PlayerService => GameServer.Kernel.Get<IPlayerService>();
 
         public CharacterSelected(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private int _charSlot;
@@ -27,46 +24,49 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _unk3; // new in C4
         private int _unk4; // new in C4
 
-        public override void read()
+        public override void Read()
         {
-            _charSlot = readD();
-            _unk1 = readH();
-            _unk2 = readD();
-            _unk3 = readD();
-            _unk4 = readD();
+            _charSlot = ReadD();
+            _unk1 = ReadH();
+            _unk2 = ReadD();
+            _unk3 = ReadD();
+            _unk4 = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
-            GameClient client = getClient();
+            GameClient client = GetClient();
 
-            PlayerModel playerModel = playerService.GetPlayerModelBySlotId(client.AccountName, _charSlot);
-            L2Player player = getClient().AccountChars.FirstOrDefault(filter => filter.CharSlot == _charSlot);
+            PlayerModel playerModel = PlayerService.GetPlayerModelBySlotId(client.AccountName, _charSlot);
+            L2Player player = GetClient().AccountChars.FirstOrDefault(filter => filter.CharSlot == _charSlot);
 
             PlayerModelMapping(playerModel, player);
 
-            if (player != null)
+            if (player == null)
             {
-                player.Online = 1;
-                player.Gameclient = client;
-                client.CurrentPlayer = player;
-
-                getClient().sendPacket(new Serverpackets.CharacterSelected(player, client.SessionId));
+                return;
             }
+
+            player.Online = 1;
+            player.Gameclient = client;
+            client.CurrentPlayer = player;
+
+            GetClient().SendPacket(new Serverpackets.CharacterSelected(player, client.SessionId));
         }
 
+        //TODO: Simplify method body
         private static void PlayerModelMapping(PlayerModel playerModel, L2Player player)
         {
             //AccountName = player.AccountName,
             //ObjectId = player.ObjID,
             //player.Name = playerModel.Name;
             player.Level = (byte)playerModel.Level;
-            player.MaxHP = playerModel.MaxHp;
-            player.CurHP = playerModel.CurHp;
-            player.MaxCP = playerModel.MaxCp;
-            player.CurCP = playerModel.CurCp;
-            player.MaxMP = playerModel.MaxMp;
-            player.CurMP = playerModel.CurMp;
+            player.MaxHp = playerModel.MaxHp;
+            player.CurHp = playerModel.CurHp;
+            player.MaxCp = playerModel.MaxCp;
+            player.CurCp = playerModel.CurCp;
+            player.MaxMp = playerModel.MaxMp;
+            player.CurMp = playerModel.CurMp;
             player.Face = playerModel.Face;
             player.HairStyle = playerModel.HairStyle;
             player.HairColor = playerModel.HairColor;
@@ -77,7 +77,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             player.Z = playerModel.Z;
             player.Exp = playerModel.Exp;
             player.ExpOnDeath = playerModel.ExpBeforeDeath;
-            player.SP = playerModel.Sp;
+            player.Sp = playerModel.Sp;
             player.Karma = playerModel.Karma;
             player.PvpKills = playerModel.PvpKills;
             player.PkKills = playerModel.PkKills;
@@ -96,7 +96,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             player.LastAccess = playerModel.LastAccess;
             player.ClanPrivs = playerModel.ClanPrivs;
             player.WantsPeace = playerModel.WantsPeace;
-            player.IsIn7sDungeon = playerModel.IsIn7sDungeon;
+            player.IsIn7SDungeon = playerModel.IsIn7SDungeon;
             player.PunishLevel = playerModel.PunishLevel;
             player.PunishTimer = playerModel.PunishLevel;
             player.PowerGrade = playerModel.PowerGrade;

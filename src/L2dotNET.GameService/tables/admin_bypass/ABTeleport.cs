@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using log4net;
@@ -9,70 +10,71 @@ namespace L2dotNET.GameService.Tables.Admin_Bypass
 {
     public class ABTeleport
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ABTeleport));
-        public SortedList<int, ab_teleport_group> _groups = new SortedList<int, ab_teleport_group>();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ABTeleport));
+        public SortedList<int, ABTeleportGroup> Groups = new SortedList<int, ABTeleportGroup>();
 
         public ABTeleport()
         {
-            reload();
+            Reload();
         }
 
-        public void reload()
+        public void Reload()
         {
             XElement xml = XElement.Parse(File.ReadAllText(@"scripts\admin\abteleport.xml"));
             XElement ex = xml.Element("list");
             if (ex != null)
             {
                 foreach (XElement m in ex.Elements())
-                {
                     if (m.Name == "group")
                     {
-                        ab_teleport_group ab = new ab_teleport_group();
-                        ab.id = int.Parse(m.Attribute("id").Value);
-                        ab.str = m.Attribute("str").Value;
-                        ab.name = m.Attribute("name").Value;
-                        ab.level = int.Parse(m.Attribute("level").Value);
+                        ABTeleportGroup ab = new ABTeleportGroup
+                                             {
+                                                 Id = int.Parse(m.Attribute("id").Value),
+                                                 Str = m.Attribute("str").Value,
+                                                 Name = m.Attribute("name").Value,
+                                                 Level = int.Parse(m.Attribute("level").Value)
+                                             };
 
-                        foreach (XElement e in m.Elements())
+                        foreach (ABTeleportEntry ae in from e in m.Elements()
+                                                       where e.Name == "entry"
+                                                       select new ABTeleportEntry
+                                                              {
+                                                                  Name = e.Attribute("name").Value,
+                                                                  X = int.Parse(e.Attribute("x").Value),
+                                                                  Y = int.Parse(e.Attribute("y").Value),
+                                                                  Z = int.Parse(e.Attribute("z").Value),
+                                                                  Id = ab.Teles.Count
+                                                              })
                         {
-                            if (e.Name == "entry")
-                            {
-                                ab_teleport_entry ae = new ab_teleport_entry();
-                                ae.name = e.Attribute("name").Value;
-                                ae.x = int.Parse(e.Attribute("x").Value);
-                                ae.y = int.Parse(e.Attribute("y").Value);
-                                ae.z = int.Parse(e.Attribute("z").Value);
-                                ae.id = ab._teles.Count;
-
-                                ab._teles.Add(ae.id, ae);
-                            }
+                            ab.Teles.Add(ae.Id, ae);
                         }
 
-                        _groups.Add(ab.id, ab);
+                        Groups.Add(ab.Id, ab);
                     }
-                }
             }
 
-            log.Info("AdminPlugin(Teleport): loaded " + _groups.Count + " groups.");
+            Log.Info("AdminPlugin(Teleport): loaded " + Groups.Count + " groups.");
         }
 
         public void ShowGroup(L2Player player, int groupId)
         {
-            if (!_groups.ContainsKey(groupId))
+            if (!Groups.ContainsKey(groupId))
             {
-                player.sendMessage("teleport group #" + groupId + " was not found.");
-                player.sendActionFailed();
+                player.SendMessage("teleport group #" + groupId + " was not found.");
+                player.SendActionFailed();
                 return;
             }
-            ab_teleport_group gr = _groups[groupId];
-            StringBuilder sb = new StringBuilder("<button value=\"Back\" action=\"bypass -h admin?ask=3&reply=0\" width=50 height=20 back=\"L2UI_ct1.button_df\" fore=\"L2UI_ct1.button_df\"><center><font color=\"Blue\">Region : </font><font color=\"LEVEL\">" + gr.name + "</font><br>");
-            foreach (ab_teleport_entry e in gr._teles.Values)
+
+            ABTeleportGroup gr = Groups[groupId];
+            StringBuilder sb = new StringBuilder("<button value=\"Back\" action=\"bypass -h admin?ask=3&reply=0\" width=50 height=20 back=\"L2UI_ct1.button_df\" fore=\"L2UI_ct1.button_df\"><center><font color=\"Blue\">Region : </font><font color=\"LEVEL\">" + gr.Name + "</font><br>");
+            foreach (ABTeleportEntry e in gr.Teles.Values)
             {
-                sb.Append("<button value=\"" + e.name + "\" action=\"bypass -h admin?ask=2&reply=" + e.id + "\" width=150 height=20 back=\"L2UI_ct1.button_df\" fore=\"L2UI_ct1.button_df\"><br1>");
+                sb.Append("<button value=\"" + e.Name + "\" action=\"bypass -h admin?ask=2&reply=" + e.Id + "\" width=150 height=20 back=\"L2UI_ct1.button_df\" fore=\"L2UI_ct1.button_df\"><br1>");
             }
+
             sb.Append("</center>");
 
-            player.ViewingAdminTeleportGroup = gr.id;
+            player.ViewingAdminTeleportGroup = gr.Id;
             player.ShowHtmAdmin(sb.ToString(), true);
         }
 
@@ -86,17 +88,20 @@ namespace L2dotNET.GameService.Tables.Admin_Bypass
             sb.Append("<table width=270>");
             sb.Append("<tr>");
             int count = 0;
-            foreach (ab_teleport_group gr in _groups.Values)
+            foreach (ABTeleportGroup gr in Groups.Values)
             {
                 count++;
-                sb.Append("<td><button value=\"" + gr.name + "\" action=\"bypass -h admin?ask=1&reply=" + gr.id + "\" width=135 height=20 back=\"L2UI_ct1.button_df\" fore=\"L2UI_ct1.button_df\"></td>");
-                if (count == 2)
+                sb.Append("<td><button value=\"" + gr.Name + "\" action=\"bypass -h admin?ask=1&reply=" + gr.Id + "\" width=135 height=20 back=\"L2UI_ct1.button_df\" fore=\"L2UI_ct1.button_df\"></td>");
+                if (count != 2)
                 {
-                    sb.Append("</tr>");
-                    sb.Append("<tr>");
-                    count = 0;
+                    continue;
                 }
+
+                sb.Append("</tr>");
+                sb.Append("<tr>");
+                count = 0;
             }
+
             sb.Append("</tr>");
             sb.Append("</table>");
             sb.Append("<font color=\"333333\" align=\"center\">_______________________________________</font>");
@@ -107,17 +112,17 @@ namespace L2dotNET.GameService.Tables.Admin_Bypass
 
         public void Use(L2Player player, int reply)
         {
-            if (player.ViewingAdminTeleportGroup == -1 || !_groups.ContainsKey(player.ViewingAdminTeleportGroup))
+            if ((player.ViewingAdminTeleportGroup != -1) && Groups.ContainsKey(player.ViewingAdminTeleportGroup))
             {
-                player.sendMessage("teleport group #" + player.ViewingAdminTeleportGroup + " was not found.");
-                player.sendActionFailed();
                 return;
             }
 
-            ab_teleport_group gr = _groups[player.ViewingAdminTeleportGroup];
-            ab_teleport_entry e = gr._teles[reply];
+            player.SendMessage("teleport group #" + player.ViewingAdminTeleportGroup + " was not found.");
+            player.SendActionFailed();
+            //return;
 
-            player.teleport(e.x, e.y, e.z);
+            //ab_teleport_group gr = _groups[player.ViewingAdminTeleportGroup];
+            //ab_teleport_entry e = gr._teles[reply];
         }
     }
 }

@@ -5,27 +5,31 @@ namespace L2dotNET.GameService.Managers
 {
     class RqItemManager
     {
-        private static readonly RqItemManager m = new RqItemManager();
+        private static readonly RqItemManager M = new RqItemManager();
 
-        public static RqItemManager getInstance()
+        public static RqItemManager GetInstance()
         {
-            return m;
+            return M;
         }
 
-        public SortedList<int, L2Item> _items = new SortedList<int, L2Item>();
+        public SortedList<int, L2Item> Items = new SortedList<int, L2Item>();
 
-        public void postItem(L2Item item)
+        public void PostItem(L2Item item)
         {
-            if (_items.ContainsKey(item.ObjID))
-                lock (_items)
-                    _items.Remove(item.ObjID);
+            if (Items.ContainsKey(item.ObjId))
+            {
+                lock (Items)
+                {
+                    Items.Remove(item.ObjId);
+                }
+            }
 
-            _items.Add(item.ObjID, item);
+            Items.Add(item.ObjId, item);
         }
 
-        public L2Item getItem(int _objectId)
+        public L2Item GetItem(int objectId)
         {
-            return _items.ContainsKey(_objectId) ? _items[_objectId] : null;
+            return Items.ContainsKey(objectId) ? Items[objectId] : null;
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using L2dotNET.GameService.Enums;
+using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Templates
 {
@@ -21,8 +21,8 @@ namespace L2dotNET.GameService.Templates
         public int CorpseTime { get; set; }
 
         public int DropHerbGroup { get; set; }
-        public Race race = Race.UNKNOWN;
-        public AIType AiType { get; set; }
+        public Race race = Race.Unknown;
+        public AiType AiType { get; set; }
 
         public int SsCount { get; set; }
         public int SsRate { get; set; }
@@ -57,16 +57,16 @@ namespace L2dotNET.GameService.Templates
             Type = set.GetString("type");
             Name = set.GetString("name");
             Title = set.GetString("title", "");
-            CantBeChampionMonster = Title.Equals("Quest Monster", StringComparison.InvariantCultureIgnoreCase);
-            Level = set.GetByte("level", (byte)1);
-            Exp = set.GetInt("exp", 0);
-            Sp = set.GetInt("sp", 0);
-            RHand = set.GetInt("rHand", 0);
-            LHand = set.GetInt("lHand", 0);
-            EnchantEffect = set.GetInt("enchant", 0);
+            CantBeChampionMonster = Title.EqualsIgnoreCase("Quest Monster");
+            Level = set.GetByte("level", 1);
+            Exp = set.GetInt("exp");
+            Sp = set.GetInt("sp");
+            RHand = set.GetInt("rHand");
+            LHand = set.GetInt("lHand");
+            EnchantEffect = set.GetInt("enchant");
             CorpseTime = set.GetInt("corpseTime", 7);
 
-            DropHerbGroup = set.GetInt("dropHerbGroup", 0);
+            DropHerbGroup = set.GetInt("dropHerbGroup");
             //if (_dropHerbGroup > 0 && HerbDropTable.getInstance().getHerbDroplist(_dropHerbGroup) == null)
             //{
             //    _log.warning("Missing dropHerbGroup information for npcId: " + _npcId + ", dropHerbGroup: " + _dropHerbGroup);
@@ -74,15 +74,17 @@ namespace L2dotNET.GameService.Templates
             //}
 
             if (set.ContainsKey("raceId"))
+            {
                 race = (Race)set.GetInt("raceId");
+            }
 
             //_aiType = set.GetEnumerator(new "aiType", AIType.DEFAULT);
 
-            SsCount = set.GetInt("ssCount", 0);
-            SsRate = set.GetInt("ssRate", 0);
-            SpsCount = set.GetInt("spsCount", 0);
-            SpsRate = set.GetInt("spsRate", 0);
-            AggroRange = set.GetInt("aggro", 0);
+            SsCount = set.GetInt("ssCount");
+            SsRate = set.GetInt("ssRate");
+            SpsCount = set.GetInt("spsCount");
+            SpsRate = set.GetInt("spsRate");
+            AggroRange = set.GetInt("aggro");
 
             if (set.ContainsKey("clan"))
             {
@@ -90,11 +92,13 @@ namespace L2dotNET.GameService.Templates
                 ClanRange = set.GetInt("clanRange");
 
                 if (set.ContainsKey("ignoredIds"))
+                {
                     IgnoredIds = set.GetIntegerArray("ignoredIds");
+                }
             }
 
             CanMove = set.GetBool("canMove", true);
-            IsSeedable = set.GetBool("seedable", false);
+            IsSeedable = set.GetBool("seedable");
 
             // _categories = set.getList("drops");
             // _minions = set.getList("minions");

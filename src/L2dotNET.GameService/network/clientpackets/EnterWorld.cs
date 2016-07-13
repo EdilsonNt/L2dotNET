@@ -12,12 +12,12 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public EnterWorld(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        private int[][] tracert = new int[5][];
+        private int[][] _tracert = new int[5][];
 
-        public override void read()
+        public override void Read()
         {
             //readB(32);
             //readD();
@@ -35,52 +35,52 @@ namespace L2dotNET.GameService.Network.Clientpackets
             //}
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
             player.TotalRestore();
 
-            player.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.WELCOME_TO_LINEAGE));
+            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.WelcomeToLineage));
 
             AnnouncementManager.Instance.OnEnter(player);
 
-            foreach (L2Item item in player.Inventory.Items.Values.Where(item => item._isEquipped != 0))
+            foreach (L2Item item in player.Inventory.Items.Where(item => item.IsEquipped != 0))
             {
-                item.notifyStats(player);
+                item.NotifyStats(player);
             }
 
             player.StartRegeneration();
             // player.sendItemList(false);
-            player.sendPacket(new FriendList());
-            player.sendQuestList();
-            player.updateSkillList();
-            player.updateReuse();
+            player.SendPacket(new FriendList());
+            player.SendQuestList();
+            player.UpdateSkillList();
+            player.UpdateReuse();
 
             if (player.ClanId > 0)
             {
                 ClanTable.Instance.Apply(player);
             }
 
-            player.sendPacket(new ExStorageMaxCount(player));
+            player.SendPacket(new ExStorageMaxCount(player));
             // player.sendPacket(new ExBasicActionList());
             //  NpcTable.getInstance().spawnNpc("grandmaster_ramos", player.X, player.Y, player.Z, player.Heading);
-            player.sendActionFailed();
+            player.SendActionFailed();
 
             GameTime.Instance.EnterWorld(player);
 
-            player.timer();
+            player.Timer();
 
             player.SpawnMe();
             //L2WorldRegion worldRegion = L2World.Instance.GetRegion(player.X, player.Y);
             //player.SetRegion(worldRegion);
             //player.getKnowns(500, 500, false);
 
-            player.sendPacket(new UserInfo(player));
-            player.sendPacket(new UserInfo(player));
+            player.SendPacket(new UserInfo(player));
+            player.SendPacket(new UserInfo(player));
 
             //player.sendPacket(new ShortCutInit(player));
-            player.StartAI();
+            player.StartAi();
 
             player.RequestPing();
         }

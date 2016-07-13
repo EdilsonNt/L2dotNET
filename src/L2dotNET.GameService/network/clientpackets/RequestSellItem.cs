@@ -10,35 +10,35 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestSellItem(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private int _listId;
         private int _count;
         private long[] _items;
 
-        public override void read()
+        public override void Read()
         {
-            _listId = readD();
-            _count = readD();
+            _listId = ReadD();
+            _count = ReadD();
             _items = new long[_count * 3];
 
             for (int i = 0; i < _count; i++)
             {
-                _items[i * 3 + 0] = readD();
-                _items[i * 3 + 1] = readD();
-                _items[i * 3 + 2] = readQ();
+                _items[(i * 3) + 0] = ReadD();
+                _items[(i * 3) + 1] = ReadD();
+                _items[(i * 3) + 2] = ReadQ();
             }
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
             L2Npc npc = player.FolkNpc;
 
             if (npc == null)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
@@ -46,58 +46,69 @@ namespace L2dotNET.GameService.Network.Clientpackets
             int weight = 0;
             for (int i = 0; i < _count; i++)
             {
-                int objectId = (int)_items[i * 3 + 0];
-                long count = _items[i * 3 + 2];
+                int objectId = (int)_items[(i * 3) + 0];
+                long count = _items[(i * 3) + 2];
 
-                if (count < 0 || count > int.MaxValue)
+                if ((count < 0) || (count > int.MaxValue))
                 {
-                    player.sendSystemMessage(SystemMessage.SystemMessageId.SELL_ATTEMPT_FAILED);
-                    player.sendActionFailed();
+                    player.SendSystemMessage(SystemMessage.SystemMessageId.SellAttemptFailed);
+                    player.SendActionFailed();
                     return;
                 }
 
-                L2Item item = (L2Item)player.Inventory.Items[objectId];
+                L2Item item = player.Inventory.Items[objectId];
 
-                if (item.Template.isStackable())
-                    totalCost += (int)(item.Count * (item.Template.Price * .5));
+                if (item.Template.Stackable)
+                {
+                    totalCost += (int)(item.Count * (item.Template.ReferencePrice * .5));
+                }
                 else
-                    totalCost += (int)(item.Template.Price * .5);
+                {
+                    totalCost += (int)(item.Template.ReferencePrice * .5);
+                }
 
                 weight += item.Template.Weight;
             }
 
-            if (totalCost > long.MaxValue)
-            {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.SELL_ATTEMPT_FAILED);
-                player.sendActionFailed();
-                return;
-            }
+            //if (totalCost > long.MaxValue)
+            //{
+            //    player.sendSystemMessage(SystemMessage.SystemMessageId.SELL_ATTEMPT_FAILED);
+            //    player.sendActionFailed();
+            //    return;
+            //}
 
-            long added,
-                 currentAdena = player.getAdena();
-            if (currentAdena + totalCost >= int.MaxValue)
+            int added,
+                currentAdena = player.GetAdena();
+            if ((currentAdena + totalCost) >= int.MaxValue)
+            {
                 added = int.MaxValue - currentAdena;
+            }
             else
+            {
                 added = (int)totalCost;
+            }
 
             List<long[]> transfer = new List<long[]>();
-            InventoryUpdate iu = new InventoryUpdate();
+            //InventoryUpdate iu = new InventoryUpdate();
             for (int i = 0; i < _count; i++)
             {
-                int objectId = (int)_items[i * 3 + 0];
-                long count = _items[i * 3 + 2];
+                int objectId = (int)_items[(i * 3) + 0];
+                long count = _items[(i * 3) + 2];
 
-                transfer.Add(new long[] { objectId, count });
+                transfer.Add(new[] { objectId, count });
             }
-            player.Refund.transferHere(player, transfer, false);
-            player.Refund.validate();
 
-            player.addAdena(added, false, false);
-            player.sendItemList(true);
-            player.sendPacket(new ExBuySellList_Close());
+            //player.Refund.transferHere(player, transfer, false);
+            //player.Refund.validate();
+
+            player.AddAdena(added, true);
+            player.SendItemList(true);
+            player.SendPacket(new ExBuySellListClose());
 
             if (weight != 0)
-                player.updateWeight();
+            {
+                player.UpdateWeight();
+            }
 
             //if (npc.Template.fnSell != null)
             //{

@@ -10,39 +10,37 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public RequestSaveInventoryOrder(GameClient client, byte[] data)
         {
-            base.makeme(client, data, 2);
+            Makeme(client, data, 2);
         }
 
-        public override void read()
+        public override void Read()
         {
-            _count = readD();
+            _count = ReadD();
 
             //  _count = Math.Min(125, _count); мм?зачем
             _items = new int[_count * 2];
             for (int i = 0; i < _count; i++)
             {
-                _items[i * 2] = readD();
-                _items[i * 2 + 1] = readD();
+                _items[i * 2] = ReadD();
+                _items[(i * 2) + 1] = ReadD();
             }
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
-            foreach (L2Item item in player.Inventory.Items.Values)
-            {
+            foreach (L2Item item in player.Inventory.Items)
                 for (int i = 0; i < _count; i++)
                 {
                     int objId = _items[i * 2];
-                    int loc = _items[i * 2 + 1];
+                    int loc = _items[(i * 2) + 1];
 
-                    if (item.ObjID == objId)
+                    if (item.ObjId == objId)
                     {
                         item.SlotLocation = loc;
                     }
                 }
-            }
         }
     }
 }

@@ -14,15 +14,12 @@ namespace L2dotNET.GameService.Managers
     class AnnouncementManager
     {
         [Inject]
-        public IServerService serverService
-        {
-            get { return GameServer.Kernel.Get<IServerService>(); }
-        }
+        public IServerService ServerService => GameServer.Kernel.Get<IServerService>();
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(AnnouncementManager));
 
-        private static volatile AnnouncementManager instance;
-        private static readonly object syncRoot = new object();
+        private static volatile AnnouncementManager _instance;
+        private static readonly object SyncRoot = new object();
 
         public List<AnnouncementModel> Announcements { get; set; }
 
@@ -30,66 +27,68 @@ namespace L2dotNET.GameService.Managers
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new AnnouncementManager();
-                        }
+                        _instance = new AnnouncementManager();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
         public void Initialize()
         {
-            Announcements = serverService.GetAnnouncementsList();
+            Announcements = ServerService.GetAnnouncementsList();
             Log.Info($"Announcement manager: Loaded {Announcements.Count} annoucements.");
         }
-
-        public AnnouncementManager() { }
 
         public void Announce(string text)
         {
             CreatureSay cs = new CreatureSay(SayIDList.CHAT_ANNOUNCE, text);
             foreach (L2Player p in L2World.Instance.GetPlayers())
             {
-                p.sendPacket(cs);
+                p.SendPacket(cs);
             }
         }
 
-        public void criticalAnnounce(string text)
+        public void CriticalAnnounce(string text)
         {
             CreatureSay cs = new CreatureSay(SayIDList.CHAT_CRITICAL_ANNOUNCE, text);
             foreach (L2Player p in L2World.Instance.GetPlayers())
             {
-                p.sendPacket(cs);
+                p.SendPacket(cs);
             }
         }
 
-        public void screenAnnounce(string text)
+        public void ScreenAnnounce(string text)
         {
             CreatureSay cs = new CreatureSay(SayIDList.CHAT_SCREEN_ANNOUNCE, text);
             foreach (L2Player p in L2World.Instance.GetPlayers())
             {
-                p.sendPacket(cs);
+                p.SendPacket(cs);
             }
         }
 
         public void OnEnter(L2Player player)
         {
-            if (Announcements == null || Announcements.Count == 0)
+            if ((Announcements == null) || (Announcements.Count == 0))
+            {
                 return;
+            }
 
             CreatureSay cs = new CreatureSay(SayIDList.CHAT_ANNOUNCE);
             foreach (AnnouncementModel announcement in Announcements.Where(announcement => announcement.Type == 0))
             {
                 cs.Text = announcement.Text;
-                player.sendPacket(cs);
+                player.SendPacket(cs);
             }
         }
     }

@@ -20,13 +20,11 @@ namespace L2dotNET.GameService
 {
     class GameServer
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(GameServer));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(GameServer));
 
         protected TcpListener GameServerListener;
 
         public static IKernel Kernel { get; set; }
-
-        public GameServer() { }
 
         public void Start()
         {
@@ -51,15 +49,12 @@ namespace L2dotNET.GameService
 
             NpcTable.Instance.Initialize();
             NpcData.Instance.Initialize();
-            //SpawnTable.Instance.Initialize();
-
-            //TSkillTable.Instance.Initialize();
 
             MultiSell.Instance.Initialize();
             Capsule.Instance.Initialize();
             RecipeTable.Instance.Initialize();
 
-            AIManager.Instance.Initialize();
+            AiManager.Instance.Initialize();
 
             BlowFishKeygen.GenerateKeys();
 
@@ -72,7 +67,7 @@ namespace L2dotNET.GameService
             AllianceTable.Instance.Initialize();
             ClanTable.Instance.Initialize();
 
-            log.Info("NpcServer: ");
+            Log.Info("NpcServer: ");
             StaticObjTable.Instance.Initialize();
             //SpawnTable.getInstance().Spawn();
             StructureTable.Instance.Initialize();
@@ -81,7 +76,7 @@ namespace L2dotNET.GameService
 
             AuthThread.Instance.Initialize();
 
-            GameServerListener = new TcpListener(IPAddress.Any, Config.Config.Instance.serverConfig.Port);
+            GameServerListener = new TcpListener(IPAddress.Any, Config.Config.Instance.ServerConfig.Port);
 
             try
             {
@@ -89,25 +84,24 @@ namespace L2dotNET.GameService
             }
             catch (SocketException ex)
             {
-                log.Error($"Socket Error: '{ex.SocketErrorCode}'. Message: '{ex.Message}' (Error Code: '{ex.NativeErrorCode}')");
-                log.Info($"Press ENTER to exit...");
+                Log.Error($"Socket Error: '{ex.SocketErrorCode}'. Message: '{ex.Message}' (Error Code: '{ex.NativeErrorCode}')");
+                Log.Info("Press ENTER to exit...");
                 Console.Read();
                 Environment.Exit(0);
             }
 
-            log.Info($"Listening Gameservers on port {Config.Config.Instance.serverConfig.Port}");
+            Log.Info($"Listening Gameservers on port {Config.Config.Instance.ServerConfig.Port}");
 
-            TcpClient clientSocket;
             while (true)
             {
-                clientSocket = GameServerListener.AcceptTcpClient();
+                TcpClient clientSocket = GameServerListener.AcceptTcpClient();
                 Accept(clientSocket);
             }
         }
 
         private void Accept(TcpClient clientSocket)
         {
-            ClientManager.Instance.addClient(clientSocket);
+            ClientManager.Instance.AddClient(clientSocket);
         }
     }
 }

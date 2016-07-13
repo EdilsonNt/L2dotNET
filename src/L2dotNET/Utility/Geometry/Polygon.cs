@@ -7,17 +7,17 @@ namespace L2dotNET.Utility.Geometry
 {
     public class Polygon : AShape
     {
-        private const int TRIANGULATION_MAX_LOOPS = 100;
+        private const int TriangulationMaxLoops = 100;
 
-        protected List<AShape> _shapes;
+        protected List<AShape> Shapes;
 
-        protected int _size;
+        protected int Size;
 
         public Polygon(List<AShape> shapes)
         {
-            _shapes = shapes;
+            Shapes = shapes;
 
-            _size = shapes.Sum(shape => shape.GetSize());
+            Size = shapes.Sum(shape => shape.GetSize());
         }
 
         public Polygon(int id, List<int[]> points)
@@ -28,7 +28,9 @@ namespace L2dotNET.Utility.Geometry
             {
                 // not a polygon, throw exception
                 if (points.Count < 3)
+                {
                     throw new IndexOutOfRangeException("Can not create Polygon (id=" + id + ") from less than 3 coordinates.");
+                }
 
                 // get polygon orientation
                 bool isCw = GetPolygonOrientation(points);
@@ -48,8 +50,8 @@ namespace L2dotNET.Utility.Geometry
                 triangles = new List<Triangle>();
             }
 
-            _shapes = triangles.Cast<AShape>().ToList();
-            _size = size;
+            Shapes = triangles.Cast<AShape>().ToList();
+            Size = size;
         }
 
         public override double GetArea()
@@ -59,13 +61,15 @@ namespace L2dotNET.Utility.Geometry
 
         public override Location GetRandomLocation()
         {
-            int size = Rnd.Get(_size);
+            int size = Rnd.Get(Size);
 
-            foreach (AShape shape in _shapes)
+            foreach (AShape shape in Shapes)
             {
                 size -= shape.GetSize();
                 if (size < 0)
+                {
                     return shape.GetRandomLocation();
+                }
             }
 
             // should never happen
@@ -74,7 +78,7 @@ namespace L2dotNET.Utility.Geometry
 
         public override int GetSize()
         {
-            return _size;
+            return Size;
         }
 
         public override double GetVolume()
@@ -84,12 +88,12 @@ namespace L2dotNET.Utility.Geometry
 
         public override bool IsInside(int x, int y)
         {
-            return _shapes.Any(shape => shape.IsInside(x, y));
+            return Shapes.Any(shape => shape.IsInside(x, y));
         }
 
         public override bool IsInside(int x, int y, int z)
         {
-            return _shapes.Any(shape => shape.IsInside(x, y, z));
+            return Shapes.Any(shape => shape.IsInside(x, y, z));
         }
 
         private static bool GetPolygonOrientation(List<int[]> points)
@@ -105,11 +109,13 @@ namespace L2dotNET.Utility.Geometry
                 int[] pt = points[i];
 
                 // x lower, or x same and y higher
-                if ((pt[0] < point[0]) || pt[0] == point[0] && pt[1] > point[1])
+                if ((pt[0] >= point[0]) && ((pt[0] != point[0]) || (pt[1] <= point[1])))
                 {
-                    point = pt;
-                    index = i;
+                    continue;
                 }
+
+                point = pt;
+                index = i;
             }
 
             // get previous point
@@ -121,7 +127,7 @@ namespace L2dotNET.Utility.Geometry
             // get orientation
             int vx = point[0] - pointPrev[0];
             int vy = point[1] - pointPrev[1];
-            int res = pointNext[0] * vy - pointNext[1] * vx + vx * pointPrev[1] - vy * pointPrev[0];
+            int res = (((pointNext[0] * vy) - (pointNext[1] * vx)) + (vx * pointPrev[1])) - (vy * pointPrev[0]);
 
             // return
             return res <= 0;
@@ -137,7 +143,9 @@ namespace L2dotNET.Utility.Geometry
         {
             // decrease index and check for limit
             if (--index < 0)
+            {
                 return size - 1;
+            }
 
             return index;
         }
@@ -149,7 +157,7 @@ namespace L2dotNET.Utility.Geometry
 
             // result value of test function
             int size = points.Count;
-            for (int i = 0; i < size - 1; i++)
+            for (int i = 0; i < (size - 1); i++)
             {
                 // get 3 points
                 int[] point = points[i];
@@ -160,9 +168,11 @@ namespace L2dotNET.Utility.Geometry
                 int vy = pointNext[1] - point[1];
 
                 // note: cw means res/newres is <= 0
-                bool res = (pointNextNext[0] * vy - pointNextNext[1] * vx + vx * point[1] - vy * point[0]) > 0;
+                bool res = ((((pointNextNext[0] * vy) - (pointNextNext[1] * vx)) + (vx * point[1])) - (vy * point[0])) > 0;
                 if (res == isCw)
+                {
                     nonConvexPoints.Add(pointNext);
+                }
             }
 
             return nonConvexPoints;
@@ -206,8 +216,10 @@ namespace L2dotNET.Utility.Geometry
                     index = indexNext;
                 }
 
-                if (++loops == TRIANGULATION_MAX_LOOPS)
+                if (++loops == TriangulationMaxLoops)
+                {
                     throw new Exception("Coordinates are not aligned to form monotone polygon.");
+                }
             }
 
             // add last triangle
@@ -217,54 +229,50 @@ namespace L2dotNET.Utility.Geometry
             return triangles;
         }
 
-        private static bool IsEar(bool isCw, List<int[]> nonConvexPoints, int[] A, int[] B, int[] C)
+        private static bool IsEar(bool isCw, IEnumerable<int[]> nonConvexPoints, int[] a, int[] b, int[] c)
         {
             // ABC triangle
-            if (!(IsConvex(isCw, A, B, C)))
-                return false;
-
-            // iterate over all concave points and check if one of them lies inside the given triangle
-            foreach (int[] i in nonConvexPoints)
+            if (!IsConvex(isCw, a, b, c))
             {
-                if (IsInside(A, B, C, i))
-                    return false;
+                return false;
             }
 
-            return true;
+            // iterate over all concave points and check if one of them lies inside the given triangle
+            return nonConvexPoints.All(i => !IsInside(a, b, c, i));
         }
 
-        private static bool IsConvex(bool isCw, int[] A, int[] B, int[] C)
+        private static bool IsConvex(bool isCw, int[] a, int[] b, int[] c)
         {
             // get vector coordinates
-            int BAx = B[0] - A[0];
-            int BAy = B[1] - A[1];
+            int bAx = b[0] - a[0];
+            int bAy = b[1] - a[1];
 
             // get virtual triangle orientation
-            bool cw = (C[0] * BAy - C[1] * BAx + BAx * A[1] - BAy * A[0]) > 0;
+            bool cw = ((((c[0] * bAy) - (c[1] * bAx)) + (bAx * a[1])) - (bAy * a[0])) > 0;
 
             // compare with orientation of polygon
             return cw != isCw;
         }
 
-        private static bool IsInside(int[] A, int[] B, int[] C, int[] P)
+        private static bool IsInside(int[] a, int[] b, int[] c, int[] p)
         {
             // get vector coordinates
-            int BAx = B[0] - A[0];
-            int BAy = B[1] - A[1];
-            int CAx = C[0] - A[0];
-            int CAy = C[1] - A[1];
-            int PAx = P[0] - A[0];
-            int PAy = P[1] - A[1];
+            int bAx = b[0] - a[0];
+            int bAy = b[1] - a[1];
+            int cAx = c[0] - a[0];
+            int cAy = c[1] - a[1];
+            int pAx = p[0] - a[0];
+            int pAy = p[1] - a[1];
 
             // get determinant
-            double detXYZ = BAx * CAy - CAx * BAy;
+            double detXyz = (bAx * cAy) - (cAx * bAy);
 
             // calculate BA and CA coefficient to each P from A
-            double ba = (BAx * PAy - PAx * BAy) / detXYZ;
-            double ca = (PAx * CAy - CAx * PAy) / detXYZ;
+            double ba = ((bAx * pAy) - (pAx * bAy)) / detXyz;
+            double ca = ((pAx * cAy) - (cAx * pAy)) / detXyz;
 
             // check coefficients
-            return (ba > 0 && ca > 0 && (ba + ca) < 1);
+            return (ba > 0) && (ca > 0) && ((ba + ca) < 1);
         }
     }
 }

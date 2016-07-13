@@ -11,18 +11,20 @@ namespace L2dotNET.GameService.Model.Zones.Classes
 
         public hideout_zone()
         {
-            ZoneID = IdFactory.Instance.nextId();
-            _enabled = true;
+            ZoneId = IdFactory.Instance.NextId();
+            Enabled = true;
         }
 
-        public override void onEnter(L2Object obj)
+        public override void OnEnter(L2Object obj)
         {
-            if (!_enabled)
+            if (!Enabled)
+            {
                 return;
+            }
 
-            base.onEnter(obj);
+            base.OnEnter(obj);
 
-            obj.onEnterZone(this);
+            obj.OnEnterZone(this);
 
             if (obj is L2Player)
             {
@@ -31,14 +33,16 @@ namespace L2dotNET.GameService.Model.Zones.Classes
             }
         }
 
-        public override void onExit(L2Object obj, bool cls)
+        public override void OnExit(L2Object obj, bool cls)
         {
-            if (!_enabled)
+            if (!Enabled)
+            {
                 return;
+            }
 
-            base.onExit(obj, cls);
+            base.OnExit(obj, cls);
 
-            obj.onExitZone(this, cls);
+            obj.OnExitZone(this, cls);
 
             if (obj is L2Player)
             {

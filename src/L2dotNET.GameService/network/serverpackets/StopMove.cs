@@ -12,21 +12,21 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
         public StopMove(L2Character cha)
         {
-            _id = cha.ObjID;
+            _id = cha.ObjId;
             _x = cha.X;
             _y = cha.Y;
             _z = cha.Z;
             _h = cha.Heading;
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0x47);
-            writeD(_id);
-            writeD(_x);
-            writeD(_y);
-            writeD(_z);
-            writeD(_h);
+            WriteC(0x47);
+            WriteD(_id);
+            WriteD(_x);
+            WriteD(_y);
+            WriteD(_z);
+            WriteD(_h);
         }
     }
 }

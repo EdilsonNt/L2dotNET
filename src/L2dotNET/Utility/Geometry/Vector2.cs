@@ -33,14 +33,14 @@ namespace L2dotNET.Utility.Geometry
 
         public Vector2(double x, double y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         public Vector2(double value)
         {
-            this.X = value;
-            this.Y = value;
+            X = value;
+            Y = value;
         }
 
         #endregion Constructors
@@ -94,14 +94,14 @@ namespace L2dotNET.Utility.Geometry
         {
             double v1 = value1.X - value2.X,
                    v2 = value1.Y - value2.Y;
-            return (double)Math.Sqrt((v1 * v1) + (v2 * v2));
+            return Math.Sqrt((v1 * v1) + (v2 * v2));
         }
 
         public static void Distance(ref Vector2 value1, ref Vector2 value2, out double result)
         {
             double v1 = value1.X - value2.X,
                    v2 = value1.Y - value2.Y;
-            result = (double)Math.Sqrt((v1 * v1) + (v2 * v2));
+            result = Math.Sqrt((v1 * v1) + (v2 * v2));
         }
 
         public static double DistanceSquared(Vector2 value1, Vector2 value2)
@@ -160,7 +160,7 @@ namespace L2dotNET.Utility.Geometry
         {
             if (obj is Vector2)
             {
-                return Equals((Vector2)this);
+                return Equals(this);
             }
 
             return false;
@@ -194,7 +194,7 @@ namespace L2dotNET.Utility.Geometry
 
         public static Vector2 Hermite(Vector2 value1, Vector2 tangent1, Vector2 value2, Vector2 tangent2, double amount)
         {
-            Vector2 result = new Vector2();
+            Vector2 result;
             Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount, out result);
             return result;
         }
@@ -207,7 +207,7 @@ namespace L2dotNET.Utility.Geometry
 
         public double Length()
         {
-            return (double)Math.Sqrt((X * X) + (Y * Y));
+            return Math.Sqrt((X * X) + (Y * Y));
         }
 
         public double LengthSquared()
@@ -288,14 +288,14 @@ namespace L2dotNET.Utility.Geometry
 
         public void Normalize()
         {
-            double val = 1.0f / (double)Math.Sqrt((X * X) + (Y * Y));
+            double val = 1.0f / Math.Sqrt((X * X) + (Y * Y));
             X *= val;
             Y *= val;
         }
 
         public static Vector2 Normalize(Vector2 value)
         {
-            double val = 1.0f / (double)Math.Sqrt((value.X * value.X) + (value.Y * value.Y));
+            double val = 1.0f / Math.Sqrt((value.X * value.X) + (value.Y * value.Y));
             value.X *= val;
             value.Y *= val;
             return value;
@@ -303,7 +303,7 @@ namespace L2dotNET.Utility.Geometry
 
         public static void Normalize(ref Vector2 value, out Vector2 result)
         {
-            double val = 1.0f / (double)Math.Sqrt((value.X * value.X) + (value.Y * value.Y));
+            double val = 1.0f / Math.Sqrt((value.X * value.X) + (value.Y * value.Y));
             result.X = value.X * val;
             result.Y = value.Y * val;
         }
@@ -379,7 +379,7 @@ namespace L2dotNET.Utility.Geometry
 
         public static Vector2 TransformNormal(Vector2 normal, Matrix matrix)
         {
-            Vector2.TransformNormal(ref normal, ref matrix, out normal);
+            TransformNormal(ref normal, ref matrix, out normal);
             return normal;
         }
 
@@ -391,7 +391,7 @@ namespace L2dotNET.Utility.Geometry
         public override string ToString()
         {
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
-            return string.Format(currentCulture, "{{X:{0} Y:{1}}}", new object[] { this.X.ToString(currentCulture), this.Y.ToString(currentCulture) });
+            return string.Format(currentCulture, "{{X:{0} Y:{1}}}", new object[] { X.ToString(currentCulture), Y.ToString(currentCulture) });
         }
 
         #endregion Public Methods
@@ -407,12 +407,12 @@ namespace L2dotNET.Utility.Geometry
 
         public static bool operator ==(Vector2 value1, Vector2 value2)
         {
-            return value1.X == value2.X && value1.Y == value2.Y;
+            return (value1.X == value2.X) && (value1.Y == value2.Y);
         }
 
         public static bool operator !=(Vector2 value1, Vector2 value2)
         {
-            return value1.X != value2.X || value1.Y != value2.Y;
+            return (value1.X != value2.X) || (value1.Y != value2.Y);
         }
 
         public static Vector2 operator +(Vector2 value1, Vector2 value2)

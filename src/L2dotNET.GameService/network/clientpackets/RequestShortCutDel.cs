@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.GameService.Model.Player.General;
 using L2dotNET.GameService.Network.Serverpackets;
 
 namespace L2dotNET.GameService.Network.Clientpackets
@@ -8,34 +9,34 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestShortCutDel(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private int _slot;
         private int _page;
 
-        public override void read()
+        public override void Read()
         {
-            int id = readD();
+            int id = ReadD();
             _slot = id % 12;
             _page = id / 12;
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
-            L2Shortcut scx = player._shortcuts.FirstOrDefault(sc => sc.Slot == _slot && sc.Page == _page);
+            L2Shortcut scx = player.Shortcuts.FirstOrDefault(sc => (sc.Slot == _slot) && (sc.Page == _page));
 
             if (scx == null)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            lock (player._shortcuts)
+            lock (player.Shortcuts)
             {
-                player._shortcuts.Remove(scx);
+                player.Shortcuts.Remove(scx);
 
                 //SQL_Block sqb = new SQL_Block("user_shortcuts");
                 //sqb.where("ownerId", player.ObjID);
@@ -45,7 +46,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 //sqb.sql_delete(false);
             }
 
-            player.sendPacket(new ShortCutInit(player));
+            player.SendPacket(new ShortCutInit(player));
         }
     }
 }

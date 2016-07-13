@@ -8,25 +8,27 @@ namespace L2dotNET.GameService.Model.Npcs
 {
     class L2Doormen : L2Npc
     {
-        private readonly Hideout hideout;
+        private readonly Hideout _hideout;
 
         public L2Doormen(HideoutTemplate hideout)
         {
-            this.hideout = (Hideout)hideout;
-            structureControlled = true;
+            _hideout = (Hideout)hideout;
+            StructureControlled = true;
         }
 
         public override void NotifyAction(L2Player player)
         {
-            if (hideout.ownerId == player.ClanId)
+            if (_hideout.ownerId != player.ClanId)
             {
-                NpcHtmlMessage htm = new NpcHtmlMessage(player, "agitjanitorhi.htm", ObjID);
-                htm.replace("<?my_pledge_name?>", player.Clan.Name);
-                player.sendPacket(htm);
+                return;
             }
+
+            NpcHtmlMessage htm = new NpcHtmlMessage(player, "agitjanitorhi.htm", ObjId);
+            htm.Replace("<?my_pledge_name?>", player.Clan.Name);
+            player.SendPacket(htm);
         }
 
-        public override void onDialog(L2Player player, int ask, int reply)
+        public override void OnDialog(L2Player player, int ask, int reply)
         {
             player.FolkNpc = this;
 
@@ -39,31 +41,32 @@ namespace L2dotNET.GameService.Model.Npcs
                     switch (reply)
                     {
                         case 1: //open ch doors
-                            foreach (L2Door door in hideout.doors.Where(door => door.Closed != 0))
+                            foreach (L2Door door in _hideout.doors.Where(door => door.Closed != 0))
                             {
                                 door.Closed = 0;
-                                door.broadcastUserInfo();
+                                door.BroadcastUserInfo();
                             }
 
-                            player.sendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorOpen.htm", ObjID));
+                            player.SendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorOpen.htm", ObjId));
                             break;
                         case 2: //close
-                            foreach (L2Door door in hideout.doors.Where(door => door.Closed != 1))
+                            foreach (L2Door door in _hideout.doors.Where(door => door.Closed != 1))
                             {
                                 door.Closed = 1;
-                                door.broadcastUserInfo();
+                                door.BroadcastUserInfo();
                             }
 
-                            player.sendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorClose.htm", ObjID));
+                            player.SendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorClose.htm", ObjId));
                             break;
                     }
+
                     break;
             }
         }
 
-        public override string asString()
+        public override string AsString()
         {
-            return "L2Doormen:" + Template.NpcId + "; id " + ObjID + "; " + hideout.ID;
+            return "L2Doormen:" + Template.NpcId + "; id " + ObjId + "; " + _hideout.ID;
         }
     }
 }

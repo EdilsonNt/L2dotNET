@@ -4,29 +4,29 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
 {
     class AnswerPartyLootModification : GameServerNetworkRequest
     {
-        private byte answer;
+        private byte _answer;
 
         public AnswerPartyLootModification(GameClient client, byte[] data)
         {
-            base.makeme(client, data, 2);
+            Makeme(client, data, 2);
         }
 
-        public override void read()
+        public override void Read()
         {
-            answer = (byte)readD();
+            _answer = (byte)ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
             if (player.Party == null)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            player.Party.AnswerLootVote(player, answer);
+            player.Party.AnswerLootVote(player, _answer);
         }
     }
 }

@@ -16,67 +16,77 @@ namespace L2dotNET.GameService.Commands.Admin
         {
             if (!(admin.CurrentTarget is L2Player))
             {
-                admin.sendMessage("target is not a player.");
+                admin.SendMessage("target is not a player.");
                 return;
             }
 
             L2Player target = (L2Player)admin.CurrentTarget;
-            TAcquireSkillsEntry skills = TSkillTable.Instance.GetAllRegularSkills(target.ActiveClass.ClassId.Id);
+            AcquireSkillsEntry skills = SkillTable.Instance.GetAllRegularSkills(target.ActiveClass.ClassId.Id);
 
-            SortedList<int, TAcquireSkill> avail = new SortedList<int, TAcquireSkill>();
+            SortedList<int, AcquireSkill> avail = new SortedList<int, AcquireSkill>();
             Dictionary<int, int> updDel = new Dictionary<int, int>();
 
             int nextLvl = 800;
-            foreach (TAcquireSkill e in skills.skills)
+            foreach (AcquireSkill e in skills.Skills)
             {
-                if (e.get_lv > target.Level)
+                if (e.GetLv > target.Level)
                 {
-                    if (nextLvl > e.get_lv)
-                        nextLvl = e.get_lv;
-                    continue;
-                }
-
-                if (avail.ContainsKey(e.id))
-                {
-                    continue;
-                }
-
-                if (target._skills.ContainsKey(e.id))
-                {
-                    TSkill skill = target._skills[e.id];
-
-                    if (skill.level >= e.lv)
-                        continue;
-
-                    if (!avail.ContainsKey(e.id))
+                    if (nextLvl > e.GetLv)
                     {
-                        avail.Add(e.id, e);
-                        updDel.Add(e.id, e.lv);
-                        break;
+                        nextLvl = e.GetLv;
                     }
+                    continue;
                 }
-                else
-                    avail.Add(e.id, e);
+
+                if (avail.ContainsKey(e.Id))
+                {
+                    continue;
+                }
+
+                if (target.Skills.ContainsKey(e.Id))
+                {
+                    Skill skill = target.Skills[e.Id];
+
+                    if (skill.Level >= e.Lv)
+                    {
+                        continue;
+                    }
+
+                    if (avail.ContainsKey(e.Id))
+                    {
+                        continue;
+                    }
+
+                    avail.Add(e.Id, e);
+                    updDel.Add(e.Id, e.Lv);
+                    break;
+                }
+
+                avail.Add(e.Id, e);
             }
 
             //foreach (int a in updDel.Keys)
             //    target.removeSkill(a, true, false);
             //updDel.Clear();
 
-            foreach (TAcquireSkill sk in avail.Values)
+            foreach (AcquireSkill sk in avail.Values)
             {
-                TSkill skill = TSkillTable.Instance.Get(sk.id, sk.lv);
+                Skill skill = SkillTable.Instance.Get(sk.Id, sk.Lv);
                 if (skill != null)
-                    target.addSkill(skill, false, false);
+                {
+                    target.AddSkill(skill, false, false);
+                }
                 else
-                    target.sendMessage("no skill #" + sk.id + "-" + sk.lv);
+                {
+                    target.SendMessage("no skill #" + sk.Id + "-" + sk.Lv);
+                }
             }
 
             target.ActiveSkillTree = avail;
-            target.sendPacket(new AcquireSkillList(0, target));
+            target.SendPacket(new AcquireSkillList(AcquireSkillList.SkillType.Usual));
 
-            target.updateSkillList();
-            target.sendMessage("gor all skills [" + skills.skills.Count + "][" + avail.Count + "] for lv" + target.Level + ", class @" + target.ActiveClass.ClassId.Id.ToString());
+            target.UpdateSkillList();
+            target.SendMessage("gor all skills [" + skills.Skills.Count + "][" + avail.Count + "] for lv" + target.Level + ", class @" + target.ActiveClass.ClassId.Id);
         }
     }
 }

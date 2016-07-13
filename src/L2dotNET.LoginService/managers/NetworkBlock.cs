@@ -3,36 +3,39 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
+using L2dotNET.Utility;
 
 namespace L2dotNET.LoginService.Managers
 {
     sealed class NetworkBlock
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(NetworkBlock));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(NetworkBlock));
 
-        private static volatile NetworkBlock instance;
-        private static readonly object syncRoot = new object();
+        private static volatile NetworkBlock _instance;
+        private static readonly object SyncRoot = new object();
 
         public static NetworkBlock Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new NetworkBlock();
-                        }
+                        _instance = new NetworkBlock();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
-        private readonly List<NB_interface> blocks = new List<NB_interface>();
+        private readonly List<NBInterface> _blocks = new List<NBInterface>();
 
         public NetworkBlock()
         {
@@ -42,79 +45,95 @@ namespace L2dotNET.LoginService.Managers
                 {
                     string line = reader.ReadLine() ?? string.Empty;
                     if (line.Length == 0)
-                        continue;
-
-                    if (line.StartsWith("//"))
-                        continue;
-
-                    if (line.StartsWith("d"))
                     {
-                        NB_interface i = new NB_interface();
-                        i.directIp = line.Split(' ')[1];
-                        i.forever = line.Split(' ')[2].Equals("0");
-                        blocks.Add(i);
+                        continue;
                     }
-                    else if (line.StartsWith("m"))
+
+                    if (line.StartsWithIgnoreCase("//"))
                     {
-                        NB_interface i = new NB_interface();
-                        i.mask = line.Split(' ')[1];
-                        i.forever = line.Split(' ')[2].Equals("0");
-                        blocks.Add(i);
+                        continue;
+                    }
+
+                    if (line.StartsWithIgnoreCase("d"))
+                    {
+                        NBInterface i = new NBInterface
+                                        {
+                                            DirectIp = line.Split(' ')[1],
+                                            Forever = line.Split(' ')[2].EqualsIgnoreCase("0")
+                                        };
+                        _blocks.Add(i);
+                    }
+                    else if (line.StartsWithIgnoreCase("m"))
+                    {
+                        NBInterface i = new NBInterface
+                                        {
+                                            Mask = line.Split(' ')[1],
+                                            Forever = line.Split(' ')[2].EqualsIgnoreCase("0")
+                                        };
+                        _blocks.Add(i);
                     }
                 }
             }
-            log.Info($"NetworkBlock: {blocks.Count} blocks.");
+
+            Log.Info($"NetworkBlock: {_blocks.Count} blocks.");
         }
 
         public bool Allowed(string ip)
         {
-            if (blocks.Count == 0)
-                return true;
-
-            foreach (NB_interface nbi in blocks)
+            if (_blocks.Count == 0)
             {
-                if (nbi.directIp != null)
-                    if (nbi.directIp.Equals(ip))
-                    {
-                        if (nbi.forever)
-                            return false;
-                        else
-                        {
-                            if (nbi.timeEnd.CompareTo(DateTime.Now) == 1)
-                            {
-                                return false;
-                            }
-                        }
-                    }
+                return true;
+            }
 
-                if (nbi.mask != null)
+            foreach (NBInterface nbi in _blocks)
+            {
+                if (nbi.DirectIp?.Equals(ip) ?? false)
                 {
-                    string[] a = ip.Split('.'),
-                             b = nbi.mask.Split('.');
-                    bool[] d = new bool[4];
-                    for (byte c = 0; c < 4; c++)
+                    if (nbi.Forever)
                     {
-                        d[c] = false;
-
-                        if (b[c] == "*")
-                            d[c] = true;
-                        else if (b[c] == a[c])
-                            d[c] = true;
-                        else if (b[c].Contains("/"))
-                        {
-                            byte n = byte.Parse(b[c].Split('/')[0]),
-                                 x = byte.Parse(b[c].Split('/')[1]);
-                            byte t = byte.Parse(a[c]);
-                            d[c] = t >= n && t <= x;
-                        }
+                        return false;
                     }
 
-                    byte cnt = 0;
-                    foreach (bool u in d.Where(u => u))
-                        cnt++;
-
-                    if (cnt >= 4)
+                    if (nbi.TimeEnd.CompareTo(DateTime.Now) == 1)
+                    {
                         return false;
+                    }
+                }
+
+                if (nbi.Mask == null)
+                {
+                    continue;
+                }
+
+                string[] a = ip.Split('.'),
+                         b = nbi.Mask.Split('.');
+                bool[] d = new bool[4];
+                for (byte c = 0; c < 4; c++)
+                {
+                    d[c] = false;
+
+                    if (b[c] == "*")
+                    {
+                        d[c] = true;
+                    }
+                    else if (b[c] == a[c])
+                    {
+                        d[c] = true;
+                    }
+                    else if (b[c].Contains("/"))
+                    {
+                        byte n = byte.Parse(b[c].Split('/')[0]),
+                             x = byte.Parse(b[c].Split('/')[1]);
+                        byte t = byte.Parse(a[c]);
+                        d[c] = (t >= n) && (t <= x);
+                    }
+                }
+
+                byte cnt = (byte)d.Count(u => u);
+
+                if (cnt >= 4)
+                {
+                    return false;
                 }
             }
 

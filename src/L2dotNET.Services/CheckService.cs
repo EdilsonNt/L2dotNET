@@ -5,16 +5,16 @@ namespace L2dotNET.Services
 {
     public class CheckService : ICheckService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public CheckService(IUnitOfWork unitOfWork)
         {
-            this.unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
         public bool PreCheckRepository()
         {
-            return this.unitOfWork.CheckRepository.PreCheckRepository();
+            return _unitOfWork.CheckRepository.PreCheckRepository();
         }
     }
 }

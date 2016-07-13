@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using L2dotNET.GameService.Templates;
@@ -18,48 +19,45 @@ namespace L2dotNET.Tests
             try
             {
                 StatsSet set = new StatsSet();
-                StatsSet petSet = new StatsSet();
+                //StatsSet petSet = new StatsSet();
 
                 foreach (string i in xmlFilesArray)
                 {
                     doc.Load(i);
-                    if (doc.DocumentElement != null)
+
+                    XmlNodeList nodes = doc.DocumentElement?.SelectNodes("/list/npc");
+
+                    if (nodes == null)
                     {
-                        XmlNodeList nodes = doc.DocumentElement.SelectNodes("/list/npc");
+                        continue;
+                    }
 
-                        if (nodes != null)
+                    foreach (XmlNode node in nodes)
+                    {
+                        XmlElement ownerElement = node.Attributes?[0].OwnerElement;
+                        if ((ownerElement != null) && (node.Attributes != null) && "npc".Equals(ownerElement.Name))
                         {
-                            foreach (XmlNode node in nodes)
-                            {
-                                if (node.Attributes != null)
-                                {
-                                    XmlElement ownerElement = node.Attributes[0].OwnerElement;
-                                    if (ownerElement != null && (node.Attributes != null && "npc".Equals(ownerElement.Name)))
-                                    {
-                                        XmlNamedNodeMap attrs = node.Attributes;
+                            XmlNamedNodeMap attrs = node.Attributes;
 
-                                        int npcId = int.Parse(attrs.GetNamedItem("id").Value);
-                                        int templateId = attrs.GetNamedItem("idTemplate") == null ? npcId : int.Parse(attrs.GetNamedItem("idTemplate").Value);
+                            int npcId = int.Parse(attrs.GetNamedItem("id").Value);
+                            int templateId = attrs.GetNamedItem("idTemplate") == null ? npcId : int.Parse(attrs.GetNamedItem("idTemplate").Value);
 
-                                        set.Set("id", npcId);
-                                        set.Set("idTemplate", templateId);
-                                        set.Set("name", attrs.GetNamedItem("name").Value);
-                                        set.Set("title", attrs.GetNamedItem("title").Value);
+                            set.Set("id", npcId);
+                            set.Set("idTemplate", templateId);
+                            set.Set("name", attrs.GetNamedItem("name").Value);
+                            set.Set("title", attrs.GetNamedItem("title").Value);
 
-                                        _npcs.Add(npcId, new NpcTemplate(set));
-                                    }
-                                }
-                                set.Clear();
-                            }
+                            _npcs.Add(npcId, new NpcTemplate(set));
                         }
+                        set.Clear();
                     }
                 }
             }
-                //catch (Exception e)
-                //{
-                //    //_log.log(Level.SEVERE, "NpcTable: Error parsing NPC templates : ", e);
-                //}
-            finally { }
+            catch (Exception e)
+            {
+                Console.WriteLine($"MapRegionTest Error: {e.Message}");
+                //_log.log(Level.SEVERE, "NpcTable: Error parsing NPC templates : ", e);
+            }
         }
     }
 }

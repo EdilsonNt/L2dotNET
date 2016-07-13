@@ -17,7 +17,7 @@ namespace L2dotNET.LoginService.Network
 {
     public class LoginClient
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(LoginClient));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(LoginClient));
 
         public int SessionId;
         public EndPoint Address { get; set; }
@@ -35,17 +35,17 @@ namespace L2dotNET.LoginService.Network
             Address = tcpClient.Client.RemoteEndPoint;
             SessionId = new Random().Next(int.MaxValue);
 
-            initializeNetwork();
+            InitializeNetwork();
         }
 
-        public void initializeNetwork()
+        public void InitializeNetwork()
         {
             RsaPair = ClientManager.Instance.GetScrambledKeyPair();
             BlowfishKey = ClientManager.Instance.GetBlowfishKey();
             _loginCrypt = new LoginCrypt();
-            _loginCrypt.updateKey(BlowfishKey);
+            _loginCrypt.UpdateKey(BlowfishKey);
 
-            new Thread(read).Start();
+            new Thread(Read).Start();
             new Thread(SendInit).Start();
         }
 
@@ -57,7 +57,7 @@ namespace L2dotNET.LoginService.Network
         public void Send(Packet p)
         {
             byte[] data = p.GetBuffer();
-            data = _loginCrypt.encrypt(data, 0, data.Length);
+            data = _loginCrypt.Encrypt(data, 0, data.Length);
             List<byte> array = new List<byte>();
             array.AddRange(BitConverter.GetBytes((short)(data.Length + 2)));
             array.AddRange(data);
@@ -66,17 +66,17 @@ namespace L2dotNET.LoginService.Network
             NetStream.Flush();
         }
 
-        public void read()
+        public void Read()
         {
             try
             {
                 _buffer = new byte[2];
-                NetStream.BeginRead(_buffer, 0, 2, new AsyncCallback(OnReceiveCallbackStatic), null);
+                NetStream.BeginRead(_buffer, 0, 2, OnReceiveCallbackStatic, null);
             }
             catch (Exception ex)
             {
-                log.Error($"Error: {ex.Message}");
-                close();
+                Log.Error($"Error: {ex.Message}");
+                Close();
                 throw;
             }
         }
@@ -87,21 +87,23 @@ namespace L2dotNET.LoginService.Network
             {
                 int rs = NetStream.EndRead(result);
 
-                if (rs > 0)
+                if (rs <= 0)
                 {
-                    short Length = BitConverter.ToInt16(_buffer, 0);
-                    _buffer = new byte[Length - 2];
-                    NetStream.BeginRead(_buffer, 0, Length - 2, new AsyncCallback(OnReceiveCallback), result.AsyncState);
+                    return;
                 }
+
+                short length = BitConverter.ToInt16(_buffer, 0);
+                _buffer = new byte[length - 2];
+                NetStream.BeginRead(_buffer, 0, length - 2, OnReceiveCallback, result.AsyncState);
             }
             catch (Exception s)
             {
-                log.Warn(Address + $" was closed by force. {s}");
-                close();
+                Log.Warn(Address + $" was closed by force. {s}");
+                Close();
             }
         }
 
-        public void close()
+        public void Close()
         {
             ClientManager.Instance.RemoveClient(this);
         }
@@ -114,14 +116,14 @@ namespace L2dotNET.LoginService.Network
             byte[] buff = new byte[_buffer.Length];
             _buffer.CopyTo(buff, 0);
 
-            if (!_loginCrypt.decrypt(ref buff, 0, buff.Length))
+            if (!_loginCrypt.Decrypt(ref buff, 0, buff.Length))
             {
-                log.Error($"Blowfish failed on {Address}. Please restart auth server.");
+                Log.Error($"Blowfish failed on {Address}. Please restart auth server.");
             }
             else
             {
                 Handle(new Packet(1, buff));
-                new System.Threading.Thread(read).Start();
+                new Thread(Read).Start();
             }
         }
 
@@ -143,11 +145,11 @@ namespace L2dotNET.LoginService.Network
                     new RequestServerList(packet, this).RunImpl();
                     break;
                 case 0x07:
-                    new AuthGameGuard(packet, this).RunImpl();
+                    new AuthGameGuard(this).RunImpl();
                     break;
 
                 default:
-                    log.Warn($"LoginClient: received unk request {packet.FirstOpcode}");
+                    Log.Warn($"LoginClient: received unk request {packet.FirstOpcode}");
                     break;
             }
 
@@ -155,22 +157,22 @@ namespace L2dotNET.LoginService.Network
             //    new Thread(new ThreadStart(msg.Run)).Start();
         }
 
-        public int login1,
-                   login2;
+        public int Login1,
+                   Login2;
 
-        public void setLoginPair(int key1, int key2)
+        public void SetLoginPair(int key1, int key2)
         {
-            login1 = key1;
-            login2 = key2;
+            Login1 = key1;
+            Login2 = key2;
         }
 
-        public int play1,
-                   play2;
+        public int Play1,
+                   Play2;
 
-        public void setPlayPair(int key1, int key2)
+        public void SetPlayPair(int key1, int key2)
         {
-            play1 = key1;
-            play2 = key2;
+            Play1 = key1;
+            Play2 = key2;
         }
 
         public AccountModel ActiveAccount { get; set; }

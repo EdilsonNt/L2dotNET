@@ -1,55 +1,56 @@
 ﻿using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Playable;
 using L2dotNET.GameService.Model.Player;
-using L2dotNET.GameService.Network.Serverpackets;
 
 namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
 {
     class RequestPetUseItem : GameServerNetworkRequest
     {
-        private int sID;
+        private int _sId;
 
         public RequestPetUseItem(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            sID = readD();
+            _sId = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
-            if (player.Summon == null || !(player.Summon is L2Pet))
+            if (!(player.Summon is L2Pet))
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
             L2Pet pet = (L2Pet)player.Summon;
 
-            if (pet._p_block_act == 1 || pet.Dead)
+            if ((pet.PBlockAct == 1) || pet.Dead)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            if (!pet.Inventory.Items.ContainsKey(sID))
-            {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.INCORRECT_ITEM);
-                player.sendActionFailed();
-                return;
-            }
+            //if (!pet.Inventory.Items.ContainsKey(sID))
+            //{
+            //    player.sendSystemMessage(SystemMessage.SystemMessageId.INCORRECT_ITEM);
+            //    player.sendActionFailed();
+            //    return;
+            //}
 
-            L2Item item = pet.Inventory.Items[sID];
+            L2Item item = pet.Inventory.Items[_sId];
 
             if (ItemHandler.Instance.Process(pet, item))
+            {
                 return;
+            }
 
-            player.sendActionFailed();
+            player.SendActionFailed();
         }
     }
 }

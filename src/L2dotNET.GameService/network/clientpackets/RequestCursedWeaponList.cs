@@ -7,19 +7,19 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestCursedWeaponList(GameClient client, byte[] data)
         {
-            base.makeme(client, data, 2);
+            Makeme(client, data, 2);
         }
 
-        public override void read()
+        public override void Read()
         {
             // nothing
         }
 
-        public override void run()
+        public override void Run()
         {
-            int[] ids = CursedWeapons.getInstance().getWeaponIds();
+            int[] ids = CursedWeapons.GetInstance().GetWeaponIds();
 
-            Client.sendPacket(new ExCursedWeaponList(ids));
+            Client.SendPacket(new ExCursedWeaponList(ids));
         }
     }
 }

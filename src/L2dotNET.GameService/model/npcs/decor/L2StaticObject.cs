@@ -11,29 +11,31 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
         /// <summary>
         /// EL2_DOOR (1), EL2_AIRSHIPKEY (3)
         /// </summary>
-        public int StaticID;
+        public int StaticId;
         public int ClanID = -1;
-        public int MeshID = 0;
+        public int MeshId = 0;
         public int StructureId = 0;
         public int Type = 0;
         public byte Closed = 1;
-        public ShowTownMap townMap;
-        public string htm;
-        public int pdef;
-        public int mdef;
+        public ShowTownMap TownMap;
+        public string Htm;
+        public int Pdef;
+        public int Mdef;
         public bool UnlockTrigger = false;
         public bool UnlockSkill = false;
         public bool UnlockNpc = false;
 
-        public override void broadcastUserInfo()
+        public override void BroadcastUserInfo()
         {
-            foreach (L2Player obj in knownObjects.Values.OfType<L2Player>())
-                obj.sendPacket(new StaticObject(this));
+            foreach (L2Player obj in KnownObjects.Values.OfType<L2Player>())
+            {
+                obj.SendPacket(new StaticObject(this));
+            }
         }
 
-        public override void onAction(L2Player player)
+        public override void OnAction(L2Player player)
         {
-            player.sendMessage(asString());
+            player.SendMessage(AsString());
 
             player.ChangeTarget(this);
         }
@@ -43,7 +45,7 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
             return 1;
         }
 
-        public byte ShowHP()
+        public byte ShowHp()
         {
             //TODO castle war
             return 0;
@@ -59,16 +61,16 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
             return 0;
         }
 
-        public void setLoc(string[] p)
+        public void SetLoc(string[] p)
         {
             X = Convert.ToInt32(p[0]);
             Y = Convert.ToInt32(p[1]);
             Z = Convert.ToInt32(p[2]);
         }
 
-        public void setTex(string[] d)
+        public void SetTex(string[] d)
         {
-            townMap = new ShowTownMap("town_map." + d[0], Convert.ToInt32(d[1]), Convert.ToInt32(d[2]));
+            TownMap = new ShowTownMap("town_map." + d[0], Convert.ToInt32(d[1]), Convert.ToInt32(d[2]));
         }
     }
 }

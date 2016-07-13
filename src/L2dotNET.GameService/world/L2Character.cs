@@ -17,7 +17,7 @@ namespace L2dotNET.GameService.World
 {
     public class L2Character : L2Object
     {
-        public SortedList<int, TSkill> _skills = new SortedList<int, TSkill>();
+        public SortedList<int, Skill> Skills = new SortedList<int, Skill>();
 
         public virtual string Name { get; set; }
         public virtual string Title { get; set; }
@@ -53,15 +53,15 @@ namespace L2dotNET.GameService.World
         public const int AbnormalMaskEventCrown2 = 0x000040;
         public const int AbnormalMaskEventCrown3 = 0x000080;
 
-        public virtual void updateAbnormalEffect() { }
+        public virtual void UpdateAbnormalEffect() { }
 
-        public virtual void updateAbnormalExEffect() { }
+        public virtual void UpdateAbnormalExEffect() { }
 
-        public virtual void updateAbnormalEventEffect() { }
+        public virtual void UpdateAbnormalEventEffect() { }
 
-        public StandartAiTemplate AICharacter = new StandartAiTemplate();
+        public StandartAiTemplate AiCharacter = new StandartAiTemplate();
 
-        public override void onAction(L2Player player)
+        public override void OnAction(L2Player player)
         {
             bool newtarget = false;
             if (player.CurrentTarget == null)
@@ -71,7 +71,7 @@ namespace L2dotNET.GameService.World
             }
             else
             {
-                if (player.CurrentTarget.ObjID != this.ObjID)
+                if (player.CurrentTarget.ObjId != ObjId)
                 {
                     player.CurrentTarget = this;
                     newtarget = true;
@@ -80,11 +80,11 @@ namespace L2dotNET.GameService.World
 
             if (newtarget)
             {
-                player.sendPacket(new MyTargetSelected(this.ObjID, 0));
+                player.SendPacket(new MyTargetSelected(ObjId, 0));
             }
         }
 
-        public override void onForcedAttack(L2Player player)
+        public override void OnForcedAttack(L2Player player)
         {
             bool newtarget = false;
             if (player.CurrentTarget == null)
@@ -94,7 +94,7 @@ namespace L2dotNET.GameService.World
             }
             else
             {
-                if (player.CurrentTarget.ObjID != this.ObjID)
+                if (player.CurrentTarget.ObjId != ObjId)
                 {
                     player.CurrentTarget = this;
                     newtarget = true;
@@ -103,10 +103,12 @@ namespace L2dotNET.GameService.World
 
             if (newtarget)
             {
-                player.sendPacket(new MyTargetSelected(this.ObjID, 0));
+                player.SendPacket(new MyTargetSelected(ObjId, 0));
             }
             else
-                player.sendActionFailed();
+            {
+                player.SendActionFailed();
+            }
         }
 
         public override void SetRegion(L2WorldRegion newRegion)
@@ -115,442 +117,452 @@ namespace L2dotNET.GameService.World
             if (Region != null)
             {
                 if (newRegion != null)
+                {
                     Region.RevalidateZones(this);
+                }
                 else
+                {
                     Region.RemoveFromZones(this);
+                }
             }
 
             base.SetRegion(newRegion);
         }
 
-        public void addSkill(int id, int lvl, bool updDb, bool update)
+        public void AddSkill(int id, int lvl, bool updDb, bool update)
         {
-            TSkill skill = TSkillTable.Instance.Get(id, lvl);
+            Skill skill = SkillTable.Instance.Get(id, lvl);
             if (skill != null)
-                addSkill(skill, updDb, update);
+            {
+                AddSkill(skill, updDb, update);
+            }
         }
 
-        public virtual void addSkill(TSkill newsk, bool updDb, bool update)
+        public virtual void AddSkill(Skill newsk, bool updDb, bool update)
         {
-            lock (_skills)
+            lock (Skills)
             {
-                if (_skills.ContainsKey(newsk.skill_id))
+                if (Skills.ContainsKey(newsk.SkillId))
                 {
-                    if (newsk.OpType == TSkillOperational.P)
-                        removeStats(_skills[newsk.skill_id], this);
+                    if (newsk.OpType == SkillOperational.P)
+                    {
+                        RemoveStats(Skills[newsk.SkillId], this);
+                    }
 
-                    _skills.Remove(newsk.skill_id);
+                    Skills.Remove(newsk.SkillId);
                 }
+
+                Skills.Add(newsk.SkillId, newsk);
             }
 
-            _skills.Add(newsk.skill_id, newsk);
-
-            if (newsk.OpType == TSkillOperational.P)
-                addStats(newsk, this);
+            if (newsk.OpType == SkillOperational.P)
+            {
+                AddStats(newsk, this);
+            }
         }
 
         public void SetInsisdeZone(ZoneId zone, bool state)
         {
             if (state)
+            {
                 _zones[(int)zone.Id]++;
+            }
             else
             {
                 _zones[(int)zone.Id]--;
-                if (_zones[(int)zone.Id] < 0)
-                    _zones[(int)zone.Id] = 0;
             }
         }
 
-        public virtual void removeSkill(int id, bool updDb, bool update)
+        public virtual void RemoveSkill(int id, bool updDb, bool update)
         {
-            lock (_skills)
+            lock (Skills)
             {
-                if (_skills.ContainsKey(id))
+                if (!Skills.ContainsKey(id))
                 {
-                    if (_skills[id].OpType == TSkillOperational.P)
-                        removeStats(_skills[id], this);
-
-                    _skills.Remove(id);
+                    return;
                 }
+
+                if (Skills[id].OpType == SkillOperational.P)
+                {
+                    RemoveStats(Skills[id], this);
+                }
+
+                Skills.Remove(id);
             }
         }
 
-        private void removeStats(TSkill skill, L2Character caster)
+        private void RemoveStats(Skill skill, L2Character caster)
         {
-            if (skill.effects.Count > 0)
+            if (skill.Effects.Count <= 0)
             {
-                TEffectResult result = CharacterStat.Stop(skill.effects, caster);
-                if (this is L2Player)
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                    else
-                    {
-                        if (result.sus != null)
-                        {
-                            StatusUpdate su = new StatusUpdate(ObjID);
-                            foreach (int stat in result.sus.Keys)
-                                su.add(stat, (int)result.sus[stat]);
-
-                            broadcastPacket(su, false);
-
-                            if (this is L2Player && result.HpMpCp == 1 && ((L2Player)this).Party != null)
-                                ((L2Player)this).Party.broadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
-                        }
-                    }
-                }
-                else
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                }
-            }
-        }
-
-        public void removeStats(L2Item item)
-        {
-            if (item.Template.stats.Count > 0)
-            {
-                TEffectResult result = CharacterStat.Stop(item.Template.stats, this);
-                if (this is L2Player)
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                    else
-                    {
-                        if (result.sus != null)
-                        {
-                            StatusUpdate su = new StatusUpdate(ObjID);
-                            foreach (int stat in result.sus.Keys)
-                                su.add(stat, (int)result.sus[stat]);
-
-                            broadcastPacket(su, false);
-
-                            if (this is L2Player && result.HpMpCp == 1 && ((L2Player)this).Party != null)
-                                ((L2Player)this).Party.broadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
-                        }
-                    }
-                }
-                else
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                }
-            }
-        }
-
-        public void removeStat(TEffect effect)
-        {
-            List<TEffect> ts = new List<TEffect>();
-            ts.Add(effect);
-            TEffectResult result = CharacterStat.Stop(ts, this);
-            if (this is L2Player)
-            {
-                if (result.TotalUI == 1)
-                    broadcastUserInfo();
-                else
-                {
-                    if (result.sus != null)
-                    {
-                        StatusUpdate su = new StatusUpdate(ObjID);
-                        foreach (int stat in result.sus.Keys)
-                            su.add(stat, (int)result.sus[stat]);
-
-                        broadcastPacket(su, false);
-
-                        if (this is L2Player && result.HpMpCp == 1 && ((L2Player)this).Party != null)
-                            ((L2Player)this).Party.broadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
-                    }
-                }
-            }
-            else
-            {
-                if (result.TotalUI == 1)
-                    broadcastUserInfo();
-            }
-        }
-
-        private void addStats(TSkill skill, L2Character caster)
-        {
-            if (skill.effects == null)
                 return;
-
-            if (skill.effects.Count > 0)
-            {
-                TEffectResult result = CharacterStat.Apply(skill.effects, caster);
-                if (this is L2Player)
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                    else
-                    {
-                        if (result.sus != null)
-                        {
-                            StatusUpdate su = new StatusUpdate(ObjID);
-                            foreach (int stat in result.sus.Keys)
-                                su.add(stat, (int)result.sus[stat]);
-
-                            broadcastPacket(su, false);
-
-                            if (this is L2Player && result.HpMpCp == 1 && ((L2Player)this).Party != null)
-                                ((L2Player)this).Party.broadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
-                        }
-                    }
-                }
-                else
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                }
             }
-        }
 
-        public void addStats(L2Item item)
-        {
-            if (item.Template.stats.Count > 0)
-            {
-                TEffectResult result = CharacterStat.Apply(item.Template.stats, this);
-                if (this is L2Player)
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                    else
-                    {
-                        if (result.sus != null)
-                        {
-                            StatusUpdate su = new StatusUpdate(ObjID);
-                            foreach (int stat in result.sus.Keys)
-                                su.add(stat, (int)result.sus[stat]);
-
-                            broadcastPacket(su, false);
-
-                            if (this is L2Player && result.HpMpCp == 1 && ((L2Player)this).Party != null)
-                                ((L2Player)this).Party.broadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
-                        }
-                    }
-                }
-                else
-                {
-                    if (result.TotalUI == 1)
-                        broadcastUserInfo();
-                }
-            }
-        }
-
-        public void addStat(TEffect effect)
-        {
-            List<TEffect> ts = new List<TEffect>();
-            ts.Add(effect);
-            TEffectResult result = CharacterStat.Apply(ts, this);
+            EffectResult result = CharacterStat.Stop(skill.Effects, caster);
             if (this is L2Player)
             {
-                if (result.TotalUI == 1)
-                    broadcastUserInfo();
+                if (result.TotalUi == 1)
+                {
+                    BroadcastUserInfo();
+                }
                 else
                 {
-                    if (result.sus != null)
+                    if (result.Sus == null)
                     {
-                        StatusUpdate su = new StatusUpdate(ObjID);
-                        foreach (int stat in result.sus.Keys)
-                            su.add(stat, (int)result.sus[stat]);
+                        return;
+                    }
 
-                        broadcastPacket(su, false);
+                    StatusUpdate su = new StatusUpdate(ObjId);
+                    foreach (int stat in result.Sus.Keys)
+                    {
+                        su.Add(stat, (int)result.Sus[stat]);
+                    }
 
-                        if (this is L2Player && result.HpMpCp == 1 && ((L2Player)this).Party != null)
-                            ((L2Player)this).Party.broadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                    BroadcastPacket(su, false);
+
+                    if (this is L2Player && (result.HpMpCp == 1))
+                    {
+                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
                     }
                 }
             }
             else
             {
-                if (result.TotalUI == 1)
-                    broadcastUserInfo();
-            }
-        }
-
-        public void stopEffect(TSkill skill, L2Character caster)
-        {
-            AbnormalEffect ex = _effects.FirstOrDefault(e => e.id == skill.skill_id);
-
-            if (ex != null)
-            {
-                lock (_effects)
+                if (result.TotalUi == 1)
                 {
-                    ex.forcedStop(true, true);
-                    _effects.Remove(ex);
+                    BroadcastUserInfo();
                 }
             }
         }
 
-        public void onAveEnd(AbnormalEffect ave, bool msg, bool icon, L2Character caster)
+        public void RemoveStats(L2Item item) { }
+
+        public void RemoveStat(Effect effect)
+        {
+            List<Effect> ts = new List<Effect>
+                              {
+                                  effect
+                              };
+            EffectResult result = CharacterStat.Stop(ts, this);
+            if (this is L2Player)
+            {
+                if (result.TotalUi == 1)
+                {
+                    BroadcastUserInfo();
+                }
+                else
+                {
+                    if (result.Sus == null)
+                    {
+                        return;
+                    }
+
+                    StatusUpdate su = new StatusUpdate(ObjId);
+                    foreach (int stat in result.Sus.Keys)
+                    {
+                        su.Add(stat, (int)result.Sus[stat]);
+                    }
+
+                    BroadcastPacket(su, false);
+
+                    if (this is L2Player && (result.HpMpCp == 1))
+                    {
+                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                    }
+                }
+            }
+            else
+            {
+                if (result.TotalUi == 1)
+                {
+                    BroadcastUserInfo();
+                }
+            }
+        }
+
+        private void AddStats(Skill skill, L2Character caster)
+        {
+            if (!(skill.Effects?.Count > 0))
+            {
+                return;
+            }
+
+            EffectResult result = CharacterStat.Apply(skill.Effects, caster);
+            if (this is L2Player)
+            {
+                if (result.TotalUi == 1)
+                {
+                    BroadcastUserInfo();
+                }
+                else
+                {
+                    if (result.Sus == null)
+                    {
+                        return;
+                    }
+
+                    StatusUpdate su = new StatusUpdate(ObjId);
+                    foreach (int stat in result.Sus.Keys)
+                    {
+                        su.Add(stat, (int)result.Sus[stat]);
+                    }
+
+                    BroadcastPacket(su, false);
+
+                    if (this is L2Player && (result.HpMpCp == 1))
+                    {
+                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                    }
+                }
+            }
+            else
+            {
+                if (result.TotalUi == 1)
+                {
+                    BroadcastUserInfo();
+                }
+            }
+        }
+
+        public void AddStats(L2Item item) { }
+
+        public void AddStat(Effect effect)
+        {
+            List<Effect> ts = new List<Effect>
+                              {
+                                  effect
+                              };
+            EffectResult result = CharacterStat.Apply(ts, this);
+            if (this is L2Player)
+            {
+                if (result.TotalUi == 1)
+                {
+                    BroadcastUserInfo();
+                }
+                else
+                {
+                    if (result.Sus == null)
+                    {
+                        return;
+                    }
+
+                    StatusUpdate su = new StatusUpdate(ObjId);
+                    foreach (int stat in result.Sus.Keys)
+                    {
+                        su.Add(stat, (int)result.Sus[stat]);
+                    }
+
+                    BroadcastPacket(su, false);
+
+                    if (this is L2Player && (result.HpMpCp == 1))
+                    {
+                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                    }
+                }
+            }
+            else
+            {
+                if (result.TotalUi == 1)
+                {
+                    BroadcastUserInfo();
+                }
+            }
+        }
+
+        public void StopEffect(Skill skill, L2Character caster)
+        {
+            AbnormalEffect ex = Effects.FirstOrDefault(e => e.Id == skill.SkillId);
+
+            if (ex == null)
+            {
+                return;
+            }
+
+            lock (Effects)
+            {
+                ex.ForcedStop(true, true);
+                Effects.Remove(ex);
+            }
+        }
+
+        public void OnAveEnd(AbnormalEffect ave, bool msg, bool icon, L2Character caster)
         {
             int olda = AbnormalBitMask;
-            if (ave.skill.abnormal_visual_effect != -1)
+            if (ave.Skill.AbnormalVisualEffect != -1)
             {
-                AbnormalBitMask &= ~ave.skill.abnormal_visual_effect;
+                AbnormalBitMask &= ~ave.Skill.AbnormalVisualEffect;
             }
 
-            bool uis = false;
-            if (AbnormalBitMask != olda)
-            {
-                uis = true;
-            }
+            bool uis = AbnormalBitMask != olda;
 
-            removeStats(ave.skill, caster);
+            RemoveStats(ave.Skill, caster);
 
             if (msg)
-                sendPacket(new SystemMessage(SystemMessage.SystemMessageId.EFFECT_S1_DISAPPEARED).AddSkillName(ave.id, ave.lvl));
+            {
+                SendPacket(new SystemMessage(SystemMessage.SystemMessageId.EffectS1Disappeared).AddSkillName(ave.Id, ave.Lvl));
+            }
 
             if (uis)
-                broadcastUserInfo();
+            {
+                BroadcastUserInfo();
+            }
 
             if (icon)
-                updateMagicEffectIcons();
+            {
+                UpdateMagicEffectIcons();
+            }
         }
 
-        public virtual void updateMagicEffectIcons() { }
+        public virtual void UpdateMagicEffectIcons() { }
 
-        public virtual void updateSkillList() { }
+        public virtual void UpdateSkillList() { }
 
-        public virtual void sendMessage(string p) { }
+        public virtual void SendMessage(string p) { }
 
-        public virtual void sendActionFailed() { }
+        public virtual void SendActionFailed() { }
 
-        public virtual void sendSystemMessage(SystemMessage.SystemMessageId msgId) { }
+        public virtual void SendSystemMessage(SystemMessage.SystemMessageId msgId) { }
 
-        public virtual void onPickUp(L2Item item) { }
+        public virtual void OnPickUp(L2Item item) { }
 
-        public int _buffMax = Config.Config.Instance.gameplayConfig.MaxBuffs;
-        public LinkedList<AbnormalEffect> _effects = new LinkedList<AbnormalEffect>();
+        public int BuffMax = Config.Config.Instance.GameplayConfig.PlayerConfig.Buff.MaxBuffsAmount;
+        public LinkedList<AbnormalEffect> Effects = new LinkedList<AbnormalEffect>();
 
-        public override void addAbnormal(TSkill skill, L2Character caster, bool permanent, bool unlim)
+        public override void AddAbnormal(Skill skill, L2Character caster, bool permanent, bool unlim)
         {
             if (!permanent)
             {
-                if (skill.debuff == 1)
+                if (skill.Debuff == 1)
                 {
-                    bool success = true; // TODO _stats.calcDebuffSuccess(skill, caster);
+                    //const bool success = true; // TODO _stats.calcDebuffSuccess(skill, caster);
 
-                    if (!success)
-                    {
-                        caster.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1_RESISTED_YOUR_S2).AddString(Name).AddSkillName(skill.skill_id, skill.level));
+                    //if (!success)
+                    //{
+                    //    caster.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1_RESISTED_YOUR_S2).AddString(Name).AddSkillName(skill.skill_id, skill.level));
 
-                        sendPacket(new SystemMessage(SystemMessage.SystemMessageId.RESISTED_S1_MAGIC).AddString(caster.Name));
-                        return;
-                    }
+                    //    sendPacket(new SystemMessage(SystemMessage.SystemMessageId.RESISTED_S1_MAGIC).AddString(caster.Name));
+                    //    return;
+                    //}
                 }
             }
 
-            if (skill.abnormal_time == 0)
+            if (skill.AbnormalTime == 0)
             {
-                onAveStart(skill, caster);
+                OnAveStart(skill, caster);
                 return;
             }
 
             bool cnew = true;
 
             List<AbnormalEffect> nulled = new List<AbnormalEffect>();
-            foreach (AbnormalEffect ave in _effects.Where(ave => ave.active != 0))
+            foreach (AbnormalEffect ave in Effects.Where(ave => ave.Active != 0))
             {
-                if (ave.skill.skill_id == skill.skill_id && ave.skill.level >= skill.level)
+                if ((ave.Skill.SkillId == skill.SkillId) && (ave.Skill.Level >= skill.Level))
                 {
                     cnew = false;
                     break;
                 }
 
-                if ((ave.skill.abnormal_type != null && skill.abnormal_type != null) && ave.skill.abnormal_type.Equals(skill.abnormal_type))
+                if ((ave.Skill.AbnormalType == null) || (skill.AbnormalType == null) || !ave.Skill.AbnormalType.Equals(skill.AbnormalType))
                 {
-                    if (ave.skill.effect_point > skill.effect_point)
-                    {
-                        cnew = false;
-                        break;
-                    }
-                    else
-                    {
-                        nulled.Add(ave);
-                    }
+                    continue;
                 }
+
+                if (ave.Skill.EffectPoint > skill.EffectPoint)
+                {
+                    cnew = false;
+                    break;
+                }
+
+                nulled.Add(ave);
             }
 
-            lock (_effects)
+            lock (Effects)
             {
                 foreach (AbnormalEffect ei in nulled)
                 {
-                    ei.forcedStop(false, false);
-                    _effects.Remove(ei);
+                    ei.ForcedStop(false, false);
+                    Effects.Remove(ei);
                 }
             }
 
             nulled.Clear();
 
             if (!cnew)
+            {
                 return;
+            }
 
-            AbnormalEffect ic = new AbnormalEffect();
-            ic.id = skill.skill_id;
-            ic.lvl = skill.level;
-            ic.time = unlim ? -2 : skill.abnormal_time;
-            ic.active = 1;
-            ic._owner = this;
-            ic.skill = skill;
-            ic.timer();
+            AbnormalEffect ic = new AbnormalEffect
+                                {
+                                    Id = skill.SkillId,
+                                    Lvl = skill.Level,
+                                    Time = unlim ? -2 : skill.AbnormalTime,
+                                    Active = 1,
+                                    Owner = this,
+                                    Skill = skill
+                                };
+            ic.Timer();
 
-            if (_effects.Count >= _buffMax)
+            if (Effects.Count >= BuffMax)
             {
                 int id = 1;
-                foreach (AbnormalEffect ave in _effects)
+                foreach (AbnormalEffect ave in Effects)
                 {
                     if (id == 1)
                     {
-                        ave.forcedStop(false, false);
+                        ave.ForcedStop(false, false);
                         break;
                     }
+
                     id++;
                 }
 
-                lock (_effects)
+                lock (Effects)
                 {
-                    _effects.RemoveFirst();
+                    Effects.RemoveFirst();
                 }
             }
 
-            _effects.AddLast(ic);
-            onAveStart(skill, caster);
+            Effects.AddLast(ic);
+            OnAveStart(skill, caster);
 
             {
-                SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YOU_FEEL_S1_EFFECT);
-                sm.AddSkillName(ic.id, ic.lvl);
-                sendPacket(sm);
+                SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YouFeelS1Effect);
+                sm.AddSkillName(ic.Id, ic.Lvl);
+                SendPacket(sm);
             }
 
-            updateMagicEffectIcons();
+            UpdateMagicEffectIcons();
         }
 
-        public void addAbnormalSPA(int skillId, bool unlim)
+        public void AddAbnormalSpa(int skillId, bool unlim)
         {
             bool addNew = true;
             int lvlnext = 1;
             List<AbnormalEffect> nulled = new List<AbnormalEffect>();
-            foreach (AbnormalEffect ave in _effects.Where(ave => ave.active != 0 && ave.skill.skill_id == skillId))
+            foreach (AbnormalEffect ave in Effects.Where(ave => (ave.Active != 0) && (ave.Skill.SkillId == skillId)))
             {
                 addNew = false;
-                if (ave.skill.level <= 10)
+                if (ave.Skill.Level > 10)
                 {
-                    addNew = true;
-                    lvlnext = ave.skill.level + 1;
-                    nulled.Add(ave);
-                    break;
+                    continue;
                 }
+
+                addNew = true;
+                lvlnext = ave.Skill.Level + 1;
+                nulled.Add(ave);
+                break;
             }
 
             if (nulled.Count > 0)
             {
-                lock (_effects)
+                lock (Effects)
                 {
                     foreach (AbnormalEffect ei in nulled)
                     {
-                        ei.forcedStop(false, false);
-                        _effects.Remove(ei);
+                        ei.ForcedStop(false, false);
+                        Effects.Remove(ei);
                     }
                 }
 
@@ -558,148 +570,168 @@ namespace L2dotNET.GameService.World
             }
 
             if (!addNew)
+            {
                 return;
+            }
 
-            TSkill newsk = TSkillTable.Instance.Get(skillId, lvlnext);
-            AbnormalEffect ic = new AbnormalEffect();
-            ic.id = newsk.skill_id;
-            ic.lvl = newsk.level;
-            ic.time = unlim ? -2 : newsk.abnormal_time;
-            ic.active = 1;
-            ic._owner = this;
-            ic.skill = newsk;
-            ic.timer();
+            Skill newsk = SkillTable.Instance.Get(skillId, lvlnext);
+            AbnormalEffect ic = new AbnormalEffect
+                                {
+                                    Id = newsk.SkillId,
+                                    Lvl = newsk.Level,
+                                    Time = unlim ? -2 : newsk.AbnormalTime,
+                                    Active = 1,
+                                    Owner = this,
+                                    Skill = newsk
+                                };
+            ic.Timer();
 
-            if (_effects.Count >= _buffMax)
+            if (Effects.Count >= BuffMax)
             {
                 int id = 1;
-                foreach (AbnormalEffect ave in _effects)
+                foreach (AbnormalEffect ave in Effects)
                 {
                     if (id == 1)
                     {
-                        ave.forcedStop(false, false);
+                        ave.ForcedStop(false, false);
                         break;
                     }
+
                     id++;
                 }
 
-                lock (_effects)
+                lock (Effects)
                 {
-                    _effects.RemoveFirst();
+                    Effects.RemoveFirst();
                 }
             }
 
-            _effects.AddLast(ic);
-            onAveStart(newsk, null);
+            Effects.AddLast(ic);
+            OnAveStart(newsk, null);
 
-            updateMagicEffectIcons();
+            UpdateMagicEffectIcons();
         }
 
-        public void onAveStart(TSkill skill, L2Character caster)
+        public void OnAveStart(Skill skill, L2Character caster)
         {
             int olda = AbnormalBitMask;
-            if (skill.abnormal_visual_effect != -1)
+            if (skill.AbnormalVisualEffect != -1)
             {
-                AbnormalBitMask |= skill.abnormal_visual_effect;
+                AbnormalBitMask |= skill.AbnormalVisualEffect;
             }
 
-            bool uis = false;
-            if (AbnormalBitMask != olda)
-            {
-                uis = true;
-            }
+            bool uis = AbnormalBitMask != olda;
 
-            addStats(skill, caster);
+            AddStats(skill, caster);
 
             if (uis)
-                broadcastUserInfo();
+            {
+                BroadcastUserInfo();
+            }
         }
 
-        public virtual void addEffects(L2Character caster, TSkill skill, SortedList<int, L2Object> objects)
+        public virtual void AddEffects(L2Character caster, Skill skill, SortedList<int, L2Object> objects)
         {
             foreach (L2Object target in objects.Values)
             {
-                target.addAbnormal(skill, caster, false, false);
+                target.AddAbnormal(skill, caster, false, false);
             }
         }
 
-        public virtual void addEffect(L2Character caster, TSkill skill, bool permanent, bool unlim)
+        public virtual void AddEffect(L2Character caster, Skill skill, bool permanent, bool unlim)
         {
-            addAbnormal(skill, caster, permanent, unlim);
+            AddAbnormal(skill, caster, permanent, unlim);
         }
 
-        public int clientPosX,
-                   clientPosY,
-                   clientPosZ,
-                   clientHeading;
+        public int ClientPosX,
+                   ClientPosY,
+                   ClientPosZ,
+                   ClientHeading;
 
-        public virtual void teleport(int x, int y, int z)
+        public virtual void Teleport(int x, int y, int z)
         {
             ChangeTarget();
             //clearKnowns(true);
             X = x;
             Y = y;
             Z = z;
-            if (this is L2Player)
-            {
-                if (((L2Player)this).Summon != null)
-                {
-                    L2Player pl = (L2Player)this;
-                    pl.Summon.teleport(x, y, z);
-                    pl.Summon.isTeleporting = true;
-                }
 
-                broadcastPacket(new TeleportToLocation(ObjID, x, y, z, Heading));
+            if (!(this is L2Player))
+            {
+                return;
             }
+
+            if (((L2Player)this).Summon != null)
+            {
+                L2Player pl = (L2Player)this;
+                pl.Summon.Teleport(x, y, z);
+                pl.Summon.IsTeleporting = true;
+            }
+
+            BroadcastPacket(new TeleportToLocation(ObjId, x, y, z, Heading));
         }
 
-        public int getSkillLevel(int id)
+        public int GetSkillLevel(int id)
         {
-            if (_skills.ContainsKey(id))
-                return _skills[id].level;
+            if (Skills == null)
+            {
+                return -1;
+            }
+
+            lock (Skills)
+            {
+                if (Skills.ContainsKey(id))
+                {
+                    return Skills[id].Level;
+                }
+            }
 
             return -1;
         }
 
-        private System.Timers.Timer _waterTimer;
+        private Timer _waterTimer;
         private DateTime _waterTimeDamage;
         //private bool lastInsideWater = false;
 
-        public void waterTimer()
+        public void WaterTimer()
         {
-            if (isInWater())
+            if (IsInWater())
             {
                 bool next = false;
-                if (_waterTimer == null || !_waterTimer.Enabled)
+                if ((_waterTimer == null) || !_waterTimer.Enabled)
                 {
-                    _waterTimer = new System.Timers.Timer();
-                    _waterTimer.Elapsed += new ElapsedEventHandler(waterActionTime);
+                    _waterTimer = new Timer();
+                    _waterTimer.Elapsed += WaterActionTime;
                     _waterTimer.Interval = 3000;
                     next = true;
                 }
 
-                if (next)
+                if (!next)
                 {
-                    int breath = (int)CharacterStat.getStat(TEffectType.b_breath);
-                    _waterTimeDamage = DateTime.Now.AddSeconds(breath);
-                    _waterTimer.Enabled = true;
+                    return;
+                }
 
-                    if (this is L2Player)
-                    {
-                        sendPacket(new SetupGauge(ObjID, SetupGauge.SG_color.cyan, breath * 1000));
-                    }
+                int breath = (int)CharacterStat.GetStat(EffectType.BBreath);
+                _waterTimeDamage = DateTime.Now.AddSeconds(breath);
+                _waterTimer.Enabled = true;
+
+                if (this is L2Player)
+                {
+                    SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Cyan, breath * 1000));
                 }
             }
             else
             {
-                if (_waterTimer != null && _waterTimer.Enabled)
+                if ((_waterTimer == null) || !_waterTimer.Enabled)
                 {
-                    _waterTimer.Enabled = false;
+                    return;
+                }
 
-                    if (this is L2Player)
-                    {
-                        sendPacket(new SetupGauge(ObjID, SetupGauge.SG_color.cyan, 1));
-                    }
+                _waterTimer.Enabled = false;
+
+                if (this is L2Player)
+                {
+                    SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Cyan, 1));
                 }
             }
 
@@ -738,159 +770,162 @@ namespace L2dotNET.GameService.World
             //}
         }
 
-        private void waterActionTime(object sender, ElapsedEventArgs e)
+        private void WaterActionTime(object sender, ElapsedEventArgs e)
         {
             TimeSpan ts = _waterTimeDamage - DateTime.Now;
-            if (ts.TotalMilliseconds < 0) //дыхалка кончилась. лупим по ушам
+            if (!(ts.TotalMilliseconds < 0))
             {
-                if (this is L2Player)
-                {
-                    reduceHpArea(200, 297);
-                }
-            }
-        }
-
-        public void reduceHpArea(int damage, int msgId)
-        {
-            if (Dead)
-                return;
-
-            CurHP -= damage;
-
-            StatusUpdate su = new StatusUpdate(ObjID);
-            su.add(StatusUpdate.CUR_HP, (int)CurHP);
-            su.add(StatusUpdate.MAX_HP, (int)CharacterStat.getStat(TEffectType.b_max_hp));
-            broadcastPacket(su);
-
-            if (CurHP <= 0)
-            {
-                Dead = true;
-                CurHP = 0;
-                doDie(null, true);
                 return;
             }
 
             if (this is L2Player)
-                sendPacket(new SystemMessage((SystemMessage.SystemMessageId)msgId).AddNumber((int)damage));
+            {
+                ReduceHpArea(200, 297);
+            }
         }
 
-        public override void reduceHp(L2Character attacker, double damage)
+        public void ReduceHpArea(int damage, int msgId)
         {
             if (Dead)
-                return;
-
-            if (this is L2Player && attacker is L2Player || attacker is L2Summon)
             {
-                if (CurCP > 0)
-                {
-                    CurCP -= damage;
+                return;
+            }
 
-                    if (CurCP < 0)
+            CurHp -= damage;
+
+            StatusUpdate su = new StatusUpdate(ObjId);
+            su.Add(StatusUpdate.CurHp, (int)CurHp);
+            su.Add(StatusUpdate.MaxHp, (int)CharacterStat.GetStat(EffectType.BMaxHp));
+            BroadcastPacket(su);
+
+            if (CurHp <= 0)
+            {
+                Dead = true;
+                CurHp = 0;
+                DoDie(null, true);
+                return;
+            }
+
+            if (this is L2Player)
+            {
+                SendPacket(new SystemMessage((SystemMessage.SystemMessageId)msgId).AddNumber(damage));
+            }
+        }
+
+        public override void ReduceHp(L2Character attacker, double damage)
+        {
+            if (Dead)
+            {
+                return;
+            }
+
+            if ((this is L2Player && attacker is L2Player) || attacker is L2Summon)
+            {
+                if (CurCp > 0)
+                {
+                    CurCp -= damage;
+
+                    if (CurCp < 0)
                     {
-                        damage = CurCP * -1;
-                        CurCP = 0;
+                        damage = CurCp * -1;
+                        CurCp = 0;
                     }
                 }
             }
 
-            CurHP -= damage;
+            CurHp -= damage;
 
-            StatusUpdate su = new StatusUpdate(ObjID);
-            su.add(StatusUpdate.CUR_HP, (int)CurHP);
-            su.add(StatusUpdate.CUR_CP, (int)CurCP);
-            broadcastPacket(su);
+            StatusUpdate su = new StatusUpdate(ObjId);
+            su.Add(StatusUpdate.CurHp, (int)CurHp);
+            su.Add(StatusUpdate.CurCp, (int)CurCp);
+            BroadcastPacket(su);
 
-            if (CurHP <= 0)
+            if (CurHp <= 0)
             {
-                CurHP = 0;
-                doDie(attacker, false);
+                CurHp = 0;
+                DoDie(attacker, false);
                 return;
             }
 
-            AICharacter.NotifyOnHit(attacker, damage);
+            AiCharacter.NotifyOnHit(attacker, damage);
         }
 
-        public virtual void doDie(L2Character killer, bool bytrigger)
+        public virtual void DoDie(L2Character killer, bool bytrigger)
         {
             Dead = true;
             StopRegeneration();
-            if (isAttacking())
-                abortAttack();
+            if (IsAttacking())
+            {
+                AbortAttack();
+            }
 
-            if (isCastingNow())
-                abortCast();
+            if (IsCastingNow())
+            {
+                AbortCast();
+            }
 
-            CurHP = 0;
-            StatusUpdate su = new StatusUpdate(ObjID);
-            su.add(StatusUpdate.CUR_HP, 0);
-            broadcastPacket(su);
+            CurHp = 0;
+            StatusUpdate su = new StatusUpdate(ObjId);
+            su.Add(StatusUpdate.CurHp, 0);
+            BroadcastPacket(su);
 
-            sendMessage("You died from " + killer.Name);
-            killer.sendMessage("You killed " + Name);
-            broadcastPacket(new Die(this));
+            SendMessage("You died from " + killer.Name);
+            killer.SendMessage("You killed " + Name);
+            BroadcastPacket(new Die(this));
 
-            updateMagicEffectIcons();
+            UpdateMagicEffectIcons();
 
-            killer.AICharacter.NotifyOnKill(this);
-            AICharacter.NotifyOnDie(killer);
+            killer.AiCharacter.NotifyOnKill(this);
+            AiCharacter.NotifyOnDie(killer);
 
-            AICharacter.Disable();
+            AiCharacter.Disable();
         }
 
         public virtual void DeleteByForce()
         {
-            if (AICharacter != null)
-                AICharacter.Disable();
+            AiCharacter?.Disable();
 
             StopRegeneration();
 
-            foreach (AbnormalEffect a in _effects)
-                a._timer.Enabled = false;
+            foreach (AbnormalEffect a in Effects)
+            {
+                a.MTimer.Enabled = false;
+            }
 
-            _effects.Clear();
+            Effects.Clear();
 
-            broadcastPacket(new DeleteObject(ObjID));
+            BroadcastPacket(new DeleteObject(ObjId));
             L2World.Instance.RemoveObject(this);
         }
 
-        public virtual L2Item ActiveWeapon
-        {
-            get { return null; }
-            set { }
-        }
+        public virtual L2Item ActiveWeapon => null;
 
-        public virtual L2Item SecondaryWeapon
-        {
-            get { return null; }
-            set { }
-        }
+        public virtual L2Item SecondaryWeapon => null;
 
-        public virtual L2Item ActiveArmor
-        {
-            get { return null; }
-            set { }
-        }
+        public virtual L2Item ActiveArmor => null;
 
         public L2Character CurrentTarget;
 
-        public virtual void doAttack(L2Character target)
+        public virtual void DoAttack(L2Character target)
         {
             if (target == null)
             {
-                AICharacter.NotifyTargetNull();
+                AiCharacter.NotifyTargetNull();
                 return;
             }
 
             if (target.Dead)
             {
-                AICharacter.NotifyTargetDead();
+                AiCharacter.NotifyTargetDead();
                 return;
             }
 
-            if (attack_ToHit != null && attack_ToHit.Enabled)
+            if ((AttackToHit != null) && AttackToHit.Enabled)
+            {
                 return;
+            }
 
-            if (attack_ToEnd != null && attack_ToEnd.Enabled)
+            if ((AttackToEnd != null) && AttackToEnd.Enabled)
             {
                 return;
             }
@@ -899,53 +934,26 @@ namespace L2dotNET.GameService.World
                    reqMp = 0;
 
             L2Item weapon = ActiveWeapon;
-            double timeAtk = CharacterStat.getStat(TEffectType.b_attack_spd);
+            double timeAtk = CharacterStat.GetStat(EffectType.BAttackSpd);
             bool dual = false,
                  ranged = false,
                  ss = false;
-            if (weapon != null)
-            {
-                ss = weapon.Soulshot;
-                switch (weapon.Template.WeaponType)
-                {
-                    case ItemTemplate.L2ItemWeaponType.bow:
-                        timeAtk = (1500 * 345 / timeAtk);
-                        ranged = true;
-                        break;
-                    case ItemTemplate.L2ItemWeaponType.crossbow:
-                        timeAtk = (1200 * 345 / timeAtk);
-                        ranged = true;
-                        break;
-                    case ItemTemplate.L2ItemWeaponType.dualdagger:
-                    case ItemTemplate.L2ItemWeaponType.dual:
-                        timeAtk = (1362 * 345 / timeAtk);
-                        dual = true;
-                        break;
-                    default:
-                        timeAtk = (1362 * 345 / timeAtk);
-                        break;
-                }
-                if (weapon.Template.WeaponType == ItemTemplate.L2ItemWeaponType.crossbow || weapon.Template.WeaponType == ItemTemplate.L2ItemWeaponType.bow)
-                {
-                    dist += 740;
-                    reqMp = weapon.Template.MpConsume;
-                }
-            }
+            if (weapon != null) { }
             else
             {
-                timeAtk = (1362 * 345 / timeAtk);
+                timeAtk = (1362 * 345) / timeAtk;
             }
 
-            if (!Calcs.checkIfInRange((int)dist, this, target, true))
+            if (!Calcs.CheckIfInRange((int)dist, this, target, true))
             {
-                tryMoveTo(target.X, target.Y, target.Z);
+                TryMoveTo(target.X, target.Y, target.Z);
                 return;
             }
 
-            if (reqMp > 0 && reqMp > CurMP)
+            if ((reqMp > 0) && (reqMp > CurMp))
             {
-                sendMessage("no mp " + CurMP + " " + reqMp);
-                AICharacter.NotifyMpEnd(target);
+                SendMessage("no mp " + CurMp + " " + reqMp);
+                AiCharacter.NotifyMpEnd(target);
                 return;
             }
 
@@ -953,80 +961,90 @@ namespace L2dotNET.GameService.World
 
             if (dual)
             {
-                hit1 = genHitSimple(dual, ss);
-                atk.addHit(target.ObjID, (int)hit1.damage, hit1.miss, hit1.crit, hit1.shieldDef > 0);
+                Hit1 = GenHitSimple(true, ss);
+                atk.AddHit(target.ObjId, (int)Hit1.Damage, Hit1.Miss, Hit1.Crit, Hit1.ShieldDef > 0);
 
-                hit2 = genHitSimple(dual, ss);
-                atk.addHit(target.ObjID, (int)hit2.damage, hit2.miss, hit2.crit, hit2.shieldDef > 0);
+                Hit2 = GenHitSimple(true, ss);
+                atk.AddHit(target.ObjId, (int)Hit2.Damage, Hit2.Miss, Hit2.Crit, Hit2.ShieldDef > 0);
             }
             else
             {
-                hit1 = genHitSimple(false, ss);
-                atk.addHit(target.ObjID, (int)hit1.damage, hit1.miss, hit1.crit, hit1.shieldDef > 0);
+                Hit1 = GenHitSimple(false, ss);
+                atk.AddHit(target.ObjId, (int)Hit1.Damage, Hit1.Miss, Hit1.Crit, Hit1.ShieldDef > 0);
             }
 
             CurrentTarget = target;
 
-            if (attack_ToHit == null)
+            if (AttackToHit == null)
             {
-                attack_ToHit = new Timer();
-                attack_ToHit.Elapsed += new ElapsedEventHandler(AttackDoHit);
+                AttackToHit = new Timer();
+                AttackToHit.Elapsed += AttackDoHit;
             }
 
             double timeToHit = ranged ? timeAtk * 0.5 : timeAtk * 0.6;
-            attack_ToHit.Interval = timeToHit;
-            attack_ToHit.Enabled = true;
+            AttackToHit.Interval = timeToHit;
+            AttackToHit.Enabled = true;
 
             if (dual)
             {
-                if (attack_toHitBonus == null)
+                if (AttackToHitBonus == null)
                 {
-                    attack_toHitBonus = new Timer();
-                    attack_toHitBonus.Elapsed += new ElapsedEventHandler(AttackDoHit2nd);
+                    AttackToHitBonus = new Timer();
+                    AttackToHitBonus.Elapsed += AttackDoHit2Nd;
                 }
 
-                attack_toHitBonus.Interval = timeAtk * 0.78;
-                attack_toHitBonus.Enabled = true;
+                AttackToHitBonus.Interval = timeAtk * 0.78;
+                AttackToHitBonus.Enabled = true;
             }
 
-            if (attack_ToEnd == null)
+            if (AttackToEnd == null)
             {
-                attack_ToEnd = new Timer();
-                attack_ToEnd.Elapsed += new ElapsedEventHandler(AttackDoEnd);
+                AttackToEnd = new Timer();
+                AttackToEnd.Elapsed += AttackDoEnd;
             }
 
-            attack_ToEnd.Interval = timeAtk;
-            attack_ToEnd.Enabled = true;
+            AttackToEnd.Interval = timeAtk;
+            AttackToEnd.Enabled = true;
 
-            broadcastPacket(atk);
+            BroadcastPacket(atk);
         }
 
         public class Hit
         {
-            public bool miss;
-            public double shieldDef;
-            public bool crit;
-            public double damage;
+            public bool Miss;
+            public double ShieldDef;
+            public bool Crit;
+            public double Damage;
         }
 
-        public Hit hit1,
-                   hit2;
+        public Hit Hit1,
+                   Hit2;
 
-        public Hit genHitSimple(bool dual, bool ss)
+        public Hit GenHitSimple(bool dual, bool ss)
         {
-            Hit h = new Hit();
-            h.miss = Formulas.checkMissed(this, (L2Character)CurrentTarget);
-            if (!h.miss)
+            Hit h = new Hit
+                    {
+                        Miss = Formulas.CheckMissed(this, CurrentTarget)
+                    };
+            if (h.Miss)
             {
-                h.shieldDef = Formulas.checkShieldDef(this, (L2Character)CurrentTarget);
-                h.crit = Formulas.checkCrit(this, (L2Character)CurrentTarget);
-                h.damage = Formulas.getPhysHitDamage(this, (L2Character)CurrentTarget, 0);
-                if (dual)
-                    h.damage *= .5;
-                if (ss)
-                    h.damage *= 2;
-                if (h.crit)
-                    h.damage *= 2;
+                return h;
+            }
+
+            h.ShieldDef = Formulas.CheckShieldDef(this, CurrentTarget);
+            h.Crit = Formulas.CheckCrit(this, CurrentTarget);
+            h.Damage = Formulas.GetPhysHitDamage(this, CurrentTarget, 0);
+            if (dual)
+            {
+                h.Damage *= .5;
+            }
+            if (ss)
+            {
+                h.Damage *= 2;
+            }
+            if (h.Crit)
+            {
+                h.Damage *= 2;
             }
 
             return h;
@@ -1036,52 +1054,56 @@ namespace L2dotNET.GameService.World
         {
             if (CurrentTarget != null)
             {
-                if (!hit1.miss)
+                if (!Hit1.Miss)
                 {
-                    CurrentTarget.reduceHp(this, hit1.damage);
+                    CurrentTarget.ReduceHp(this, Hit1.Damage);
 
                     if (CurrentTarget is L2Player)
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_RECEIVED_S3_DAMAGE_FROM_C2).AddName(CurrentTarget).AddName(this).AddNumber(hit1.damage));
+                    {
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit1.Damage));
+                    }
                 }
                 else
                 {
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_EVADED_C2_ATTACK).AddName(CurrentTarget).AddName(this));
-                        ((L2Player)CurrentTarget).AICharacter.NotifyEvaded(this);
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
             }
 
-            attack_ToHit.Enabled = false;
+            AttackToHit.Enabled = false;
         }
 
-        public virtual void AttackDoHit2nd(object sender, ElapsedEventArgs e)
+        public virtual void AttackDoHit2Nd(object sender, ElapsedEventArgs e)
         {
             if (CurrentTarget != null)
             {
-                if (!hit2.miss)
+                if (!Hit2.Miss)
                 {
-                    CurrentTarget.reduceHp(this, hit2.damage);
+                    CurrentTarget.ReduceHp(this, Hit2.Damage);
                     if (CurrentTarget is L2Player)
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_RECEIVED_S3_DAMAGE_FROM_C2).AddName(CurrentTarget).AddName(this).AddNumber(hit2.damage));
+                    {
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit2.Damage));
+                    }
                 }
                 else
                 {
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1_HAS_EVADED_C2_ATTACK).AddName(CurrentTarget).AddName(this));
-                        ((L2Player)CurrentTarget).AICharacter.NotifyEvaded(this);
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
             }
 
-            attack_toHitBonus.Enabled = false;
+            AttackToHitBonus.Enabled = false;
         }
 
         public virtual void AttackDoEnd(object sender, ElapsedEventArgs e)
         {
-            attack_ToEnd.Enabled = false;
+            AttackToEnd.Enabled = false;
 
             //L2Item weapon = Inventory.getWeapon();
             //if (weapon != null)
@@ -1117,7 +1139,7 @@ namespace L2dotNET.GameService.World
             //    doAttack((L2Character)CurrentTarget);
         }
 
-        public void broadcastSoulshotUse(int itemId)
+        public void BroadcastSoulshotUse(int itemId)
         {
             int skillId = 0;
             switch (itemId)
@@ -1158,55 +1180,69 @@ namespace L2dotNET.GameService.World
                     break;
             }
 
-            if (skillId > 0)
+            if (skillId <= 0)
             {
-                broadcastPacket(new MagicSkillUse(this, this, skillId, 1, 0));
-                sendSystemMessage(SystemMessage.SystemMessageId.ENABLED_SOULSHOT);
+                return;
             }
+
+            BroadcastPacket(new MagicSkillUse(this, this, skillId, 1, 0));
+            SendSystemMessage(SystemMessage.SystemMessageId.EnabledSoulshot);
         }
 
-        public virtual void abortAttack()
+        public virtual void AbortAttack()
         {
-            if (attack_ToHit != null && attack_ToHit.Enabled)
-                attack_ToHit.Enabled = false;
+            if ((AttackToHit != null) && AttackToHit.Enabled)
+            {
+                AttackToHit.Enabled = false;
+            }
 
-            if (attack_toHitBonus != null && attack_toHitBonus.Enabled)
-                attack_toHitBonus.Enabled = false;
+            if ((AttackToHitBonus != null) && AttackToHitBonus.Enabled)
+            {
+                AttackToHitBonus.Enabled = false;
+            }
 
-            if (attack_ToEnd != null && attack_ToEnd.Enabled)
-                attack_ToEnd.Enabled = false;
+            if ((AttackToEnd != null) && AttackToEnd.Enabled)
+            {
+                AttackToEnd.Enabled = false;
+            }
 
             //  hit1 = null;
             //  hit2 = null;
         }
 
-        public Timer attack_ToHit,
-                     attack_toHitBonus,
-                     attack_ToEnd;
+        public Timer AttackToHit,
+                     AttackToHitBonus,
+                     AttackToEnd;
 
-        public int _p_block_spell = 0,
-                   _p_block_skill = 0;
-        public int _p_block_act = 0;
+        public int PBlockSpell = 0,
+                   PBlockSkill = 0;
+        public int PBlockAct = 0;
 
-        public virtual bool cantMove()
+        public virtual bool CantMove()
         {
-            if (_p_block_act == 1)
+            if (PBlockAct == 1)
+            {
                 return true;
+            }
 
             if ((AbnormalBitMaskEx & AbnormalMaskExFreezing) == AbnormalMaskExFreezing)
+            {
                 return true;
+            }
 
-            if (isCastingNow())
+            if (IsCastingNow())
+            {
                 return true;
+            }
 
             return false;
         }
 
-        public void tryMoveTo(int x, int y, int z)
+        public void TryMoveTo(int x, int y, int z)
         {
-            if (cantMove())
+            if (CantMove())
             {
-                sendActionFailed();
+                SendActionFailed();
                 return;
             }
 
@@ -1220,12 +1256,18 @@ namespace L2dotNET.GameService.World
         public void Status_FreezeMe(bool status, bool update)
         {
             if (status)
+            {
                 AbnormalBitMaskEx |= AbnormalMaskExFreezing;
+            }
             else
+            {
                 AbnormalBitMaskEx &= ~AbnormalMaskExFreezing;
+            }
 
             if (update)
-                updateAbnormalExEffect();
+            {
+                UpdateAbnormalExEffect();
+            }
         }
 
         public CStats CharacterStat;
@@ -1233,32 +1275,36 @@ namespace L2dotNET.GameService.World
         public void CStatsInit()
         {
             if (CharacterStat == null)
+            {
                 CharacterStat = new CStats(this);
+            }
         }
 
         public void ChangeTarget(L2Character target = null)
         {
             if (target == null)
             {
-                broadcastPacket(new TargetUnselected(this));
+                BroadcastPacket(new TargetUnselected(this));
                 CurrentTarget = null;
             }
             else
             {
                 if (CurrentTarget != null)
-                    if (CurrentTarget.ObjID != target.ObjID)
+                {
+                    if (CurrentTarget.ObjId != target.ObjId)
                     {
-                        broadcastPacket(new TargetUnselected(this));
+                        BroadcastPacket(new TargetUnselected(this));
                     }
                     else
                     {
                         OnOldTargetSelection(target);
                         return;
                     }
+                }
 
                 CurrentTarget = target;
 
-                broadcastPacket(new TargetSelected(ObjID, target));
+                BroadcastPacket(new TargetSelected(ObjId, target));
                 OnNewTargetSelection(target);
             }
         }
@@ -1269,158 +1315,182 @@ namespace L2dotNET.GameService.World
 
         public override void RegenUpdateTaskDone(object sender, ElapsedEventArgs e)
         {
-            bool hp = CurHP < CharacterStat.getStat(TEffectType.b_max_hp),
-                 mp = CurMP < CharacterStat.getStat(TEffectType.b_max_mp),
+            bool hp = CurHp < CharacterStat.GetStat(EffectType.BMaxHp),
+                 mp = CurMp < CharacterStat.GetStat(EffectType.BMaxMp),
                  cp = false;
 
             if (this is L2Player)
-                cp = CurCP < CharacterStat.getStat(TEffectType.b_max_cp);
-
-            if (hp || mp || cp)
             {
-                StatusUpdate su = new StatusUpdate(ObjID);
-                if (hp)
-                    su.add(StatusUpdate.CUR_HP, (int)CurHP);
-                if (mp)
-                    su.add(StatusUpdate.CUR_MP, (int)CurMP);
-                if (cp)
-                    su.add(StatusUpdate.CUR_CP, (int)CurCP);
+                cp = CurCp < CharacterStat.GetStat(EffectType.BMaxCp);
+            }
 
-                broadcastPacket(su);
+            if (!hp && !mp && !cp)
+            {
+                return;
+            }
 
-                if (this is L2Summon)
-                {
-                    if (((L2Summon)this).Owner != null)
-                        ((L2Summon)this).Owner.sendPacket(new PetStatusUpdate((L2Summon)this));
-                }
+            StatusUpdate su = new StatusUpdate(ObjId);
+            if (hp)
+            {
+                su.Add(StatusUpdate.CurHp, (int)CurHp);
+            }
+            if (mp)
+            {
+                su.Add(StatusUpdate.CurMp, (int)CurMp);
+            }
+            if (cp)
+            {
+                su.Add(StatusUpdate.CurCp, (int)CurCp);
+            }
 
-                if (this is L2Player)
-                {
-                    if (((L2Player)this).Party != null)
-                        ((L2Player)this).Party.broadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
-                }
+            BroadcastPacket(su);
+
+            if (this is L2Summon)
+            {
+                ((L2Summon)this).Owner?.SendPacket(new PetStatusUpdate((L2Summon)this));
+            }
+
+            if (this is L2Player)
+            {
+                ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
             }
         }
 
         public override void RegenTaskDone(object sender, ElapsedEventArgs e)
         {
-            double maxhp = CharacterStat.getStat(TEffectType.b_max_hp);
-            if (CurHP < maxhp)
+            double maxhp = CharacterStat.GetStat(EffectType.BMaxHp);
+            if (CurHp < maxhp)
             {
-                CurHP += CharacterStat.getStat(TEffectType.b_reg_hp);
-                if (CurHP > maxhp)
-                    CurHP = maxhp;
-            }
-
-            double maxmp = CharacterStat.getStat(TEffectType.b_max_mp);
-            if (CurMP < maxmp)
-            {
-                CurMP += CharacterStat.getStat(TEffectType.b_reg_mp);
-                if (CurMP > maxmp)
-                    CurMP = maxmp;
-            }
-
-            if (this is L2Player)
-            {
-                double maxcp = CharacterStat.getStat(TEffectType.b_max_cp);
-                if (CurCP < maxcp)
+                CurHp += CharacterStat.GetStat(EffectType.BRegHp);
+                if (CurHp > maxhp)
                 {
-                    CurCP += CharacterStat.getStat(TEffectType.b_reg_cp);
-                    if (CurCP > maxcp)
-                        CurCP = maxcp;
+                    CurHp = maxhp;
                 }
             }
-        }
 
-        public virtual bool isCastingNow()
-        {
-            return castTime != null && castTime.Enabled;
-        }
-
-        public virtual void abortCast()
-        {
-            if (castTime != null)
+            double maxmp = CharacterStat.GetStat(EffectType.BMaxMp);
+            if (CurMp < maxmp)
             {
-                castTime.Enabled = false;
+                CurMp += CharacterStat.GetStat(EffectType.BRegMp);
+                if (CurMp > maxmp)
+                {
+                    CurMp = maxmp;
+                }
             }
 
-            broadcastPacket(new MagicSkillCanceld(ObjID));
-            currentCast = null;
+            if (!(this is L2Player))
+            {
+                return;
+            }
+
+            double maxcp = CharacterStat.GetStat(EffectType.BMaxCp);
+            if (!(CurCp < maxcp))
+            {
+                return;
+            }
+
+            CurCp += CharacterStat.GetStat(EffectType.BRegCp);
+            if (CurCp > maxcp)
+            {
+                CurCp = maxcp;
+            }
         }
 
-        public TSkill currentCast;
-        public System.Timers.Timer castTime;
-
-        public SortedList<int, L2SkillCoolTime> _reuse = new SortedList<int, L2SkillCoolTime>();
-
-        public int castSkill(TSkill skill)
+        public virtual bool IsCastingNow()
         {
-            if (isCastingNow())
+            return (CastTime != null) && CastTime.Enabled;
+        }
+
+        public virtual void AbortCast()
+        {
+            if (CastTime != null)
+            {
+                CastTime.Enabled = false;
+            }
+
+            BroadcastPacket(new MagicSkillCanceld(ObjId));
+            CurrentCast = null;
+        }
+
+        public Skill CurrentCast;
+        public Timer CastTime;
+
+        public SortedList<int, L2SkillCoolTime> Reuse = new SortedList<int, L2SkillCoolTime>();
+
+        public int CastSkill(Skill skill)
+        {
+            if (IsCastingNow())
             {
                 return 1;
             }
 
-            L2Object target = skill.getTargetCastId(this);
+            L2Object target = skill.GetTargetCastId(this);
 
             if (target == null)
             {
                 return 2;
             }
 
-            if (skill.cast_range != -1)
+            if (skill.CastRange != -1)
             {
-                double dis = Calcs.calculateDistance(this, target, true);
-                if (dis > skill.cast_range)
+                double dis = Calcs.CalculateDistance(this, target, true);
+                if (dis > skill.CastRange)
                 {
                     return 3;
                 }
             }
 
-            if (skill.reuse_delay > 0)
+            if (skill.ReuseDelay > 0)
             {
-                if (_reuse.ContainsKey(skill.skill_id))
+                if (Reuse.ContainsKey(skill.SkillId))
                 {
-                    TimeSpan ts = _reuse[skill.skill_id].stopTime - DateTime.Now;
+                    TimeSpan ts = Reuse[skill.SkillId].StopTime - DateTime.Now;
 
                     if (ts.TotalMilliseconds > 0)
+                    {
                         return 4;
+                    }
                 }
             }
 
-            if (skill.mp_consume1 > 0 || skill.mp_consume2 > 0)
+            if ((skill.MpConsume1 > 0) || (skill.MpConsume2 > 0))
             {
-                if (CurMP < skill.mp_consume1 + skill.mp_consume2)
+                if (CurMp < (skill.MpConsume1 + skill.MpConsume2))
                 {
                     return 5;
                 }
             }
 
-            if (skill.hp_consume > 0)
+            if (skill.HpConsume > 0)
             {
-                if (CurHP < skill.hp_consume)
+                if (CurHp < skill.HpConsume)
                 {
                     return 6;
                 }
             }
 
-            if (skill.effects.Count > 0)
+            if (skill.Effects.Count > 0)
             {
-                bool fail = skill.effects.Any(ef => !ef.canUse(this));
+                bool fail = skill.Effects.Any(ef => !ef.CanUse(this));
 
                 if (fail)
+                {
                     return 7;
+                }
             }
 
-            if (skill.reuse_delay > 0)
+            if (skill.ReuseDelay > 0)
             {
-                L2SkillCoolTime reuse = new L2SkillCoolTime();
-                reuse.id = skill.skill_id;
-                reuse.lvl = skill.level;
-                reuse.total = (int)skill.reuse_delay;
-                reuse.delay = reuse.total;
-                reuse._owner = this;
-                reuse.timer();
-                _reuse.Add(reuse.id, reuse);
+                L2SkillCoolTime reuse = new L2SkillCoolTime
+                                        {
+                                            Id = skill.SkillId,
+                                            Lvl = skill.Level,
+                                            Total = (int)skill.ReuseDelay,
+                                            Owner = this
+                                        };
+                reuse.Delay = reuse.Total;
+                reuse.Timer();
+                Reuse.Add(reuse.Id, reuse);
             }
 
             {
@@ -1430,125 +1500,139 @@ namespace L2dotNET.GameService.World
                 //TODO nearby objects notify
             }
 
-            if (skill.hp_consume > 0)
+            if (skill.HpConsume > 0)
             {
-                CurHP -= skill.hp_consume;
+                CurHp -= skill.HpConsume;
 
-                StatusUpdate su = new StatusUpdate(ObjID);
-                su.add(StatusUpdate.CUR_HP, (int)CurHP);
-                broadcastPacket(su);
+                StatusUpdate su = new StatusUpdate(ObjId);
+                su.Add(StatusUpdate.CurHp, (int)CurHp);
+                BroadcastPacket(su);
             }
 
-            if (skill.mp_consume1 > 0)
+            if (skill.MpConsume1 > 0)
             {
-                CurMP -= skill.mp_consume1;
+                CurMp -= skill.MpConsume1;
 
-                StatusUpdate su = new StatusUpdate(ObjID);
-                su.add(StatusUpdate.CUR_MP, (int)CurMP);
-                broadcastPacket(su);
+                StatusUpdate su = new StatusUpdate(ObjId);
+                su.Add(StatusUpdate.CurMp, (int)CurMp);
+                BroadcastPacket(su);
             }
 
-            int hitTime = (int)skill.skill_hit_time;
+            int hitTime = skill.SkillHitTime;
 
             int hitT = hitTime > 0 ? (int)(hitTime * 0.95) : 0;
-            currentCast = skill;
+            CurrentCast = skill;
 
-            broadcastPacket(new MagicSkillUse(this, target, skill, hitTime == 0 ? 20 : hitTime));
+            BroadcastPacket(new MagicSkillUse(this, target, skill, hitTime == 0 ? 20 : hitTime));
 
             if (hitTime > 50)
             {
-                if (castTime == null)
+                if (CastTime == null)
                 {
-                    castTime = new System.Timers.Timer();
-                    castTime.Elapsed += new ElapsedEventHandler(castEnd);
+                    CastTime = new Timer();
+                    CastTime.Elapsed += CastEnd;
                 }
 
-                castTime.Interval = hitT;
-                castTime.Enabled = true;
+                CastTime.Interval = hitT;
+                CastTime.Enabled = true;
             }
             else
-                castEnd();
+            {
+                CastEnd();
+            }
 
             return -1;
         }
 
-        private void castEnd(object sender = null, ElapsedEventArgs e = null)
+        private void CastEnd(object sender = null, ElapsedEventArgs e = null)
         {
-            if (currentCast.mp_consume2 > 0)
+            if (CurrentCast.MpConsume2 > 0)
             {
-                if (CurMP < currentCast.mp_consume2)
+                if (CurMp < CurrentCast.MpConsume2)
                 {
-                    currentCast = null;
-                    castTime.Enabled = false;
+                    CurrentCast = null;
+                    CastTime.Enabled = false;
                     return;
                 }
-                else
-                {
-                    CurMP -= currentCast.mp_consume2;
 
-                    StatusUpdate su = new StatusUpdate(ObjID);
-                    su.add(StatusUpdate.CUR_MP, (int)CurMP);
-                    broadcastPacket(su);
-                }
+                CurMp -= CurrentCast.MpConsume2;
+
+                StatusUpdate su = new StatusUpdate(ObjId);
+                su.Add(StatusUpdate.CurMp, (int)CurMp);
+                BroadcastPacket(su);
             }
 
-            if (currentCast.cast_range != -1)
+            if (CurrentCast.CastRange != -1)
             {
                 bool block = false;
                 if (CurrentTarget != null)
                 {
-                    double dis = Calcs.calculateDistance(this, CurrentTarget, true);
-                    if (dis > currentCast.effective_range)
+                    double dis = Calcs.CalculateDistance(this, CurrentTarget, true);
+                    if (dis > CurrentCast.EffectiveRange)
+                    {
                         block = true;
+                    }
                 }
                 else
+                {
                     block = true;
+                }
 
                 if (block)
                 {
-                    currentCast = null;
-                    castTime.Enabled = false;
+                    CurrentCast = null;
+                    CastTime.Enabled = false;
                     return;
                 }
             }
 
-            SortedList<int, L2Object> arr = currentCast.getAffectedTargets(this);
+            SortedList<int, L2Object> arr = CurrentCast.GetAffectedTargets(this);
             List<int> broadcast = new List<int>();
             broadcast.AddRange(arr.Keys);
 
-            broadcastPacket(new MagicSkillLaunched(this, broadcast, currentCast.skill_id, currentCast.level));
+            BroadcastPacket(new MagicSkillLaunched(this, broadcast, CurrentCast.SkillId, CurrentCast.Level));
 
-            addEffects(this, currentCast, arr);
-            currentCast = null;
-            if (castTime != null)
-                lock (castTime)
-                    castTime.Enabled = false;
+            AddEffects(this, CurrentCast, arr);
+            CurrentCast = null;
+            if (CastTime == null)
+            {
+                return;
+            }
+
+            lock (CastTime)
+            {
+                CastTime.Enabled = false;
+            }
         }
 
-        public virtual L2Character[] getPartyCharacters()
+        public virtual L2Character[] GetPartyCharacters()
         {
-            return new L2Character[] { this };
+            return new[] { this };
         }
 
-        public bool isMoving()
+        public bool IsMoving()
         {
-            return updatePositionTime != null && updatePositionTime.Enabled;
+            return (_updatePositionTime != null) && _updatePositionTime.Enabled;
         }
 
         public void MoveTo(int x, int y, int z)
         {
-            if (isAttacking())
-                abortAttack();
-
-            if (updatePositionTime == null)
+            if (IsAttacking())
             {
-                updatePositionTime = new Timer();
-                updatePositionTime.Interval = 100;
-                updatePositionTime.Elapsed += new ElapsedEventHandler(UpdatePositionTask);
+                AbortAttack();
+            }
+
+            if (_updatePositionTime == null)
+            {
+                _updatePositionTime = new Timer
+                                      {
+                                          Interval = 100
+                                      };
+                _updatePositionTime.Elapsed += UpdatePositionTask;
             }
             else
             {
-                if (updatePositionTime.Enabled) // новый маршрут, но старый не закончен
+                if (_updatePositionTime.Enabled) // новый маршрут, но старый не закончен
                 {
                     NotifyStopMove(false);
                 }
@@ -1558,44 +1642,44 @@ namespace L2dotNET.GameService.World
             DestY = y;
             DestZ = z;
 
-            double dx = (x - X),
-                   dy = (y - Y),
-                   dz = (z - Z);
-            double distance = Math.Sqrt(dx * dx + dy * dy);
+            double dx = x - X,
+                   dy = y - Y;
+            //dz = (z - Z);
+            double distance = Math.Sqrt((dx * dx) + (dy * dy));
 
-            double speed = CharacterStat.getStat(TEffectType.p_speed);
+            double speed = CharacterStat.GetStat(EffectType.PSpeed);
             double spy = dy / distance,
                    spx = dx / distance;
 
-            TicksToMove = 1 + (int)(10 * distance / speed);
-            TicksToMoveCompleted = 0;
-            XSpeedTicks = (DestX - X) / TicksToMove;
-            YSpeedTicks = (DestY - Y) / TicksToMove;
+            _ticksToMove = 1 + (int)((10 * distance) / speed);
+            _ticksToMoveCompleted = 0;
+            _xSpeedTicks = (DestX - X) / (float)_ticksToMove;
+            _ySpeedTicks = (DestY - Y) / (float)_ticksToMove;
 
             Heading = (int)((Math.Atan2(-spx, -spy) * 10430.378) + short.MaxValue);
 
-            broadcastPacket(new CharMoveToLocation(this));
+            BroadcastPacket(new CharMoveToLocation(this));
 
-            updatePositionTime.Enabled = true;
+            _updatePositionTime.Enabled = true;
 
-            AICharacter.NotifyStartMoving();
+            AiCharacter.NotifyStartMoving();
         }
 
         private void UpdatePositionTask(object sender, ElapsedEventArgs e)
         {
-            validateWaterZones();
+            ValidateWaterZones();
 
-            if (DestX == X && DestY == Y && DestZ == Z)
+            if ((DestX == X) && (DestY == Y) && (DestZ == Z))
             {
                 NotifyArrived();
                 return;
             }
 
-            if (TicksToMove > TicksToMoveCompleted)
+            if (_ticksToMove > _ticksToMoveCompleted)
             {
-                TicksToMoveCompleted++;
-                X += (int)XSpeedTicks;
-                Y += (int)YSpeedTicks;
+                _ticksToMoveCompleted++;
+                X += (int)_xSpeedTicks;
+                Y += (int)_ySpeedTicks;
             }
             else
             {
@@ -1608,109 +1692,100 @@ namespace L2dotNET.GameService.World
 
         public virtual void NotifyStopMove(bool broadcast, bool update = false)
         {
-            if (updatePositionTime.Enabled)
+            if (_updatePositionTime.Enabled)
             {
-                updatePositionTime.Enabled = false;
+                _updatePositionTime.Enabled = false;
 
                 if (broadcast)
-                    AICharacter.NotifyStopMoving();
+                {
+                    AiCharacter.NotifyStopMoving();
+                }
 
                 if (update)
-                    broadcastPacket(new StopMove(this));
+                {
+                    BroadcastPacket(new StopMove(this));
+                }
             }
 
             DestX = 0;
             DestY = 0;
             DestZ = 0;
-            XSpeedTicks = 0;
-            YSpeedTicks = 0;
-            TicksToMove = 0;
+            _xSpeedTicks = 0;
+            _ySpeedTicks = 0;
+            _ticksToMove = 0;
         }
 
         public virtual void NotifyArrived()
         {
-            updatePositionTime.Enabled = false;
+            _updatePositionTime.Enabled = false;
 
             DestX = 0;
             DestY = 0;
             DestZ = 0;
-            XSpeedTicks = 0;
-            YSpeedTicks = 0;
-            TicksToMove = 0;
+            _xSpeedTicks = 0;
+            _ySpeedTicks = 0;
+            _ticksToMove = 0;
 
-            AICharacter.NotifyStopMoving();
+            AiCharacter.NotifyStopMoving();
         }
 
-        private Timer updatePositionTime;
-        private int TicksToMove,
-                    TicksToMoveCompleted = 0;
-        private float XSpeedTicks;
-        private float YSpeedTicks;
+        private Timer _updatePositionTime;
+        private int _ticksToMove,
+                    _ticksToMoveCompleted;
+        private float _xSpeedTicks;
+        private float _ySpeedTicks;
 
-        public bool isInFrontOfTarget()
+        public bool IsInFrontOfTarget()
         {
             return false;
         }
 
-        public bool isInFrontOfTarget(int x, int y, int heading)
+        public bool IsInFrontOfTarget(int x, int y, int heading)
         {
             return false;
         }
 
-        public bool isBehindTarget()
+        public bool IsBehindTarget()
         {
             return false;
         }
 
-        public virtual bool isAttacking()
+        public virtual bool IsAttacking()
         {
-            return attack_ToEnd != null && attack_ToEnd.Enabled;
+            return (AttackToEnd != null) && AttackToEnd.Enabled;
         }
 
-        public virtual int ClanId
+        public virtual int ClanId { get; set; } = 0;
+
+        public virtual int ClanCrestId { get; set; } = 0;
+
+        public virtual int AllianceId { get; set; } = 0;
+
+        public virtual int AllianceCrestId { get; set; } = 0;
+
+        public virtual int MaxHp { get; set; }
+        public virtual int MaxCp { get; set; }
+        public virtual int MaxMp { get; set; }
+
+        public override double CurHp { get; set; }
+
+        public override double CurMp { get; set; }
+
+        public override double CurCp { get; set; }
+
+        public override string AsString()
         {
-            get { return 0; }
-            set { }
+            return "L2Character:" + ObjId;
         }
 
-        public virtual int ClanCrestId
-        {
-            get { return 0; }
-        }
-
-        public virtual int AllianceId
-        {
-            get { return 0; }
-        }
-
-        public virtual int AllianceCrestId
-        {
-            get { return 0; }
-        }
-
-        public virtual int MaxHP { get; set; }
-        public virtual int MaxCP { get; set; }
-        public virtual int MaxMP { get; set; }
-
-        public override double CurHP { get; set; }
-
-        public override double CurMP { get; set; }
-
-        public override double CurCP { get; set; }
-
-        public override string asString()
-        {
-            return "L2Character:" + ObjID;
-        }
-
-        public virtual L2Item getWeaponItem()
+        public virtual L2Item GetWeaponItem()
         {
             return null;
         }
 
-        private List<long> Muted0;
-        private List<long> Muted1;
-        private List<long> Muted2;
+        private List<long> _muted0;
+        private List<long> _muted1;
+        private List<long> _muted2;
 
         public void Mute(int type, long hashId, bool start)
         {
@@ -1718,47 +1793,48 @@ namespace L2dotNET.GameService.World
             switch (type)
             {
                 case 0:
-                    if (Muted0 == null)
-                        Muted0 = new List<long>();
+                    if (_muted0 == null)
+                    {
+                        _muted0 = new List<long>();
+                    }
 
-                    list = Muted0;
+                    list = _muted0;
                     break;
                 case 1:
-                    if (Muted1 == null)
-                        Muted1 = new List<long>();
+                    if (_muted1 == null)
+                    {
+                        _muted1 = new List<long>();
+                    }
 
-                    list = Muted1;
+                    list = _muted1;
                     break;
                 case 2:
-                    if (Muted2 == null)
-                        Muted2 = new List<long>();
+                    if (_muted2 == null)
+                    {
+                        _muted2 = new List<long>();
+                    }
 
-                    list = Muted2;
+                    list = _muted2;
                     break;
             }
 
             if (start)
             {
-                if (list != null && !list.Contains(hashId))
+                if ((list != null) && !list.Contains(hashId))
+                {
                     list.Add(hashId);
+                }
             }
-            else if (list != null)
-                list.Remove(hashId);
+            else
+            {
+                list?.Remove(hashId);
+            }
         }
 
-        public bool MutedPhysically
-        {
-            get { return Muted0 != null && Muted0.Count > 0; }
-        }
+        public bool MutedPhysically => (_muted0 != null) && (_muted0.Count > 0);
 
-        public bool MutedMagically
-        {
-            get { return Muted1 != null && Muted1.Count > 0; }
-        }
+        public bool MutedMagically => (_muted1 != null) && (_muted1.Count > 0);
 
-        public bool MutedSpecial
-        {
-            get { return Muted2 != null && Muted2.Count > 0; }
-        }
+        public bool MutedSpecial => (_muted2 != null) && (_muted2.Count > 0);
     }
 }

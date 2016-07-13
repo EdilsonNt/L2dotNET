@@ -11,55 +11,57 @@ namespace L2dotNET.GameService.Controllers
     [Synchronization]
     public class GameTime
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(GameTime));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(GameTime));
 
-        private static volatile GameTime instance;
-        private static readonly object syncRoot = new object();
+        private static volatile GameTime _instance;
+        private static readonly object SyncRoot = new object();
 
         public static GameTime Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new GameTime();
-                        }
+                        _instance = new GameTime();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
-        private int Time;
-        private readonly GameServerNetworkPacket DayPk = new SunRise();
-        private readonly GameServerNetworkPacket NightPk = new SunSet();
-        private System.Timers.Timer TimeController;
-        public DateTime serverStartUp;
-        public static bool Night = false;
+        public int Time;
+        private readonly GameServerNetworkPacket _dayPk = new SunRise();
+        private readonly GameServerNetworkPacket _nightPk = new SunSet();
+        private System.Timers.Timer _timeController;
+        public DateTime ServerStartUp;
+        public static bool Night;
 
-        private const int SEC_DAY = 10800,
-                          SEC_NIGHT = 3600,
-                          SEC_HOUR = 600,
-                          SEC_DN = 14400;
-        private const int SEC_SCALE = 1800;
-
-        public GameTime() { }
+        private const int SecDay = 10800,
+                          SecNight = 3600,
+                          SecHour = 600,
+                          SecDn = 14400;
+        private const int SecScale = 1800;
 
         public void Initialize()
         {
-            serverStartUp = DateTime.Now;
+            ServerStartUp = DateTime.Now;
             Time = 5800 + 0; // 10800 18:00 вечер
-            TimeController = new System.Timers.Timer();
-            TimeController.Interval = 1000;
-            TimeController.Enabled = true;
-            TimeController.Elapsed += new System.Timers.ElapsedEventHandler(ActionTime);
+            _timeController = new System.Timers.Timer
+                              {
+                                  Interval = 1000,
+                                  Enabled = true
+                              };
+            _timeController.Elapsed += ActionTime;
 
-            log.Info("GameTime Controller: started 18:00 PM.");
+            Log.Info("GameTime Controller: started 18:00 PM.");
         }
 
         private void ActionTime(object sender, System.Timers.ElapsedEventArgs e)
@@ -68,16 +70,18 @@ namespace L2dotNET.GameService.Controllers
 
             switch (Time)
             {
-                case SEC_DAY + SEC_SCALE: // 21:00
+                case SecDay + SecScale: // 21:00
                     NotifyStartNight();
                     break;
-                case SEC_SCALE: // 03:00
+                case SecScale: // 03:00
                     NotifyStartDay();
                     break;
             }
 
-            if (Time == SEC_DN)
+            if (Time == SecDn)
+            {
                 Time = 0;
+            }
         }
 
         private void NotifyStartDay()
@@ -85,7 +89,9 @@ namespace L2dotNET.GameService.Controllers
             Night = false;
 
             foreach (L2Player p in L2World.Instance.GetPlayers())
-                p.NotifyDayChange(DayPk);
+            {
+                p.NotifyDayChange(_dayPk);
+            }
         }
 
         private void NotifyStartNight()
@@ -93,25 +99,27 @@ namespace L2dotNET.GameService.Controllers
             Night = true;
 
             foreach (L2Player p in L2World.Instance.GetPlayers())
-                p.NotifyDayChange(NightPk);
+            {
+                p.NotifyDayChange(_nightPk);
+            }
         }
 
         public void EnterWorld(L2Player p)
         {
-            p.NotifyDayChange(Night ? NightPk : DayPk);
+            p.NotifyDayChange(Night ? _nightPk : _dayPk);
         }
 
         public void ShowInfo(L2Player player)
         {
             DateTime dt = new DateTime(2000, 1, 1, 0, 0, 0).AddSeconds(Time * 6);
 
-            SystemMessage sm = new SystemMessage(Night ? SystemMessage.SystemMessageId.TIME_S1_S2_IN_THE_NIGHT : SystemMessage.SystemMessageId.TIME_S1_S2_IN_THE_DAY);
+            SystemMessage sm = new SystemMessage(Night ? SystemMessage.SystemMessageId.TimeS1S2InTheNight : SystemMessage.SystemMessageId.TimeS1S2InTheDay);
             sm.AddString(dt.Hour < 10 ? "0" + dt.Hour : "" + dt.Hour);
             string str = dt.Minute < 10 ? "0" + dt.Minute : "" + dt.Minute;
             str += ":";
             str += dt.Second < 10 ? "0" + dt.Second : "" + dt.Second;
             sm.AddString(str);
-            player.sendPacket(sm);
+            player.SendPacket(sm);
         }
     }
 }

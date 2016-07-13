@@ -8,72 +8,67 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestDestroyItem(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        private int sID;
-        private long num;
+        private int _sId;
+        private int _num;
 
-        public override void read()
+        public override void Read()
         {
-            sID = readD();
-            num = readQ();
+            _sId = ReadD();
+            _num = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
-            if (player._p_block_act == 1)
+            if (player.PBlockAct == 1)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
             if (player.TradeState != 0)
             {
-                player.sendMessage("You cannot destroy items while trading.");
-                player.sendActionFailed();
+                player.SendMessage("You cannot destroy items while trading.");
+                player.SendActionFailed();
                 return;
             }
 
-            L2Item item = player.Inventory.getByObject(sID);
+            L2Item item = player.GetItemByObjId(_sId);
 
             if (item == null)
             {
-                player.sendMessage("null item " + sID);
-                player.sendActionFailed();
+                player.SendMessage("null item " + _sId);
+                player.SendActionFailed();
                 return;
             }
 
-            if (item.Template.can_equip_hero == 1 && item.Template.Type == ItemTemplate.L2ItemType.weapon)
+            if (!item.Template.Destroyable)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.HERO_WEAPONS_CANT_DESTROYED);
-                player.sendActionFailed();
-                return;
-            }
-
-            if (item.Template.is_destruct == 0)
-            {
-                SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S1_S2);
-                sm.AddItemName(item.Template.ItemID);
+                SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S1S2);
+                sm.AddItemName(item.Template.ItemId);
                 sm.AddString("cannot be destroyed.");
-                player.sendPacket(sm);
-                player.sendActionFailed();
+                player.SendPacket(sm);
+                player.SendActionFailed();
                 return;
             }
 
-            if (num < 0)
-                num = 1;
-
-            if (item._isEquipped == 1)
+            if (_num < 0)
             {
-                int pdollId = player.Inventory.getPaperdollId(item.Template);
-                player.setPaperdoll(pdollId, null, true);
-                player.broadcastUserInfo();
+                _num = 1;
             }
 
-            player.Inventory.destroyItem(item.Template.ItemID, num, true, true);
+            //if (item._isEquipped == 1)
+            //{
+            //    int pdollId = player.Inventory.getPaperdollId(item.Template);
+            //    player.setPaperdoll(pdollId, null, true);
+            //    player.broadcastUserInfo();
+            //}
+
+            player.DestroyItemById(item.Template.ItemId, _num);
         }
     }
 }

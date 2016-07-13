@@ -5,7 +5,7 @@ namespace L2dotNET.LoginService.Network.OuterNetwork.ServerPackets
     /// <summary>
     /// Play accepted packet.
     /// </summary>
-    internal static class PlayOk
+    static class PlayOk
     {
         /// <summary>
         /// Packet opcode.
@@ -20,7 +20,7 @@ namespace L2dotNET.LoginService.Network.OuterNetwork.ServerPackets
         internal static Packet ToPacket(LoginClient client)
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(client.play1, client.play2);
+            p.WriteInt(client.Play1, client.Play2);
             return p;
         }
     }

@@ -12,57 +12,68 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
         public ExQuestItemList(L2Player player)
         {
-            _items = player.getAllQuestItems();
+            _items = null; //player.getAllQuestItems();
+
+            if (_items == null)
+            {
+                return;
+            }
 
             foreach (L2Item item in _items.Where(item => item.Blocked))
-                _block.Add(item.ObjID);
+            {
+                _block.Add(item.ObjId);
+            }
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0xFE);
-            writeH(0xC5);
-            writeH(_items.Length);
+            WriteC(0xFE);
+            WriteH(0xC5);
+            WriteH(_items.Length);
 
             foreach (L2Item item in _items)
             {
-                writeD(item.ObjID);
-                writeD(item.Template.ItemID);
-                writeD(0);
-                writeQ(item.Count);
+                WriteD(item.ObjId);
+                WriteD(item.Template.ItemId);
+                WriteD(0);
+                WriteQ(item.Count);
 
-                writeH(item.Template.Type2());
-                writeH(0);
-                writeH(item._isEquipped);
+                WriteH(item.Template.Type2);
+                WriteH(0);
+                WriteH(item.IsEquipped);
 
-                writeD(item.Template.BodyPartId());
-                writeH(item.Enchant);
-                writeH(0);
+                WriteD(item.Template.BodyPart);
+                WriteH(item.Enchant);
+                WriteH(0);
 
-                writeD(item.AugmentationID);
-                writeD(item.Durability);
-                writeD(item.LifeTimeEnd());
+                WriteD(item.AugmentationId);
+                WriteD(item.Durability);
+                WriteD(item.LifeTimeEnd());
 
-                writeH(item.AttrAttackType);
-                writeH(item.AttrAttackValue);
-                writeH(item.AttrDefenseValueFire);
-                writeH(item.AttrDefenseValueWater);
-                writeH(item.AttrDefenseValueWind);
-                writeH(item.AttrDefenseValueEarth);
-                writeH(item.AttrDefenseValueHoly);
-                writeH(item.AttrDefenseValueUnholy);
+                WriteH(item.AttrAttackType);
+                WriteH(item.AttrAttackValue);
+                WriteH(item.AttrDefenseValueFire);
+                WriteH(item.AttrDefenseValueWater);
+                WriteH(item.AttrDefenseValueWind);
+                WriteH(item.AttrDefenseValueEarth);
+                WriteH(item.AttrDefenseValueHoly);
+                WriteH(item.AttrDefenseValueUnholy);
 
-                writeH(item.Enchant1);
-                writeH(item.Enchant2);
-                writeH(item.Enchant3);
+                WriteH(item.Enchant1);
+                WriteH(item.Enchant2);
+                WriteH(item.Enchant3);
             }
 
-            writeH(_block.Count);
-            if (_block.Count > 0)
+            WriteH(_block.Count);
+            if (_block.Count <= 0)
             {
-                writeC(1);
-                foreach (int id in _block)
-                    writeD(id);
+                return;
+            }
+
+            WriteC(1);
+            foreach (int id in _block)
+            {
+                WriteD(id);
             }
         }
     }

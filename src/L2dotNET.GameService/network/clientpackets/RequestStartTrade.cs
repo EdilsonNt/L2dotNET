@@ -6,75 +6,74 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestStartTrade : GameServerNetworkRequest
     {
-        private int targetId;
+        private int _targetId;
 
         public RequestStartTrade(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            targetId = readD();
+            _targetId = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
             if (player.TradeState != 0)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.ALREADY_TRADING);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.AlreadyTrading);
+                player.SendActionFailed();
                 return;
             }
 
-            if (player.ObjID == targetId)
+            if (player.ObjId == _targetId)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.CANNOT_USE_ON_YOURSELF);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.CannotUseOnYourself);
+                player.SendActionFailed();
                 return;
             }
 
             if (player.EnchantState != 0)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            L2Player target;
-            if (player.CurrentTarget == null || !(player.CurrentTarget is L2Player))
+            if (!(player.CurrentTarget is L2Player))
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.TARGET_IS_INCORRECT);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.TargetIsIncorrect);
+                player.SendActionFailed();
                 return;
             }
 
-            target = (L2Player)player.CurrentTarget;
+            L2Player target = (L2Player)player.CurrentTarget;
             if (target.TradeState != 0)
             {
-                player.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1_ALREADY_TRADING).AddPlayerName(target.Name));
-                player.sendActionFailed();
+                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1AlreadyTrading).AddPlayerName(target.Name));
+                player.SendActionFailed();
                 return;
             }
 
             if (target.PartyState == 1)
             {
-                player.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1_IS_BUSY_TRY_LATER).AddPlayerName(target.Name));
-                player.sendActionFailed();
+                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1IsBusyTryLater).AddPlayerName(target.Name));
+                player.SendActionFailed();
                 return;
             }
 
-            if (!Calcs.checkIfInRange(150, player, target, true))
+            if (!Calcs.CheckIfInRange(150, player, target, true))
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            player.sendPacket(new SystemMessage(SystemMessage.SystemMessageId.REQUEST_S1_FOR_TRADE).AddPlayerName(target.Name));
-            target.requester = player;
-            player.requester = target;
-            target.sendPacket(new SendTradeRequest(player.ObjID));
+            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.RequestS1ForTrade).AddPlayerName(target.Name));
+            target.Requester = player;
+            player.Requester = target;
+            target.SendPacket(new SendTradeRequest(player.ObjId));
             target.TradeState = 2; // жмакает ответ
             player.TradeState = 1; // запросил
         }

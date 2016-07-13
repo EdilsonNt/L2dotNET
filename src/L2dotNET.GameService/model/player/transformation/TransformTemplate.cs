@@ -1,80 +1,88 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using L2dotNET.GameService.Model.Skills2;
 
 namespace L2dotNET.GameService.Model.Player.Transformation
 {
     public class TransformTemplate
     {
-        public int id,
-                   npcId;
-        public double[] collision_box,
-                        collision_box_f;
-        public int[] moving_speed,
-                     skills,
-                     action;
-        public List<int[]> _skills;
-        public bool _onCursedWeapon = false;
+        public int Id,
+                   NpcId;
+        public double[] CollisionBox,
+                        CollisionBoxF;
+        public int[] MovingSpeed;
+
+        public int[] skills;
+
+        public int[] Action;
+
+        public List<int[]> Skills;
+        public bool OnCursedWeapon = false;
         public byte MoveMode = 0; //1- ride, 2-fly
         public int TransformDispelId = 619;
 
-        public int base_attack_range;
-        public int base_random_damage;
-        public int base_attack_speed;
-        public int base_critical_prob;
-        public int base_physical_attack;
-        public int base_magical_attack;
+        public int BaseAttackRange;
+        public int BaseRandomDamage;
+        public int BaseAttackSpeed;
+        public int BaseCriticalProb;
+        public int BasePhysicalAttack;
+        public int BaseMagicalAttack;
 
-        public int[] base_defend,
-                     base_magic_defend,
-                     basic_stat;
+        public int[] BaseDefend,
+                     BaseMagicDefend,
+                     BasicStat;
 
-        public virtual void onTransformStart(L2Player player)
+        public virtual void OnTransformStart(L2Player player)
         {
-            player.TransformID = id;
+            player.TransformId = Id;
             player.MountType = MoveMode;
             //player.MountedTemplate = NpcTable.Instance.GetNpcTemplate(npcId);
-            player.broadcastUserInfo();
+            player.BroadcastUserInfo();
 
-            if (_skills != null && _skills.Count > 0)
+            if ((Skills == null) || (Skills.Count <= 0))
             {
-                foreach (int[] s in _skills)
-                {
-                    TSkill sk = TSkillTable.Instance.Get(s[0], s[1]);
-                    if (sk != null)
-                        player.addSkill(sk, false, false);
-                }
-
-                player.updateSkillList();
+                return;
             }
+
+            foreach (Skill sk in Skills.Select(s => SkillTable.Instance.Get(s[0], s[1])).Where(sk => sk != null))
+            {
+                player.AddSkill(sk, false, false);
+            }
+
+            player.UpdateSkillList();
         }
 
-        public virtual void onTransformEnd(L2Player player)
+        public virtual void OnTransformEnd(L2Player player)
         {
             if (MoveMode > 0)
-                player.MountType = 0;
-            player.MountedTemplate = null;
-            player.TransformID = 0;
-            player.broadcastUserInfo();
-
-            if (_skills != null && _skills.Count > 0)
             {
-                foreach (int[] s in _skills)
-                {
-                    player.removeSkill(s[0], false, false);
-                }
-
-                player.updateSkillList();
+                player.MountType = 0;
             }
+            player.MountedTemplate = null;
+            player.TransformId = 0;
+            player.BroadcastUserInfo();
+
+            if ((Skills == null) || (Skills.Count <= 0))
+            {
+                return;
+            }
+
+            foreach (int[] s in Skills)
+            {
+                player.RemoveSkill(s[0], false, false);
+            }
+
+            player.UpdateSkillList();
         }
 
-        public virtual bool startFailed(L2Player player)
+        public virtual bool StartFailed(L2Player player)
         {
             return false;
         }
 
-        public double getRadius(byte Sex)
+        public double GetRadius(byte sex)
         {
-            switch (Sex)
+            switch (sex)
             {
                 case 0:
                     return 0; //coll_r_male;
@@ -83,9 +91,9 @@ namespace L2dotNET.GameService.Model.Player.Transformation
             }
         }
 
-        public double getHeight(byte Sex)
+        public double GetHeight(byte sex)
         {
-            switch (Sex)
+            switch (sex)
             {
                 case 0:
                     return 0; //coll_h_male;

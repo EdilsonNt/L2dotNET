@@ -11,19 +11,19 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
         public TargetUnselected(L2Object obj)
         {
-            _id = obj.ObjID;
+            _id = obj.ObjId;
             _x = obj.X;
             _y = obj.Y;
             _z = obj.Z;
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0x2a);
-            writeD(_id);
-            writeD(_x);
-            writeD(_y);
-            writeD(_z);
+            WriteC(0x2a);
+            WriteD(_id);
+            WriteD(_x);
+            WriteD(_y);
+            WriteD(_z);
         }
     }
 }

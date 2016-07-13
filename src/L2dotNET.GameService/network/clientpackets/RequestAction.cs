@@ -7,51 +7,55 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestAction(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        private int ServerID;
-        private int _X;
-        private int _Y;
-        private int _Z;
+        private int _serverId;
+        private int _x;
+        private int _y;
+        private int _z;
         private int _actionId;
 
-        public override void read()
+        public override void Read()
         {
-            ServerID = readD();
-            _X = readD();
-            _Y = readD();
-            _Z = readD();
-            _actionId = readC(); // Action identifier : 0-Simple click, 1-Shift click
+            _serverId = ReadD();
+            _x = ReadD();
+            _y = ReadD();
+            _z = ReadD();
+            _actionId = ReadC(); // Action identifier : 0-Simple click, 1-Shift click
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
             L2Object obj = null;
 
-            if (ServerID == player.ObjID)
+            if (_serverId == player.ObjId)
+            {
                 obj = player;
+            }
             else
             {
-                if (player.knownObjects.ContainsKey(ServerID))
-                    obj = player.knownObjects[ServerID];
+                if (player.KnownObjects.ContainsKey(_serverId))
+                {
+                    obj = player.KnownObjects[_serverId];
+                }
             }
 
             if (obj == null)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
             switch (_actionId)
             {
                 case 0:
-                    obj.onAction(player);
+                    obj.OnAction(player);
                     break;
                 case 1:
-                    obj.onActionShift(player);
+                    obj.OnActionShift(player);
                     break;
             }
         }

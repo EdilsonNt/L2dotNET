@@ -6,9 +6,9 @@
 
         public ExBasicActionList()
         {
-            int count1 = 74; // 0 <-> (count1 - 1) //Update by rocknow
-            int count2 = 99; // 1000 <-> (1000 + count2 - 1) //Update by rocknow
-            int count3 = 16; // 5000 <-> (5000 + count3 - 1) //Update by rocknow
+            const int count1 = 74; // 0 <-> (count1 - 1) //Update by rocknow
+            const int count2 = 99; // 1000 <-> (1000 + count2 - 1) //Update by rocknow
+            const int count3 = 16; // 5000 <-> (5000 + count3 - 1) //Update by rocknow
             int[] actionIds = new int[count1 + count2 + count3]; //Update by rocknow
 
             int index = 0;
@@ -28,14 +28,14 @@
             _defaultActionList = actionIds;
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0xfe);
-            writeH(0x5f);
-            writeD(_defaultActionList.Length);
+            WriteC(0xfe);
+            WriteH(0x5f);
+            WriteD(_defaultActionList.Length);
             foreach (int i in _defaultActionList)
             {
-                writeD(i);
+                WriteD(i);
             }
         }
     }

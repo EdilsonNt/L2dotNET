@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Xml;
 using log4net;
 using L2dotNET.GameService.World;
 
@@ -8,12 +6,10 @@ namespace L2dotNET.GameService.Managers
 {
     public class ZoneManager
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ZoneManager));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ZoneManager));
 
-        private static volatile ZoneManager instance;
-        private static readonly object syncRoot = new object();
-
-        public ZoneManager() { }
+        private static volatile ZoneManager _instance;
+        private static readonly object SyncRoot = new object();
 
         public void Initialize()
         {
@@ -21,15 +17,14 @@ namespace L2dotNET.GameService.Managers
 
             try
             {
-                XmlDocument doc = new XmlDocument();
+                //XmlDocument doc = new XmlDocument();
                 //int fileCounter = 0;
-                string[] xmlFilesArray = Directory.GetFiles(@"data\xml\zones\");
-                for (int i = 0; i < xmlFilesArray.Length; i++) { }
+                //string[] xmlFilesArray = Directory.GetFiles(@"data\xml\zones\");
+                //for (int i = 0; i < xmlFilesArray.Length; i++) { }
             }
             catch (Exception e)
             {
-                log.Error($"ZoneManager: {e.Message}");
-                return;
+                Log.Error($"ZoneManager: {e.Message}");
             }
 
             //int size = 0;
@@ -39,18 +34,20 @@ namespace L2dotNET.GameService.Managers
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new ZoneManager();
-                        }
+                        _instance = new ZoneManager();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
     }

@@ -13,23 +13,30 @@ namespace L2dotNET.GameService.Commands.Admin
         protected internal override void Use(L2Player admin, string alias)
         {
             //whisper [on|off] -- so when whisper is off means no one can message you when whispers on they can message you.
-            bool changed = false;
+            bool changed;
             switch (alias.Split(' ')[1])
             {
                 case "on":
                     changed = admin.WhisperBlock = false;
                     admin.WhisperBlock = true;
-                    admin.sendMessage("Whisper blocking enabled.");
+                    admin.SendMessage("Whisper blocking enabled.");
                     break;
                 case "off":
                     changed = admin.WhisperBlock = true;
                     admin.WhisperBlock = false;
-                    admin.sendMessage("Whisper blocking disabled.");
+                    admin.SendMessage("Whisper blocking disabled.");
+                    break;
+                default:
+                    changed = admin.WhisperBlock = true;
+                    admin.WhisperBlock = false;
+                    admin.SendMessage("Whisper blocking disabled.");
                     break;
             }
 
             if (changed)
-                admin.sendPacket(new EtcStatusUpdate(admin));
+            {
+                admin.SendPacket(new EtcStatusUpdate(admin));
+            }
         }
     }
 }

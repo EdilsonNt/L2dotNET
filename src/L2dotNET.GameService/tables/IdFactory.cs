@@ -8,53 +8,50 @@ namespace L2dotNET.GameService.Tables
     sealed class IdFactory
     {
         [Inject]
-        public IServerService serverService
-        {
-            get { return GameServer.Kernel.Get<IServerService>(); }
-        }
+        public IServerService ServerService => GameServer.Kernel.Get<IServerService>();
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(IdFactory));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(IdFactory));
 
-        private static volatile IdFactory instance;
-        private static readonly object syncRoot = new object();
+        private static volatile IdFactory _instance;
+        private static readonly object SyncRoot = new object();
 
-        public const int ID_MIN = 0x10000000,
-                         ID_MAX = 0x7FFFFFFF;
+        public const int IdMin = 0x10000000,
+                         IdMax = 0x7FFFFFFF;
 
-        private int currentId = 1;
+        private int _currentId = 1;
 
         public static IdFactory Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new IdFactory();
-                        }
+                        _instance = new IdFactory();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
-        public IdFactory() { }
-
-        public int nextId()
+        public int NextId()
         {
-            currentId++;
-            return currentId;
+            _currentId++;
+            return _currentId;
         }
 
         public void Initialize()
         {
-            currentId = serverService.GetPlayersObjectIdList().DefaultIfEmpty(ID_MIN).Max();
+            _currentId = ServerService.GetPlayersObjectIdList().DefaultIfEmpty(IdMin).Max();
 
-            log.Info($"idfactory: used ids {currentId}");
+            Log.Info($"idfactory: used ids {_currentId}");
         }
     }
 }

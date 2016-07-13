@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
 
@@ -7,45 +8,39 @@ namespace L2dotNET.GameService.Network.Serverpackets
     class SellList : GameServerNetworkPacket
     {
         private readonly List<L2Item> _sells = new List<L2Item>();
-        private readonly long _adena;
+        private readonly int _adena;
 
-        public SellList(L2Player player, int npcObj)
+        public SellList(L2Player player)
         {
-            foreach (L2Item item in player.getAllItems())
+            foreach (L2Item item in player.GetAllItems().Where(item => item.Template.Tradable && (item.AugmentationId <= 0) && (item.IsEquipped != 1)))
             {
-                if (item.Template.is_trade == 0 || item.AugmentationID > 0 || item._isEquipped == 1)
-                    continue;
-
-                if (item.Template.Type == ItemTemplate.L2ItemType.asset)
-                    continue;
-
                 _sells.Add(item);
             }
 
-            _adena = player.getAdena();
+            _adena = player.GetAdena();
         }
 
-        protected internal override void write()
+        protected internal override void Write()
         {
-            writeC(0x10);
-            writeD(_adena);
-            writeD(0);
-            writeH(_sells.Count);
+            WriteC(0x10);
+            WriteD(_adena);
+            WriteD(0);
+            WriteH(_sells.Count);
 
             foreach (L2Item item in _sells)
             {
-                writeD(item.ObjID);
-                writeD(item.Template.ItemID);
-                writeQ(item.Count);
+                WriteD(item.ObjId);
+                WriteD(item.Template.ItemId);
+                WriteQ(item.Count);
 
-                writeH(item.Template.Type2());
-                writeH(item.Template.Type1());
-                writeD(item.Template.BodyPartId());
+                WriteH(item.Template.Type2);
+                WriteH(item.Template.Type1);
+                WriteD(item.Template.BodyPart);
 
-                writeH(item.Enchant);
-                writeH(item.Template.Type2());
-                writeH(0x00);
-                writeD((int)(item.Template.Price * 0.5));
+                WriteH(item.Enchant);
+                WriteH(item.Template.Type2);
+                WriteH(0x00);
+                WriteD((int)(item.Template.ReferencePrice * 0.5));
             }
         }
     }

@@ -4,35 +4,35 @@ namespace L2dotNET.Utility
 {
     public class BlowFishKeygen
     {
-        private const int CRYPT_KEYS_SIZE = 20;
-        private static readonly byte[][] CRYPT_KEYS = new byte[CRYPT_KEYS_SIZE][];
+        private const int CryptKeysSize = 20;
+        private static readonly byte[][] CryptKeys = new byte[CryptKeysSize][];
         private static readonly Random Random = new Random();
 
         public static void GenerateKeys()
         {
-            for (int i = 0; i < CRYPT_KEYS_SIZE; i++)
+            for (int i = 0; i < CryptKeysSize; i++)
             {
-                CRYPT_KEYS[i] = new byte[16];
+                CryptKeys[i] = new byte[16];
 
-                for (int j = 0; j < CRYPT_KEYS[i].Length; j++)
+                for (int j = 0; j < CryptKeys[i].Length; j++)
                 {
-                    CRYPT_KEYS[i][j] = (byte)Random.Next(255);
+                    CryptKeys[i][j] = (byte)Random.Next(255);
                 }
 
-                CRYPT_KEYS[i][8] = (byte)0xc8;
-                CRYPT_KEYS[i][9] = (byte)0x27;
-                CRYPT_KEYS[i][10] = (byte)0x93;
-                CRYPT_KEYS[i][11] = (byte)0x01;
-                CRYPT_KEYS[i][12] = (byte)0xa1;
-                CRYPT_KEYS[i][13] = (byte)0x6c;
-                CRYPT_KEYS[i][14] = (byte)0x31;
-                CRYPT_KEYS[i][15] = (byte)0x97;
+                CryptKeys[i][8] = 0xc8;
+                CryptKeys[i][9] = 0x27;
+                CryptKeys[i][10] = 0x93;
+                CryptKeys[i][11] = 0x01;
+                CryptKeys[i][12] = 0xa1;
+                CryptKeys[i][13] = 0x6c;
+                CryptKeys[i][14] = 0x31;
+                CryptKeys[i][15] = 0x97;
             }
         }
 
-        public static byte[] getRandomKey()
+        public static byte[] GetRandomKey()
         {
-            return CRYPT_KEYS[Random.Next(CRYPT_KEYS_SIZE)];
+            return CryptKeys[Random.Next(CryptKeysSize)];
         }
     }
 }

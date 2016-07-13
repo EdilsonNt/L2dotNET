@@ -27,7 +27,7 @@ namespace L2dotNET.Utility
         /// <summary>
         /// Common output stream writer.
         /// </summary>
-        private static StreamWriter Output;
+        private static StreamWriter _output;
 
         /// <summary>
         /// Writes data to console and common output file.
@@ -40,7 +40,9 @@ namespace L2dotNET.Utility
             string s = string.Format(format, args);
 
             if (!append)
+            {
                 s = FormatOutputString(s);
+            }
 
             Console.Write(s);
         }
@@ -129,24 +131,36 @@ namespace L2dotNET.Utility
         private static string FormatException(Exception e)
         {
             if (e == null)
+            {
                 return string.Empty;
+            }
 
             StringBuilder sb = new StringBuilder();
             sb.Append($"{e.GetType()} occurred on {ServiceTime.CurrentTime}{Environment.NewLine}");
 
             if (!string.IsNullOrEmpty(e.Message))
-                sb.Append($"Message: {e.Message}{Environment.NewLine}");
-            if (!string.IsNullOrEmpty(e.StackTrace))
-                sb.Append($"StackTrace: {e.StackTrace}{Environment.NewLine}");
-            if (e.InnerException != null)
             {
-                sb.AppendLine("Inner exception data:");
+                sb.Append($"Message: {e.Message}{Environment.NewLine}");
+            }
+            if (!string.IsNullOrEmpty(e.StackTrace))
+            {
+                sb.Append($"StackTrace: {e.StackTrace}{Environment.NewLine}");
+            }
+            if (e.InnerException == null)
+            {
+                return sb.ToString();
+            }
 
-                if (!string.IsNullOrEmpty(e.InnerException.Message))
-                    sb.Append($"\tMessage: {e.InnerException.Message}{Environment.NewLine}");
+            sb.AppendLine("Inner exception data:");
 
-                if (!string.IsNullOrEmpty(e.InnerException.StackTrace))
-                    sb.Append($"\tStackTrace: {e.InnerException.StackTrace}{Environment.NewLine}");
+            if (!string.IsNullOrEmpty(e.InnerException.Message))
+            {
+                sb.Append($"\tMessage: {e.InnerException.Message}{Environment.NewLine}");
+            }
+
+            if (!string.IsNullOrEmpty(e.InnerException.StackTrace))
+            {
+                sb.Append($"\tStackTrace: {e.InnerException.StackTrace}{Environment.NewLine}");
             }
 
             return sb.ToString();
@@ -158,16 +172,16 @@ namespace L2dotNET.Utility
         /// <returns>Formatted system summary.</returns>
         private static string GetSystemSummary()
         {
-            StringBuilder m_StrBuilder = new StringBuilder();
-            m_StrBuilder.Append($"Date: {ServiceTime.CurrentTime}\r\n");
-            m_StrBuilder.Append($"OS: {Environment.OSVersion}\r\n");
-            m_StrBuilder.Append($"Environment version: {Environment.Version.ToString()}\r\n");
-            m_StrBuilder.Append($"Processors count: {Environment.ProcessorCount}\r\n");
-            m_StrBuilder.Append($"Working set: {Environment.WorkingSet} bytes\r\n");
-            m_StrBuilder.Append($"Domain name: {AppDomain.CurrentDomain.FriendlyName}\r\n");
-            m_StrBuilder.Append($"Service Uptime: {ServiceTime.ServiceUptimeAsString}\r\n");
-            m_StrBuilder.Append(Environment.NewLine);
-            return m_StrBuilder.ToString();
+            StringBuilder mStrBuilder = new StringBuilder();
+            mStrBuilder.Append($"Date: {ServiceTime.CurrentTime}\r\n");
+            mStrBuilder.Append($"OS: {Environment.OSVersion}\r\n");
+            mStrBuilder.Append($"Environment version: {Environment.Version}\r\n");
+            mStrBuilder.Append($"Processors count: {Environment.ProcessorCount}\r\n");
+            mStrBuilder.Append($"Working set: {Environment.WorkingSet} bytes\r\n");
+            mStrBuilder.Append($"Domain name: {AppDomain.CurrentDomain.FriendlyName}\r\n");
+            mStrBuilder.Append($"Service Uptime: {ServiceTime.ServiceUptimeAsString}\r\n");
+            mStrBuilder.Append(Environment.NewLine);
+            return mStrBuilder.ToString();
         }
 
         /// <summary>
@@ -176,7 +190,7 @@ namespace L2dotNET.Utility
         public static void Initialize()
         {
             EnsureDirectiries();
-            Output = new StreamWriter(Path.Combine(OutLogsDirectory, $"{ServiceTime.CurrentTime.ToString().Replace(":", "-").Replace("/", "-")}.log"), true);
+            _output = new StreamWriter(Path.Combine(OutLogsDirectory, $"{ServiceTime.CurrentTime.Replace(":", "-").Replace("/", "-")}.log"), true);
             WriteLine(Source.Logger, "Initialized.");
         }
 
@@ -186,11 +200,8 @@ namespace L2dotNET.Utility
         /// <param name="s">Message to write.</param>
         private static void WriteOutputLine(string s)
         {
-            if (Output != null)
-            {
-                Output.WriteLine(s);
-                Output.Flush();
-            }
+            _output?.WriteLine(s);
+            _output?.Flush();
         }
 
         /// <summary>
@@ -199,11 +210,8 @@ namespace L2dotNET.Utility
         /// <param name="s">Message to write.</param>
         private static void WriteOutput(string s)
         {
-            if (Output != null)
-            {
-                Output.Write(s);
-                Output.Flush();
-            }
+            _output?.Write(s);
+            _output?.Flush();
         }
 
         /// <summary>
@@ -212,11 +220,17 @@ namespace L2dotNET.Utility
         private static void EnsureDirectiries()
         {
             if (!Directory.Exists(CommonLogsDirectory))
+            {
                 Directory.CreateDirectory(CommonLogsDirectory);
+            }
             if (!Directory.Exists(OutLogsDirectory))
+            {
                 Directory.CreateDirectory(OutLogsDirectory);
+            }
             if (!Directory.Exists(ExceptionsLogDirectory))
+            {
                 Directory.CreateDirectory(ExceptionsLogDirectory);
+            }
         }
 
         /// <summary>
@@ -226,7 +240,7 @@ namespace L2dotNET.Utility
         /// <param name="data"><see cref="System.Exception"/> data.</param>
         private static void WriteException(string type, string data)
         {
-            string fp = $"{type}-{ServiceTime.CurrentTime.ToString().Replace(":", "-").Replace("/", "-")}.ex";
+            string fp = $"{type}-{ServiceTime.CurrentTime.Replace(":", "-").Replace("/", "-")}.ex";
 
             using (StreamWriter sw = new StreamWriter(Path.Combine(ExceptionsLogDirectory, fp), true, Encoding.Unicode))
             {

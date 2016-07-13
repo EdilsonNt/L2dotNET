@@ -12,13 +12,15 @@ namespace L2dotNET.LoginService.Model
         public string Info { get; set; }
         public byte Id { get; set; }
 
-        public byte[] GetIP(LoginClient client)
+        public byte[] GetIp(LoginClient client)
         {
             if (DefaultAddress == null)
             {
                 string ip = "0.0.0.0";
                 if (Thread != null)
+                {
                     ip = Thread.Wan;
+                }
 
                 DefaultAddress = new byte[4];
                 string[] w = ip.Split('.');
@@ -28,44 +30,25 @@ namespace L2dotNET.LoginService.Model
                 DefaultAddress[3] = byte.Parse(w[3]);
             }
 
-            if (Thread != null)
+            if (Thread == null)
             {
-                byte[] redirect = NetworkRedirect.Instance.GetRedirect(client, Id);
-                if (redirect != null)
-                    return redirect;
+                return DefaultAddress;
             }
 
-            return DefaultAddress;
+            byte[] redirect = NetworkRedirect.Instance.GetRedirect(client, Id);
+            return redirect ?? DefaultAddress;
         }
 
-        public byte Connected
-        {
-            get { return Thread != null ? (Thread.Connected ? (byte)1 : (byte)0) : (byte)0; }
-        }
+        public byte Connected => Thread != null ? (Thread.Connected ? (byte)1 : (byte)0) : (byte)0;
 
-        public short CurrentPlayers
-        {
-            get { return Thread != null ? Thread.Curp : (short)0; }
-        }
+        public short CurrentPlayers => Thread?.Curp ?? (short)0;
 
-        public short MaxPlayers
-        {
-            get { return Thread != null ? Thread.Maxp : (short)0; }
-        }
+        public short MaxPlayers => Thread?.Maxp ?? (short)0;
 
-        public int Port
-        {
-            get { return Thread != null ? Thread.Port : 0; }
-        }
+        public int Port => Thread?.Port ?? 0;
 
-        public bool TestMode
-        {
-            get { return Thread != null ? Thread.TestMode : false; }
-        }
+        public bool TestMode => (Thread != null) && Thread.TestMode;
 
-        public bool GmOnly
-        {
-            get { return Thread != null ? Thread.GmOnly : false; }
-        }
+        public bool GmOnly => (Thread != null) && Thread.GmOnly;
     }
 }

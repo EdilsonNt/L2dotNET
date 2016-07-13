@@ -6,40 +6,31 @@ namespace L2dotNET.Utility
 {
     public static class Utilz
     {
-        public static string CurrentTime
-        {
-            get { return DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss"); }
-        }
+        public static string CurrentTime => DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss");
 
-        public static TimeSpan ProcessUptime
-        {
-            get { return DateTime.Now - Process.GetCurrentProcess().StartTime; }
-        }
+        public static TimeSpan ProcessUptime => DateTime.Now - Process.GetCurrentProcess().StartTime;
 
-        public static string ProcessUptimeAsString
-        {
-            get { return DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime).ToString(); }
-        }
+        public static string ProcessUptimeAsString => DateTime.Now.Subtract(Process.GetCurrentProcess().StartTime).ToString();
 
         public static string SystemSummary()
         {
-            StringBuilder m_StrBuilder = new StringBuilder();
-            m_StrBuilder.Append($"Date: {CurrentTime}\r\n");
-            m_StrBuilder.Append($"OS: {Environment.OSVersion}\r\n");
-            m_StrBuilder.Append($"Environment version: {Environment.Version.ToString()}\r\n");
-            m_StrBuilder.Append($"Processors count: {Environment.ProcessorCount}\r\n");
-            m_StrBuilder.Append($"Working set: {Environment.WorkingSet} bytes\r\n");
-            m_StrBuilder.Append($"Domain name: {AppDomain.CurrentDomain.FriendlyName}\r\n");
-            m_StrBuilder.Append($"Service Uptime: {ProcessUptimeAsString}\r\n");
-            m_StrBuilder.Append(Environment.NewLine);
-            return m_StrBuilder.ToString();
+            StringBuilder strBuilder = new StringBuilder();
+            strBuilder.Append($"Date: {CurrentTime}\r\n");
+            strBuilder.Append($"OS: {Environment.OSVersion}\r\n");
+            strBuilder.Append($"Environment version: {Environment.Version}\r\n");
+            strBuilder.Append($"Processors count: {Environment.ProcessorCount}\r\n");
+            strBuilder.Append($"Working set: {Environment.WorkingSet} bytes\r\n");
+            strBuilder.Append($"Domain name: {AppDomain.CurrentDomain.FriendlyName}\r\n");
+            strBuilder.Append($"Service Uptime: {ProcessUptimeAsString}\r\n");
+            strBuilder.Append(Environment.NewLine);
+            return strBuilder.ToString();
         }
 
-        private static readonly DateTime year1970 = new DateTime(1970, 1, 1);
+        private static readonly DateTime Year1970 = new DateTime(1970, 1, 1);
 
         public static int CurrentSeconds()
         {
-            TimeSpan ts = year1970 - DateTime.Now;
+            TimeSpan ts = Year1970 - DateTime.Now;
             return (int)ts.TotalSeconds * -1;
         }
 
@@ -65,6 +56,36 @@ namespace L2dotNET.Utility
         public static bool EqualsMatchCase(this string str, string stringToCompare)
         {
             return str.Equals(stringToCompare, StringComparison.InvariantCulture);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="stringToCompare"></param>
+        /// <returns></returns>
+        public static bool StartsWithIgnoreCase(this string str, string stringToCompare)
+        {
+            return str.StartsWith(stringToCompare, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="stringToCompare"></param>
+        /// <returns></returns>
+        public static bool StartsWithMatchCase(this string str, string stringToCompare)
+        {
+            return str.StartsWith(stringToCompare, StringComparison.InvariantCulture);
+        }
+
+        public static bool EndsWithIgnoreCase(this string str, string stringToCompare)
+        {
+            return str.EndsWith(stringToCompare, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static bool EndsWithMatchCase(this string str, string stringToCompare)
+        {
+            return str.EndsWith(stringToCompare, StringComparison.InvariantCulture);
         }
     }
 }

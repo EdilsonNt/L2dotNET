@@ -1,5 +1,6 @@
 ﻿using L2dotNET.GameService.Handlers;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
@@ -7,43 +8,45 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestTutorialPassCmdToServer(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
         private string _alias;
 
-        public override void read()
+        public override void Read()
         {
-            _alias = readS();
+            _alias = ReadS();
             if (_alias.Contains("\n"))
+            {
                 _alias = _alias.Replace("\n", "");
+            }
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
-            if (player._p_block_act == 1)
+            if (player.PBlockAct == 1)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            if (_alias.StartsWith("menu_select?"))
+            if (_alias.StartsWithIgnoreCase("menu_select?"))
             {
-                _alias = _alias.Replace(" ", "");
-                string x1 = _alias.Split('?')[1];
-                string[] x2 = x1.Split('&');
-                int ask = int.Parse(x2[0].Substring(4));
-                int reply = int.Parse(x2[1].Substring(6));
+                //_alias = _alias.Replace(" ", "");
+                //string x1 = _alias.Split('?')[1];
+                //string[] x2 = x1.Split('&');
+                //int ask = int.Parse(x2[0].Substring(4));
+                //int reply = int.Parse(x2[1].Substring(6));
 
                 //  npc.onDialog(player, ask, reply);
             }
-            else if (_alias.StartsWith("admin?"))
+            else if (_alias.StartsWithIgnoreCase("admin?"))
             {
                 if (player.ViewingAdminPage == 0)
                 {
-                    player.sendActionFailed();
+                    player.SendActionFailed();
                     return;
                 }
 
@@ -55,7 +58,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                         z;
                     if (!int.TryParse(coord[1], out x) || !int.TryParse(coord[2], out y) || !int.TryParse(coord[3], out z))
                     {
-                        player.sendMessage("Only numbers allowed in box.");
+                        player.SendMessage("Only numbers allowed in box.");
                         return;
                     }
 

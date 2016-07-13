@@ -1,6 +1,7 @@
 ﻿using System;
 using L2dotNET.GameService.Enums;
 using L2dotNET.GameService.World;
+using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Model.Zones.Type
 {
@@ -18,28 +19,38 @@ namespace L2dotNET.GameService.Model.Zones.Type
 
         public override void SetParameter(string name, string value)
         {
-            if (name.Equals("townId"))
+            if (name.EqualsIgnoreCase("townId"))
+            {
                 TownId = Convert.ToInt32(value);
-            else if (name.Equals("taxById"))
+            }
+            else if (name.EqualsIgnoreCase("taxById"))
+            {
                 TaxById = Convert.ToInt32(value);
-            else if (name.Equals("isPeaceZone"))
+            }
+            else if (name.EqualsIgnoreCase("isPeaceZone"))
+            {
                 IsPeaceZone = bool.Parse(value);
+            }
         }
 
         protected override void OnEnter(L2Character character)
         {
             if (IsPeaceZone)
-                character.SetInsisdeZone(ZoneId.PEACE, true);
+            {
+                character.SetInsisdeZone(ZoneId.Peace, true);
+            }
 
-            character.SetInsisdeZone(ZoneId.TOWN, true);
+            character.SetInsisdeZone(ZoneId.Town, true);
         }
 
         protected override void OnExit(L2Character character)
         {
             if (IsPeaceZone)
-                character.SetInsisdeZone(ZoneId.PEACE, false);
+            {
+                character.SetInsisdeZone(ZoneId.Peace, false);
+            }
 
-            character.SetInsisdeZone(ZoneId.TOWN, false);
+            character.SetInsisdeZone(ZoneId.Town, false);
         }
 
         public override void OnDieInside(L2Character character) { }

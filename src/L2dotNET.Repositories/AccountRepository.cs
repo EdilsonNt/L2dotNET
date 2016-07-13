@@ -13,24 +13,27 @@ namespace L2dotNET.Repositories
 {
     public class AccountRepository : IAccountRepository
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AccountRepository));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(AccountRepository));
 
-        internal IDbConnection db;
+        internal IDbConnection Db;
 
         public AccountRepository()
         {
-            this.db = new MySqlConnection(ConfigurationManager.ConnectionStrings["PrimaryConnection"].ToString());
+            Db = new MySqlConnection(ConfigurationManager.ConnectionStrings["PrimaryConnection"].ToString());
         }
 
         public AccountModel GetAccountByLogin(string login)
         {
             try
             {
-                return this.db.Query<AccountModel>("select Login,Password,LastActive,access_level as AccessLevel,LastServer from accounts where login=@login", new { login = login }).FirstOrDefault();
+                return Db.Query<AccountModel>("select Login,Password,LastActive,access_level as AccessLevel,LastServer from accounts where login=@login", new
+                                                                                                                                                          {
+                                                                                                                                                              login = login
+                                                                                                                                                          }).FirstOrDefault();
             }
             catch (MySqlException ex)
             {
-                log.Error($"Method: {"GetAccountByLogin"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
+                Log.Error($"Method: {"GetAccountByLogin"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
                 return null;
             }
         }
@@ -39,15 +42,29 @@ namespace L2dotNET.Repositories
         {
             try
             {
-                this.db.Execute("insert into accounts (Login,Password,LastActive,access_level,LastServer) Values (@login,@pass,@lastactive,@access,@lastServer)", new { login = login, pass = password, lastactive = DateTime.Now.Ticks, access = 0, lastServer = 1 }); //to be edited
+                Db.Execute("insert into accounts (Login,Password,LastActive,access_level,LastServer) Values (@login,@pass,@lastactive,@access,@lastServer)", new
+                                                                                                                                                             {
+                                                                                                                                                                 login = login,
+                                                                                                                                                                 pass = password,
+                                                                                                                                                                 lastactive = DateTime.Now.Ticks,
+                                                                                                                                                                 access = 0,
+                                                                                                                                                                 lastServer = 1
+                                                                                                                                                             }); //to be edited
 
-                AccountModel accModel = new AccountModel() { Login = login, Password = password, LastActive = DateTime.Now.Ticks, AccessLevel = 0, LastServer = 1 };
+                AccountModel accModel = new AccountModel
+                                        {
+                                            Login = login,
+                                            Password = password,
+                                            LastActive = DateTime.Now.Ticks,
+                                            AccessLevel = 0,
+                                            LastServer = 1
+                                        };
 
                 return accModel;
             }
             catch (MySqlException ex)
             {
-                log.Error($"Method: {"CreateAccount"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
+                Log.Error($"Method: {"CreateAccount"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
                 return null;
             }
         }
@@ -56,11 +73,15 @@ namespace L2dotNET.Repositories
         {
             try
             {
-                return this.db.Query("select distinct 1 from accounts where login=@login AND password=@pass", new { login = login, pass = password }).Any();
+                return Db.Query("select distinct 1 from accounts where login=@login AND password=@pass", new
+                                                                                                         {
+                                                                                                             login = login,
+                                                                                                             pass = password
+                                                                                                         }).Any();
             }
             catch (MySqlException ex)
             {
-                log.Error($"Method: {"CheckIfAccountIsCorrect"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
+                Log.Error($"Method: {"CheckIfAccountIsCorrect"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
                 return false;
             }
         }
@@ -69,11 +90,14 @@ namespace L2dotNET.Repositories
         {
             try
             {
-                return this.db.Query<int>("select obj_Id from characters where account_name=@acc", new { acc = login }).ToList();
+                return Db.Query<int>("select obj_Id from characters where account_name=@acc", new
+                                                                                              {
+                                                                                                  acc = login
+                                                                                              }).ToList();
             }
             catch (MySqlException ex)
             {
-                log.Error($"Method: {"GetPlayerIdsListByAccountName"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
+                Log.Error($"Method: {"GetPlayerIdsListByAccountName"}. Message: '{ex.Message}' (Error Number: '{ex.Number}')");
                 return new List<int>();
             }
         }

@@ -21,27 +21,29 @@ namespace L2dotNET.GameService.Commands.Admin
                 target = (L2Player)admin.CurrentTarget;
             }
             else
+            {
                 target = admin;
+            }
 
-            double hpval = target.CharacterStat.getStat(TEffectType.b_max_hp) - target.CurHP;
-            double mpval = target.CharacterStat.getStat(TEffectType.b_max_mp) - target.CurMP;
-            target.CurHP += hpval;
-            target.CurMP += mpval;
+            double hpval = target.CharacterStat.GetStat(EffectType.BMaxHp) - target.CurHp;
+            double mpval = target.CharacterStat.GetStat(EffectType.BMaxMp) - target.CurMp;
+            target.CurHp += hpval;
+            target.CurMp += mpval;
 
-            StatusUpdate su = new StatusUpdate(target.ObjID);
-            su.add(StatusUpdate.CUR_HP, (int)target.CurHP);
-            su.add(StatusUpdate.CUR_MP, (int)target.CurMP);
-            target.sendPacket(su);
+            StatusUpdate su = new StatusUpdate(target.ObjId);
+            su.Add(StatusUpdate.CurHp, (int)target.CurHp);
+            su.Add(StatusUpdate.CurMp, (int)target.CurMp);
+            target.SendPacket(su);
 
-            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2_HP_RESTORED_BY_S1);
+            SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2HpRestoredByS1);
             sm.AddPlayerName(admin.Name);
             sm.AddNumber((int)hpval);
-            target.sendPacket(sm);
+            target.SendPacket(sm);
 
-            sm = new SystemMessage(SystemMessage.SystemMessageId.S2_MP_RESTORED_BY_S1);
+            sm = new SystemMessage(SystemMessage.SystemMessageId.S2MpRestoredByS1);
             sm.AddPlayerName(admin.Name);
             sm.AddNumber((int)mpval);
-            target.sendPacket(sm);
+            target.SendPacket(sm);
         }
     }
 }

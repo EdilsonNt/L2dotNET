@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using L2dotNET.GameService.Model.Items;
+﻿using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Playable;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
@@ -8,29 +7,29 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
 {
     class RequestGetItemFromPet : GameServerNetworkRequest
     {
-        private int objectId;
-        private long count;
-        private int equipped;
+        private int _objectId;
+        private long _count;
+        private int _equipped;
 
         public RequestGetItemFromPet(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            objectId = readD();
-            count = readQ();
-            equipped = readD();
+            _objectId = ReadD();
+            _count = ReadQ();
+            _equipped = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
-            if (player.Summon == null || !(player.Summon is L2Pet) || player.EnchantState != 0)
+            if (!(player.Summon is L2Pet) || (player.EnchantState != 0))
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
@@ -38,40 +37,46 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
 
             if (pet.Dead)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.CANNOT_GIVE_ITEMS_TO_DEAD_PET);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.CannotGiveItemsToDeadPet);
+                player.SendActionFailed();
                 return;
             }
 
-            if (!pet.Inventory.Items.ContainsKey(objectId))
-            {
-                player.sendActionFailed();
-                return;
-            }
+            //if (!pet.Inventory.Items.Contains(objectId))
+            //{
+            //    player.sendActionFailed();
+            //    return;
+            //}
 
-            L2Item item = pet.Inventory.Items[objectId];
+            L2Item item = pet.Inventory.Items[_objectId];
 
             if (item.TempBlock)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            if (item.Template.is_drop == 0 || item.Template.is_destruct == 0 || item.Template.is_trade == 0 || item.Template.can_equip_hero != -1 || pet.ControlItem.ObjID == objectId)
+            if (!item.Template.Dropable || !item.Template.Destroyable || !item.Template.Tradable || !item.Template.HeroItem || (pet.ControlItem.ObjId == _objectId))
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.ITEM_NOT_FOR_PETS);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.ItemNotForPets);
+                player.SendActionFailed();
                 return;
             }
 
-            if (count < 0)
-                count = 1;
-            else if (count > item.Count)
-                count = item.Count;
+            if (_count < 0)
+            {
+                _count = 1;
+            }
+            else if (_count > item.Count)
+            {
+                _count = item.Count;
+            }
 
-            List<long[]> items = new List<long[]>();
-            items.Add(new long[] { objectId, count });
-            pet.Inventory.transferFrom(player, items, true);
+            //List<long[]> items = new List<long[]>
+            //                     {
+            //                         new[] { _objectId, _count }
+            //                     };
+            //pet.Inventory.transferFrom(player, items, true);
         }
     }
 }

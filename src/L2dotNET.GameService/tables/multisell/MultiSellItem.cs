@@ -4,163 +4,43 @@ namespace L2dotNET.GameService.Tables.Multisell
 {
     public class MultiSellItem
     {
-        public int id;
-        public long count;
-        public ItemTemplate template;
+        public int Id;
+        public int Count;
+        public ItemTemplate Template;
 
-        public short enchant
+        public short Enchant
         {
             get
             {
-                if (l2item != null)
-                    return (short)l2item.Enchant;
-
-                if (template != null && template.enchanted > 0)
-                    return template.enchanted;
+                if (L2Item != null)
+                {
+                    return (short)L2Item.Enchant;
+                }
 
                 return 0;
             }
         }
 
-        public int augment = 0;
-        public L2Item l2item;
+        public int Augment = 0;
+        public L2Item L2Item;
 
-        public short AttrAttackType
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrAttackType;
-
-                if (template == null)
-                    return -2;
-                else
-                    return template.AttrAttackType;
-            }
-        }
-
-        public short AttrAttackValue
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrAttackValue;
-
-                return template == null ? (short)0 : template.AttrAttackValue;
-            }
-        }
-
-        public short AttrDefenseValueFire
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrDefenseValueFire;
-
-                if (template == null)
-                    return 0;
-                else
-                    return template.AttrDefenseValueFire;
-            }
-        }
-
-        public short AttrDefenseValueWater
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrDefenseValueWater;
-
-                if (template == null)
-                    return 0;
-                else
-                    return template.AttrDefenseValueWater;
-            }
-        }
-
-        public short AttrDefenseValueWind
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrDefenseValueWind;
-
-                if (template == null)
-                    return 0;
-                else
-                    return template.AttrDefenseValueWind;
-            }
-        }
-
-        public short AttrDefenseValueEarth
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrDefenseValueEarth;
-
-                if (template == null)
-                    return 0;
-                else
-                    return template.AttrDefenseValueEarth;
-            }
-        }
-
-        public short AttrDefenseValueHoly
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrDefenseValueHoly;
-
-                if (template == null)
-                    return 0;
-                else
-                    return template.AttrDefenseValueHoly;
-            }
-        }
-
-        public short AttrDefenseValueUnholy
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.AttrDefenseValueUnholy;
-
-                if (template == null)
-                    return 0;
-                else
-                    return template.AttrDefenseValueUnholy;
-            }
-        }
-
-        public int Durability
-        {
-            get
-            {
-                if (l2item != null)
-                    return l2item.Template.Durability;
-
-                if (template == null)
-                    return 0;
-                else
-                    return template.Durability;
-            }
-        }
+        public int Durability { get; set; }
 
         public short Type2
         {
             get
             {
-                if (template == null)
-                    return 0;
-                else
+                if (Template == null)
                 {
-                    if (l2item != null)
-                        return l2item.Template.Type2();
-
-                    return template.Type2();
+                    return 0;
                 }
+
+                if (L2Item != null)
+                {
+                    return (short)L2Item.Template.Type2;
+                }
+
+                return (short)Template.Type2;
             }
         }
 
@@ -168,21 +48,20 @@ namespace L2dotNET.GameService.Tables.Multisell
         {
             get
             {
-                if (template == null)
-                    return 0;
-                else
+                if (Template == null)
                 {
-                    if (l2item != null)
-                        return l2item.Template.BodyPartId();
-
-                    return template.BodyPartId();
+                    return 0;
                 }
+
+                if (L2Item != null)
+                {
+                    return L2Item.Template.BodyPart;
+                }
+
+                return Template.BodyPart;
             }
         }
 
-        public int ItemID
-        {
-            get { return id; }
-        }
+        public int ItemId => Id;
     }
 }

@@ -6,44 +6,44 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
 {
     class RequestChangePetName : GameServerNetworkRequest
     {
-        private string name;
+        private string _name;
 
         public RequestChangePetName(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        public override void read()
+        public override void Read()
         {
-            name = readS();
+            _name = ReadS();
         }
 
-        public override void run()
+        public override void Run()
         {
             L2Player player = Client.CurrentPlayer;
 
             if (player.Summon == null)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
             if (!(player.Summon is L2Pet))
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            if (name.Length > 8)
+            if (_name.Length > 8)
             {
-                player.sendSystemMessage(SystemMessage.SystemMessageId.NAMING_PETNAME_UP_TO_8CHARS);
-                player.sendActionFailed();
+                player.SendSystemMessage(SystemMessage.SystemMessageId.NamingPetnameUpTo_8Chars);
+                player.SendActionFailed();
                 return;
             }
 
-            player.Summon.Name = name;
+            player.Summon.Name = _name;
             ((L2Pet)player.Summon).sql_update();
-            player.Summon.broadcastUserInfo();
+            player.Summon.BroadcastUserInfo();
         }
     }
 }

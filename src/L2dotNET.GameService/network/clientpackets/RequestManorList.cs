@@ -7,27 +7,29 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestManorList(GameClient client, byte[] data)
         {
-            base.makeme(client, data, 2);
+            Makeme(client, data, 2);
         }
 
-        public override void read()
+        public override void Read()
         {
             // do nothing
         }
 
-        public override void run()
+        public override void Run()
         {
-            List<string> manorsName = new List<string>();
-            manorsName.Add("gludio");
-            manorsName.Add("dion");
-            manorsName.Add("giran");
-            manorsName.Add("oren");
-            manorsName.Add("aden");
-            manorsName.Add("innadril");
-            manorsName.Add("goddard");
-            manorsName.Add("rune");
-            manorsName.Add("schuttgart");
-            getClient().sendPacket(new ExSendManorList(manorsName));
+            List<string> manorsName = new List<string>
+                                      {
+                                          "gludio",
+                                          "dion",
+                                          "giran",
+                                          "oren",
+                                          "aden",
+                                          "innadril",
+                                          "goddard",
+                                          "rune",
+                                          "schuttgart"
+                                      };
+            GetClient().SendPacket(new ExSendManorList(manorsName));
         }
     }
 }

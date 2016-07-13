@@ -11,96 +11,102 @@ namespace L2dotNET.GameService.Model.Items
 {
     public class Capsule
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(Capsule));
-        private static volatile Capsule instance;
-        private static readonly object syncRoot = new object();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Capsule));
+        private static volatile Capsule _instance;
+        private static readonly object SyncRoot = new object();
 
         public static Capsule Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance != null)
                 {
-                    lock (syncRoot)
+                    return _instance;
+                }
+
+                lock (SyncRoot)
+                {
+                    if (_instance == null)
                     {
-                        if (instance == null)
-                        {
-                            instance = new Capsule();
-                        }
+                        _instance = new Capsule();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
         public void Initialize()
         {
-            LoadXML();
-            log.Info($"Capsule: Loaded {items.Count} items.");
+            LoadXml();
+            Log.Info($"Capsule: Loaded {Items.Count} items.");
         }
 
-        public SortedList<int, CapsuleItem> items = new SortedList<int, CapsuleItem>();
+        public SortedList<int, CapsuleItem> Items = new SortedList<int, CapsuleItem>();
 
         public void Process(L2Character character, L2Item item)
         {
             if (!(character is L2Player))
-                return;
-
-            if (items.ContainsKey(item.Template.ItemID))
             {
-                CapsuleItem caps = items[item.Template.ItemID];
-                Random rn = new Random();
-                ((L2Player)character).Inventory.destroyItem(item, 1, true, true);
-                foreach (CapsuleItemReward rew in caps.rewards.Where(rew => rn.Next(100) <= rew.rate))
-                {
-                    ((L2Player)character).addItem(rew.id, rn.Next(rew.min, rew.max));
-                }
+                return;
+            }
+
+            if (!Items.ContainsKey(item.Template.ItemId))
+            {
+                return;
+            }
+
+            CapsuleItem caps = Items[item.Template.ItemId];
+            Random rn = new Random();
+            ((L2Player)character).DestroyItem(item, 1);
+            foreach (CapsuleItemReward rew in caps.Rewards.Where(rew => rn.Next(100) <= rew.Rate))
+            {
+                ((L2Player)character).AddItem(rew.Id, rn.Next(rew.Min, rew.Max));
             }
         }
 
-        public Capsule() { }
-
-        public void LoadXML()
+        public void LoadXml()
         {
             XElement xml = XElement.Parse(File.ReadAllText(@"scripts\extractable.xml"));
             XElement ex = xml.Element("list");
 
-            if (ex != null)
+            if (ex == null)
             {
-                foreach (XElement m in ex.Elements())
-                {
-                    if (m.Name == "capsule")
-                    {
-                        CapsuleItem caps = new CapsuleItem();
-                        caps.id = Convert.ToInt32(m.Attribute("id").Value);
+                return;
+            }
 
-                        foreach (XElement stp in m.Elements())
+            foreach (XElement m in ex.Elements())
+                if (m.Name == "capsule")
+                {
+                    CapsuleItem caps = new CapsuleItem
+                                       {
+                                           Id = Convert.ToInt32(m.Attribute("id").Value)
+                                       };
+
+                    foreach (XElement stp in m.Elements())
+                        switch (stp.Name.LocalName)
                         {
-                            switch (stp.Name.LocalName)
-                            {
-                                case "item":
-                                    try
-                                    {
-                                        CapsuleItemReward rew = new CapsuleItemReward();
-                                        rew.id = int.Parse(stp.Attribute("id").Value);
-                                        rew.min = int.Parse(stp.Attribute("min").Value);
-                                        rew.max = int.Parse(stp.Attribute("max").Value);
-                                        rew.rate = int.Parse(stp.Attribute("rate").Value);
-                                        caps.rewards.Add(rew);
-                                    }
-                                    catch (Exception)
-                                    {
-                                        log.Error("cant parse capsule " + caps.id);
-                                    }
-                                    break;
-                            }
+                            case "item":
+                                try
+                                {
+                                    CapsuleItemReward rew = new CapsuleItemReward
+                                                            {
+                                                                Id = int.Parse(stp.Attribute("id").Value),
+                                                                Min = int.Parse(stp.Attribute("min").Value),
+                                                                Max = int.Parse(stp.Attribute("max").Value),
+                                                                Rate = int.Parse(stp.Attribute("rate").Value)
+                                                            };
+                                    caps.Rewards.Add(rew);
+                                }
+                                catch (Exception)
+                                {
+                                    Log.Error("cant parse capsule " + caps.Id);
+                                }
+                                break;
                         }
 
-                        items.Add(caps.id, caps);
-                    }
+                    Items.Add(caps.Id, caps);
                 }
-            }
         }
     }
 }

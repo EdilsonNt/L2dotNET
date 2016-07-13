@@ -4,19 +4,28 @@ namespace L2dotNET.GameService.Config
 {
     public class GameplayConfig
     {
-        [JsonProperty(PropertyName = "autoloot")]
-        public bool AutoLoot { get; set; }
+        [JsonProperty(PropertyName = "Clan")]
+        public ClanConfig ClanConfig { get; set; }
 
-        [JsonProperty(PropertyName = "DeleteCharAfterDays")]
-        public int DeleteDays { get; set; }
+        [JsonProperty(PropertyName = "Siege")]
+        public SiegeConfig SiegeConfig { get; set; }
 
-        [JsonProperty(PropertyName = "max_buffs")]
-        public int MaxBuffs { get; set; }
+        [JsonProperty(PropertyName = "Event")]
+        public EventConfig EventConfig { get; set; }
 
-        [JsonProperty(PropertyName = "FloodProtector")]
-        public FloodProtector FloodProtector { get; set; }
+        [JsonProperty(PropertyName = "Npc")]
+        public NpcConfig NpcConfig { get; set; }
 
-        [JsonProperty(PropertyName = "CommunityBoard")]
-        public CommunityBoard CommunityBoard { get; set; }
+        [JsonProperty(PropertyName = "Player")]
+        public PlayerConfig PlayerConfig { get; set; }
+
+        [JsonProperty(PropertyName = "Server")]
+        public ServerConfig2 Server { get; set; }
+
+        [JsonProperty(PropertyName = "Login")]
+        public LoginConfig LoginConfig { get; set; }
+
+        [JsonProperty(PropertyName = "Geodata")]
+        public GeodataConfig GeodataConfig { get; set; }
     }
 }

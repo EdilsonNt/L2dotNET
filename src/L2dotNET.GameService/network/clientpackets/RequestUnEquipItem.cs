@@ -6,30 +6,30 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         public RequestUnEquipItem(GameClient client, byte[] data)
         {
-            base.makeme(client, data);
+            Makeme(client, data);
         }
 
-        private int slotBitType;
+        private int _slotBitType;
 
-        public override void read()
+        public override void Read()
         {
-            slotBitType = readD();
+            _slotBitType = ReadD();
         }
 
-        public override void run()
+        public override void Run()
         {
-            L2Player player = getClient().CurrentPlayer;
+            L2Player player = GetClient().CurrentPlayer;
 
-            if (player._p_block_act == 1)
+            if (player.PBlockAct == 1)
             {
-                player.sendActionFailed();
+                player.SendActionFailed();
                 return;
             }
 
-            int dollId = player.Inventory.getPaperdollIdByMask(slotBitType);
+            //int dollId = player.Inventory.getPaperdollIdByMask(slotBitType);
 
-            player.setPaperdoll(dollId, null, true);
-            player.broadcastUserInfo();
+            //player.setPaperdoll(dollId, null, true);
+            player.BroadcastUserInfo();
         }
     }
 }

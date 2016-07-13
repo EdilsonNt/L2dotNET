@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using L2dotNET.GameService.Model.Inventory;
 using L2dotNET.GameService.Model.Player;
 
@@ -71,12 +72,28 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
                 for (byte id = 0; id < Inventory.PaperdollTotalslots; id++)
                 {
-                    WriteD(player.Inventory.Paperdoll[id].Template.ItemId);
+                    try
+                    {
+                        WriteD(player.Inventory.Paperdoll[id].Template.ItemId);
+                    }
+                    catch (Exception e)
+                    {
+                        WriteD(0);
+                    }
+                    
                 }
 
                 for (byte id = 0; id < Inventory.PaperdollTotalslots; id++)
                 {
-                    WriteD(player.Inventory.Paperdoll[id].Template.ItemId);
+                    try
+                    {
+                        WriteD(player.Inventory.Paperdoll[id].Template.ItemId);
+                    }
+                    catch (Exception e)
+                    {
+                        WriteD(0);
+                    }
+
                 }
 
                 WriteD(player.HairStyle);

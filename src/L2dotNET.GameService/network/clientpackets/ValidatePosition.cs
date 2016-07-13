@@ -1,11 +1,12 @@
 ﻿using System;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class ValidatePosition : GameServerNetworkRequest
+    class ValidatePosition : PacketBase
     {
-        public ValidatePosition(GameClient client, byte[] data)
+        public ValidatePosition(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -27,7 +28,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _data = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
             //string prevReg = player.CurrentRegion;

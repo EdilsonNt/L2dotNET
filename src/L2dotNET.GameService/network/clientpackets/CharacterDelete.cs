@@ -1,17 +1,18 @@
 ﻿using System.Linq;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 using L2dotNET.Services.Contracts;
 using Ninject;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class CharacterDelete : GameServerNetworkRequest
+    class CharacterDelete : PacketBase
     {
         [Inject]
         public IPlayerService PlayerService => GameServer.Kernel.Get<IPlayerService>();
 
-        public CharacterDelete(GameClient client, byte[] data)
+        public CharacterDelete(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -23,7 +24,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _charSlot = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             //if (!FloodProtectors.performAction(getClient(), Action.CHARACTER_SELECT))
             //{

@@ -575,7 +575,6 @@
     <Compile Include="Network\LoginAuth\Send\LoginServPing.cs" />
     <Compile Include="Network\NetworkBlock.cs" />
     <Compile Include="Network\PacketHandler.cs" />
-    <Compile Include="Network\GameServerNetworkRequest.cs" />
     <Compile Include="PreReqValidation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -585,7 +584,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Network\GameServerNetworkPacket.cs" />
     <Compile Include="Scripting\ScriptCompiler.cs" />
     <Compile Include="Handlers\AdminCommandHandler.cs" />
     <Compile Include="Commands\Admin\AdminHeal.cs" />

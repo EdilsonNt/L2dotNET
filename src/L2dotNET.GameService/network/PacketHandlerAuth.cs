@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Contexts;
 using System.Threading;
 using log4net;
 using L2dotNET.GameService.Network.LoginAuth;
@@ -7,6 +8,7 @@ using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network
 {
+    [Synchronization]
     public class PacketHandlerAuth
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(PacketHandlerAuth));

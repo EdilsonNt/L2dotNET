@@ -1,16 +1,18 @@
-﻿using L2dotNET.GameService.Model.Items;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestAddTradeItem : GameServerNetworkRequest
+    class RequestAddTradeItem : PacketBase
     {
         private int _sId;
         private long _num;
         private int _unk1;
 
-        public RequestAddTradeItem(GameClient client, byte[] data)
+        public RequestAddTradeItem(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -22,7 +24,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _num = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

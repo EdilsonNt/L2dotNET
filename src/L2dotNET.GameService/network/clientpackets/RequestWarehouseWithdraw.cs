@@ -4,14 +4,15 @@ using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Npcs;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestWarehouseWithdraw : GameServerNetworkRequest
+    class RequestWarehouseWithdraw : PacketBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RequestBypassToServer));
 
-        public RequestWarehouseWithdraw(GameClient client, byte[] data)
+        public RequestWarehouseWithdraw(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -36,7 +37,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
             L2Npc npc = player.FolkNpc;

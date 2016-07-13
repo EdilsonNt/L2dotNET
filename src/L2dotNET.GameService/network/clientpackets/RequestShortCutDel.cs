@@ -2,12 +2,13 @@
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Player.General;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestShortCutDel : GameServerNetworkRequest
+    class RequestShortCutDel : PacketBase
     {
-        public RequestShortCutDel(GameClient client, byte[] data)
+        public RequestShortCutDel(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -22,7 +23,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _page = id / 12;
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

@@ -1,15 +1,16 @@
 ﻿using L2dotNET.GameService.Model.Communities;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
 {
-    class RequestSetPledgeCrest : GameServerNetworkRequest
+    class RequestSetPledgeCrest : PacketBase
     {
         private int _size;
         private byte[] _picture;
 
-        public RequestSetPledgeCrest(GameClient client, byte[] data)
+        public RequestSetPledgeCrest(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -24,7 +25,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

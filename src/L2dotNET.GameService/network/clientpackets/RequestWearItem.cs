@@ -1,15 +1,16 @@
 ﻿using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestWearItem : GameServerNetworkRequest
+    class RequestWearItem : PacketBase
     {
         private int _unknow;
         private int _listId;
         private int _count;
         private int[] _items;
 
-        public RequestWearItem(GameClient client, byte[] data)
+        public RequestWearItem(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -39,7 +40,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

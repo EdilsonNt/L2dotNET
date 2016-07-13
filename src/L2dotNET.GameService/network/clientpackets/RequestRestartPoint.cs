@@ -1,13 +1,15 @@
-﻿using L2dotNET.GameService.Model.Player;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestRestartPoint : GameServerNetworkRequest
+    class RequestRestartPoint : PacketBase
     {
         private int _type;
         private int _keyItem = -1;
 
-        public RequestRestartPoint(GameClient client, byte[] data)
+        public RequestRestartPoint(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -22,7 +24,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

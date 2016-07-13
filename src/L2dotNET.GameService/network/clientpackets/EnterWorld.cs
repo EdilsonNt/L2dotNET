@@ -5,39 +5,21 @@ using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.Tables;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class EnterWorld : GameServerNetworkRequest
+    class EnterWorld : PacketBase
     {
-        public EnterWorld(GameClient client, byte[] data)
+        private GameClient _client;
+        public EnterWorld(Packet packet, GameClient client)
         {
-            Makeme(client, data);
+            _client = client;
         }
 
-        private int[][] _tracert = new int[5][];
-
-        public override void Read()
+        public override void RunImpl()
         {
-            //readB(32);
-            //readD();
-            //readD();
-            //readD();
-            //readD();
-            //readB(32);
-            //readD();
-
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    tracert[i] = new int[4];
-            //    for (int o = 0; o < 4; o++)
-            //        tracert[i][o] = readC();
-            //}
-        }
-
-        public override void Run()
-        {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             player.TotalRestore();
 
@@ -84,5 +66,24 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             player.RequestPing();
         }
+
+        //private int[][] _tracert = new int[5][];
+        //public override void Read()
+        //{
+        //    //readB(32);
+        //    //readD();
+        //    //readD();
+        //    //readD();
+        //    //readD();
+        //    //readB(32);
+        //    //readD();
+
+        //    //for (int i = 0; i < 5; i++)
+        //    //{
+        //    //    tracert[i] = new int[4];
+        //    //    for (int o = 0; o < 4; o++)
+        //    //        tracert[i][o] = readC();
+        //    //}
+        //}
     }
 }

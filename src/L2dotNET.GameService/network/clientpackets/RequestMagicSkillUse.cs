@@ -1,11 +1,12 @@
 ﻿using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills2;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestMagicSkillUse : GameServerNetworkRequest
+    class RequestMagicSkillUse : PacketBase
     {
-        public RequestMagicSkillUse(GameClient client, byte[] data)
+        public RequestMagicSkillUse(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -21,7 +22,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _shiftPressed = ReadC() != 0; // True if Shift pressed
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

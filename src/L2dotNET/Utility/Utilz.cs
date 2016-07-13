@@ -47,9 +47,9 @@ namespace L2dotNET.Utility
             return str.Equals(stringToCompare, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static Packet ToPacket(this byte[] byteArray)
+        public static Packet ToPacket(this byte[] byteArray, int extraBytes = 0)
         {
-            return new Packet(1, byteArray);
+            return new Packet(1 + extraBytes, byteArray);
         }
 
         /// <summary>

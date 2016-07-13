@@ -4,15 +4,16 @@ using L2dotNET.GameService.Model.Npcs;
 using L2dotNET.GameService.Model.Npcs.Ai;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Quests;
+using L2dotNET.Network;
 using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestBypassToServer : GameServerNetworkRequest
+    class RequestBypassToServer : PacketBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RequestBypassToServer));
 
-        public RequestBypassToServer(GameClient client, byte[] data)
+        public RequestBypassToServer(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -39,7 +40,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             return null;
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

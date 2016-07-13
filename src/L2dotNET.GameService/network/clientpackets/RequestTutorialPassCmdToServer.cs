@@ -1,12 +1,13 @@
 ﻿using L2dotNET.GameService.Handlers;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 using L2dotNET.Utility;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestTutorialPassCmdToServer : GameServerNetworkRequest
+    class RequestTutorialPassCmdToServer : PacketBase
     {
-        public RequestTutorialPassCmdToServer(GameClient client, byte[] data)
+        public RequestTutorialPassCmdToServer(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -22,7 +23,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

@@ -1,11 +1,12 @@
 ﻿using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Player.General;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestShortCutReg : GameServerNetworkRequest
+    class RequestShortCutReg : PacketBase
     {
-        public RequestShortCutReg(GameClient client, byte[] data)
+        public RequestShortCutReg(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -29,7 +30,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _page = slot / 12;
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

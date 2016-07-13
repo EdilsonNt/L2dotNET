@@ -1,15 +1,17 @@
 ﻿using System.Linq;
+using L2dotNET.GameService.Config;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
 {
-    class RequestJoinParty : GameServerNetworkRequest
+    class RequestJoinParty : PacketBase
     {
         private string _name;
         private int _itemDistribution;
 
-        public RequestJoinParty(GameClient client, byte[] data)
+        public RequestJoinParty(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -20,7 +22,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
             _itemDistribution = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
             L2Player target = player.KnownObjects.Values.OfType<L2Player>().FirstOrDefault(obj => obj.Name.Equals(_name));

@@ -1,12 +1,14 @@
-﻿using L2dotNET.GameService.Model.Player;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
 {
-    class AnswerPartyLootModification : GameServerNetworkRequest
+    class AnswerPartyLootModification : PacketBase
     {
         private byte _answer;
 
-        public AnswerPartyLootModification(GameClient client, byte[] data)
+        public AnswerPartyLootModification(Packet packet, GameClient client)
         {
             Makeme(client, data, 2);
         }
@@ -16,7 +18,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
             _answer = (byte)ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

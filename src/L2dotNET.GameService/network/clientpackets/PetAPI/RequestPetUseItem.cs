@@ -1,14 +1,16 @@
-﻿using L2dotNET.GameService.Model.Items;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Playable;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
 {
-    class RequestPetUseItem : GameServerNetworkRequest
+    class RequestPetUseItem : PacketBase
     {
         private int _sId;
 
-        public RequestPetUseItem(GameClient client, byte[] data)
+        public RequestPetUseItem(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -18,7 +20,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PetAPI
             _sId = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

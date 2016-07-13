@@ -1,11 +1,12 @@
 ﻿using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestAction : GameServerNetworkRequest
+    class RequestAction : PacketBase
     {
-        public RequestAction(GameClient client, byte[] data)
+        public RequestAction(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -25,7 +26,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _actionId = ReadC(); // Action identifier : 0-Simple click, 1-Shift click
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

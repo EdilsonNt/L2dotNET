@@ -10,6 +10,7 @@ using L2dotNET.GameService.Network;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.World;
 using L2dotNET.Models;
+using L2dotNET.Network;
 using L2dotNET.Services.Contracts;
 using L2dotNET.Utility;
 using Ninject;
@@ -57,32 +58,24 @@ namespace L2dotNET.GameService
             return key;
         }
 
-        public void SendPacket(GameServerNetworkPacket sbp)
+        public void SendPacket(Packet packet)
         {
             if (IsTerminated)
             {
                 return;
             }
 
-            sbp.Write();
-            byte[] data = sbp.ToByteArray();
+            byte[] data = packet.GetBuffer();
             _crypt.encrypt(data);
             List<byte> bytes = new List<byte>();
             bytes.AddRange(BitConverter.GetBytes((short)(data.Length + 2)));
             bytes.AddRange(data);
             TrafficDown += bytes.Count;
 
-            if (sbp is CharacterSelectionInfo)
-            {
-                // byte[] st = ToByteArray();
-                //foreach (byte s in data)
-                //    log.Info($"{ s.ToString("x2") } ");
-            }
-
             try
             {
                 Stream.Write(bytes.ToArray(), 0, bytes.Count);
-                //  _stream.Flush();
+                Stream.Flush();
             }
             catch
             {

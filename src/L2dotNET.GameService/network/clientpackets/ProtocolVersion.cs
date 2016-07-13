@@ -1,13 +1,14 @@
 ﻿using log4net;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class ProtocolVersion : GameServerNetworkRequest
+    class ProtocolVersion : PacketBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ProtocolVersion));
 
-        public ProtocolVersion(GameClient client, byte[] data)
+        public ProtocolVersion(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -19,7 +20,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _protocol = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             if ((_protocol != 746) && (_protocol != 251))
             {

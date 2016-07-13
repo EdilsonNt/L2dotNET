@@ -2,12 +2,13 @@
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills2;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestAcquireSkillInfo : GameServerNetworkRequest
+    class RequestAcquireSkillInfo : PacketBase
     {
-        public RequestAcquireSkillInfo(GameClient client, byte[] data)
+        public RequestAcquireSkillInfo(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -23,7 +24,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _skillType = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

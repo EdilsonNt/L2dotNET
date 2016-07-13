@@ -1,10 +1,11 @@
 ﻿using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.Tables.Multisell;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class MultiSellChoose : GameServerNetworkRequest
+    class MultiSellChoose : PacketBase
     {
         private int _listId;
         private int _entryId;
@@ -21,7 +22,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private short _unk10;
         private short _unk11;
 
-        public MultiSellChoose(GameClient client, byte[] data)
+        public MultiSellChoose(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -44,7 +45,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _unk11 = ReadH(); // elemental attributes
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

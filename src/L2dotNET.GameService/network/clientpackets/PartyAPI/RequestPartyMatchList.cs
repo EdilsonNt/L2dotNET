@@ -1,12 +1,13 @@
 ﻿using log4net;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
 {
-    class RequestPartyMatchList : GameServerNetworkRequest
+    class RequestPartyMatchList : PacketBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(RequestPartyMatchList));
 
-        public RequestPartyMatchList(GameClient client, byte[] data)
+        public RequestPartyMatchList(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -18,7 +19,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
             _status = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             Log.Info($"party {_status}");
         }

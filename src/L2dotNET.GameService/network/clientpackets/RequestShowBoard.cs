@@ -1,12 +1,14 @@
-﻿using L2dotNET.GameService.Managers.BBS;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Managers.BBS;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestShowBoard : GameServerNetworkRequest
+    class RequestShowBoard : PacketBase
     {
         private int _type;
 
-        public RequestShowBoard(GameClient client, byte[] data)
+        public RequestShowBoard(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -16,7 +18,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _type = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             BbsManager.Instance.RequestShow(Client.CurrentPlayer, _type);
         }

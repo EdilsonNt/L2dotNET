@@ -1,11 +1,12 @@
 ﻿using L2dotNET.GameService.Handlers;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class SendBypassBuildCmd : GameServerNetworkRequest
+    class SendBypassBuildCmd : PacketBase
     {
-        public SendBypassBuildCmd(GameClient client, byte[] data)
+        public SendBypassBuildCmd(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -18,7 +19,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _alias = _alias.Trim();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

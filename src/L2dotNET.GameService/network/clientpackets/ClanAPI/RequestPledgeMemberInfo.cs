@@ -1,13 +1,15 @@
 ﻿using System.Linq;
+using L2dotNET.GameService.Config;
 using L2dotNET.GameService.Model.Communities;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
 {
-    class RequestPledgeMemberInfo : GameServerNetworkRequest
+    class RequestPledgeMemberInfo : PacketBase
     {
-        public RequestPledgeMemberInfo(GameClient client, byte[] data)
+        public RequestPledgeMemberInfo(Packet packet, GameClient client)
         {
             Makeme(client, data, 2);
         }
@@ -21,7 +23,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
             _player = ReadS();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

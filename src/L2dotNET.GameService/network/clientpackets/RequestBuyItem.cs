@@ -3,16 +3,17 @@ using L2dotNET.GameService.Model.Npcs;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.Tables;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestBuyItem : GameServerNetworkRequest
+    class RequestBuyItem : PacketBase
     {
         private int _listId,
                     _count;
         private long[] _items;
 
-        public RequestBuyItem(GameClient client, byte[] data)
+        public RequestBuyItem(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -31,7 +32,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

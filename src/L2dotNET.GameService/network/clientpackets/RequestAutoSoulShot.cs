@@ -1,14 +1,16 @@
-﻿using L2dotNET.GameService.Model.Items;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestAutoSoulShot : GameServerNetworkRequest
+    class RequestAutoSoulShot : PacketBase
     {
         private int _itemId;
         private int _type;
 
-        public RequestAutoSoulShot(GameClient client, byte[] data)
+        public RequestAutoSoulShot(Packet packet, GameClient client)
         {
             Makeme(client, data, 2);
         }
@@ -19,7 +21,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _type = ReadD(); //1 - enable
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

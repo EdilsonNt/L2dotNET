@@ -1,14 +1,15 @@
 ﻿using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestSaveInventoryOrder : GameServerNetworkRequest
+    class RequestSaveInventoryOrder : PacketBase
     {
         private int _count;
         private int[] _items;
 
-        public RequestSaveInventoryOrder(GameClient client, byte[] data)
+        public RequestSaveInventoryOrder(Packet packet, GameClient client)
         {
             Makeme(client, data, 2);
         }
@@ -26,7 +27,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

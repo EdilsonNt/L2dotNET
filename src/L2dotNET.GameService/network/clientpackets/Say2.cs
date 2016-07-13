@@ -4,12 +4,13 @@ using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Player.Basic;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class Say2 : GameServerNetworkRequest
+    class Say2 : PacketBase
     {
-        public Say2(GameClient client, byte[] data)
+        public Say2(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -36,7 +37,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

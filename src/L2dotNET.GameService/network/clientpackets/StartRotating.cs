@@ -1,14 +1,16 @@
-﻿using L2dotNET.GameService.Model.Player;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class StartRotating : GameServerNetworkRequest
+    class StartRotating : PacketBase
     {
         private int _degree;
         private int _side;
 
-        public StartRotating(GameClient client, byte[] data)
+        public StartRotating(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -19,7 +21,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _side = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

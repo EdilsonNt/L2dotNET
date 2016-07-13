@@ -1,10 +1,11 @@
 ﻿using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestUnEquipItem : GameServerNetworkRequest
+    class RequestUnEquipItem : PacketBase
     {
-        public RequestUnEquipItem(GameClient client, byte[] data)
+        public RequestUnEquipItem(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -16,7 +17,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _slotBitType = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

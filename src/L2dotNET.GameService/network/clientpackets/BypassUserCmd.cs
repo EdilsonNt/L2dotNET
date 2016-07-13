@@ -3,12 +3,13 @@ using L2dotNET.GameService.Controllers;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class BypassUserCmd : GameServerNetworkRequest
+    class BypassUserCmd : PacketBase
     {
-        public BypassUserCmd(GameClient client, byte[] data)
+        public BypassUserCmd(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -20,7 +21,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             _command = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = GetClient().CurrentPlayer;
 

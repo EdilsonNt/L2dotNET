@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestManorList : GameServerNetworkRequest
+    class RequestManorList : PacketBase
     {
-        public RequestManorList(GameClient client, byte[] data)
+        public RequestManorList(Packet packet, GameClient client)
         {
             Makeme(client, data, 2);
         }
@@ -15,7 +16,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             // do nothing
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             List<string> manorsName = new List<string>
                                       {

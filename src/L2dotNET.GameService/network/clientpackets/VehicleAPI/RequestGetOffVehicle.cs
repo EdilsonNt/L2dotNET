@@ -1,16 +1,18 @@
-﻿using L2dotNET.GameService.Model.Player;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets.VehicleAPI
 {
-    class RequestGetOffVehicle : GameServerNetworkRequest
+    class RequestGetOffVehicle : PacketBase
     {
         private int _boatId;
         private int _x;
         private int _y;
         private int _z;
 
-        public RequestGetOffVehicle(GameClient client, byte[] data)
+        public RequestGetOffVehicle(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -23,7 +25,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.VehicleAPI
             _z = ReadD();
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
 

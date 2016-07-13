@@ -1,10 +1,12 @@
-﻿using L2dotNET.GameService.Model.Player;
+﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Clientpackets
 {
-    class RequestItemList : GameServerNetworkRequest
+    class RequestItemList : PacketBase
     {
-        public RequestItemList(GameClient client, byte[] data)
+        public RequestItemList(Packet packet, GameClient client)
         {
             Makeme(client, data);
         }
@@ -14,7 +16,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             // do nothing
         }
 
-        public override void Run()
+        public override void RunImpl()
         {
             L2Player player = Client.CurrentPlayer;
             player.SendItemList(true);

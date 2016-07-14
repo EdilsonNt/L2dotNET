@@ -1,35 +1,20 @@
 ﻿using L2dotNET.GameService.Model.Player.Basic;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class CreatureSay
     {
-        private readonly int _objectId;
-        private readonly SayIDList _type;
-        private readonly string _charName;
-        public string Text { get; set; }
+        private const byte Opcode = 0x4a;
 
-        public CreatureSay(int id, SayIDList type, string name, string text)
+        internal static Packet ToPacket(int id, SayIDList type, string name, string text)
         {
-            _objectId = id;
-            _type = type;
-            _charName = name;
-            Text = text;
-        }
-
-        public CreatureSay(SayIDList type, string text = "")
-        {
-            _type = type;
-            Text = text;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x4a);
-            p.WriteInt(_objectId);
-            p.WriteInt((byte)_type);
-            p.WriteString(_charName);
-            p.WriteString(Text);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
+            p.WriteInt((int)type);
+            p.WriteString(name);
+            p.WriteString(text);
+            return p;
         }
     }
 }

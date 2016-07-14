@@ -1,22 +1,18 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExAutoSoulShot
     {
-        private readonly int _itemId;
-        private readonly int _type;
+        private const short Opcode = 0x12;
 
-        public ExAutoSoulShot(int itemId, int type)
+        internal static Packet ToPacket(int itemId, int type)
         {
-            _itemId = itemId;
-            _type = type;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0x12);
-            p.WriteInt(_itemId);
-            p.WriteInt(_type);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(itemId);
+            p.WriteInt(type);
+            return p;
         }
     }
 }

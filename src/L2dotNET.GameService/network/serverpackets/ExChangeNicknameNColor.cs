@@ -1,11 +1,15 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExChangeNicknameNColor
     {
+        private const short Opcode = 0x83;
         internal static Packet ToPacket()
         {
-            p.WriteInt(0xFE);
-            p.WriteShort(0x83);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            return p;
         }
     }
 }

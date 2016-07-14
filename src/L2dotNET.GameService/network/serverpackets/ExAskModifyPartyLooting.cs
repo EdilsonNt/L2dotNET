@@ -1,22 +1,18 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExAskModifyPartyLooting
     {
-        private readonly string _leader;
-        private readonly byte _mode;
+        private const short Opcode = 0xBE;
 
-        public ExAskModifyPartyLooting(string leader, byte mode)
+        internal static Packet ToPacket(string leader, byte mode)
         {
-            _leader = leader;
-            _mode = mode;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0xBE);
-            p.WriteString(_leader);
-            p.WriteInt(_mode);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteString(leader);
+            p.WriteInt(mode);
+            return p;
         }
     }
 }

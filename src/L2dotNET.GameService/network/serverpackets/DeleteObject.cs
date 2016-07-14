@@ -1,19 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class DeleteObject
     {
-        private readonly int _id;
+        private const byte Opcode = 0x12;
 
-        public DeleteObject(int id)
+        internal static Packet ToPacket(int id)
         {
-            _id = id;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x12);
-            p.WriteInt(_id);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
             p.WriteInt(0);
+            return p;
         }
     }
 }

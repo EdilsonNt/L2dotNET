@@ -1,30 +1,23 @@
 ﻿using L2dotNET.GameService.Model.Items;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class DropItem
-    {
-        private readonly int _id;
-        private readonly L2Item _item;
+    { 
+        private const byte Opcode = 0x0c;
 
-        public DropItem(L2Item item)
+        internal static Packet ToPacket(L2Item item)
         {
-            _item = item;
-            _id = item.Dropper;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x0c);
-            p.WriteInt(_id);
-            p.WriteInt(_item.ObjId);
-            p.WriteInt(_item.Template.ItemId);
-            p.WriteInt(_item.X);
-            p.WriteInt(_item.Y);
-            p.WriteInt(_item.Z);
-            p.WriteInt(_item.Template.Stackable ? 1 : 0);
-            p.WriteInt(_item.Count);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(item.Dropper);
+            p.WriteInt(item.ObjId);
+            p.WriteInt(item.Template.ItemId);
+            p.WriteInt(item.X, item.Y, item.Z);
+            p.WriteInt(item.Template.Stackable ? 1 : 0);
+            p.WriteInt(item.Count);
             p.WriteInt(1); // ?
+            return p;
         }
     }
 }

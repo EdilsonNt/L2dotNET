@@ -1,19 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExBrBuyProduct
     {
-        private readonly int _result;
+        private const short Opcode = 0xCC;
 
-        public ExBrBuyProduct(int result)
+        internal static Packet ToPacket(int result)
         {
-            _result = result;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0xCC);
-            p.WriteInt(_result);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(result);
+            return p;
         }
     }
 }

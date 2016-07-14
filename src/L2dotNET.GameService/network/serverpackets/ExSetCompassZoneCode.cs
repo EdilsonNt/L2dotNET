@@ -1,4 +1,6 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExSetCompassZoneCode
     {
@@ -10,18 +12,14 @@
         public static int Pvpzone = 0x0E;
         public static int Generalzone = 0x0F;
 
-        private readonly int _zoneCode;
+        private const short Opcode = 0x33;
 
-        public ExSetCompassZoneCode(int type)
+        internal static Packet ToPacket(int type)
         {
-            _zoneCode = type;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0x33);
-            p.WriteInt(_zoneCode);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(type);
+            return p;
         }
     }
 }

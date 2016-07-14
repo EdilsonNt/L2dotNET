@@ -2,30 +2,26 @@
 using System.Linq;
 using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExBuySellListSell
     {
-        private readonly List<L2Item> _sells = new List<L2Item>();
-        private readonly List<L2Item> _refund;
+        private static readonly List<L2Item> _sells = new List<L2Item>();
+        private static readonly List<L2Item> _refund;
+        private const short Opcode = 0xB7;
 
-        public ExBuySellListSell(L2Player player)
+        internal static Packet ToPacket(L2Player player)
         {
             foreach (L2Item item in player.GetAllItems().Where(item => !item.NotForTrade()))
             {
                 _sells.Add(item);
             }
-
-            // _refund = player.Refund._items;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0xB7);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
             p.WriteInt(1);
-            p.WriteShort(_sells.Count);
+            p.WriteShort((short)_sells.Count);
 
             foreach (L2Item item in _sells)
             {
@@ -33,12 +29,12 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 p.WriteInt(item.Template.ItemId);
                 p.WriteInt(0);
                 p.WriteInt(item.Count);
-                p.WriteShort(item.Template.Type2);
-                p.WriteShort(item.CustomType1);
+                p.WriteShort((short)item.Template.Type2);
+                p.WriteShort((short)item.CustomType1);
                 p.WriteShort(0);
                 p.WriteInt(item.Template.BodyPart);
-                p.WriteShort(item.Enchant);
-                p.WriteShort(item.CustomType2);
+                p.WriteShort((short)item.Enchant);
+                p.WriteShort((short)item.CustomType2);
                 p.WriteInt(item.AugmentationId);
                 p.WriteInt(item.Durability);
                 p.WriteInt(item.LifeTimeEnd());
@@ -59,7 +55,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 p.WriteInt(item.Template.ReferencePrice / 2);
             }
 
-            p.WriteShort(_refund.Count);
+            p.WriteShort((short)_refund.Count);
 
             int idx = 0;
             foreach (L2Item item in _refund)
@@ -68,12 +64,12 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 p.WriteInt(item.Template.ItemId);
                 p.WriteInt(0);
                 p.WriteInt(item.Count);
-                p.WriteShort(item.Template.Type2);
-                p.WriteShort(item.CustomType1);
+                p.WriteShort((short)item.Template.Type2);
+                p.WriteShort((short)item.CustomType1);
                 p.WriteShort(0);
                 p.WriteInt(item.Template.BodyPart);
-                p.WriteShort(item.Enchant);
-                p.WriteShort(item.CustomType2);
+                p.WriteShort((short)item.Enchant);
+                p.WriteShort((short)item.CustomType2);
                 p.WriteInt(item.AugmentationId);
                 p.WriteInt(item.Durability);
                 p.WriteInt(item.LifeTimeEnd());
@@ -96,6 +92,8 @@ namespace L2dotNET.GameService.Network.Serverpackets
             }
 
             p.WriteInt(0);
+            return p;
         }
+        
     }
 }

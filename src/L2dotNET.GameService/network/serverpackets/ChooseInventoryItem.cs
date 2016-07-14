@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ChooseInventoryItem
     {
-        private readonly int _itemId;
+        private const byte Opcode = 0x6f;
 
-        public ChooseInventoryItem(int itemId)
+        internal static Packet ToPacket(int itemId)
         {
-            _itemId = itemId;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x6f);
-            p.WriteInt(_itemId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(itemId);
+            return p;
         }
     }
 }

@@ -1,20 +1,20 @@
 ﻿using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExStorageMaxCount
     {
-        private readonly int _inventory;
-        private readonly int _warehouse;
-        private readonly int _clan;
-        private readonly int _privateSell;
-        private readonly int _privateBuy;
-        private readonly int _receipeD;
-        private readonly int _recipe;
-        //private int _extra;
-        //private int _quest;
-
-        public ExStorageMaxCount(L2Player player)
+        private static int _inventory;
+        private static int _warehouse;
+        private static int _clan;
+        private static int _privateSell;
+        private static int _privateBuy;
+        private static int _receipeD;
+        private static int _recipe;
+        
+        private const short Opcode = 0x2e;
+        internal static Packet ToPacket(L2Player player)
         {
             _inventory = player.ItemLimitInventory;
             _warehouse = player.ItemLimitWarehouse;
@@ -23,14 +23,8 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _privateBuy = player.ItemLimitBuying;
             _receipeD = player.ItemLimitRecipeDwarven;
             _recipe = player.ItemLimitWarehouse;
-            //_extra = player.ItemLimit_Extra;
-            //_quest = player.ItemLimit_Quest;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0x2e);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
 
             p.WriteInt(_inventory);
             p.WriteInt(_warehouse);
@@ -41,6 +35,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
             p.WriteInt(_recipe);
             //p.WriteInt(_extra);
             //p.WriteInt(_quest);
+            return p;
         }
     }
 }

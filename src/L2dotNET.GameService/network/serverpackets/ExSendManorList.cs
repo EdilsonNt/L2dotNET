@@ -1,29 +1,26 @@
 ﻿using System.Collections.Generic;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExSendManorList
     {
-        private readonly List<string> _list;
+        private const short Opcode = 0x1B;
 
-        public ExSendManorList(List<string> list)
+        internal static Packet ToPacket(List<string> list)
         {
-            _list = list;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0x1B);
-            p.WriteInt(_list.Count);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(list.Count);
 
             int id = 1;
-            foreach (string manor in _list)
+            foreach (string manor in list)
             {
                 p.WriteInt(id);
                 id++;
                 p.WriteString(manor);
             }
+            return p;
         }
     }
 }

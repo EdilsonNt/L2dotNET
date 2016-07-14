@@ -1,10 +1,27 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExBasicActionList
     {
-        private readonly int[] _defaultActionList;
+        private static int[] _defaultActionList;
+        private const short Opcode = 0x5f;
 
-        public ExBasicActionList()
+        internal static Packet ToPacket()
+        {
+            SetParams();
+
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(_defaultActionList.Length);
+            foreach (int i in _defaultActionList)
+            {
+                p.WriteInt(i);
+            }
+            return p;
+        }
+
+        private static void SetParams()
         {
             const int count1 = 74; // 0 <-> (count1 - 1) //Update by rocknow
             const int count2 = 99; // 1000 <-> (1000 + count2 - 1) //Update by rocknow
@@ -26,17 +43,6 @@
             }
 
             _defaultActionList = actionIds;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0x5f);
-            p.WriteInt(_defaultActionList.Length);
-            foreach (int i in _defaultActionList)
-            {
-                p.WriteInt(i);
-            }
         }
     }
 }

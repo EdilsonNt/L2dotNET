@@ -1,19 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExNoticePostSent
     {
-        private readonly int _anim;
+        private const short Opcode = 0xb4;
 
-        public ExNoticePostSent(int anim)
+        internal static Packet ToPacket(int anim)
         {
-            _anim = anim;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0xb4);
-            p.WriteInt(_anim);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(anim);
+            return p;
         }
     }
 }

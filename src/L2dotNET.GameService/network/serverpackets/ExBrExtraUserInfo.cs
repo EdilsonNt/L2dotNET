@@ -1,23 +1,19 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExBrExtraUserInfo
     {
-        private readonly int _playerId;
-        private readonly int _value;
+        private const short Opcode = 0xcf;
 
-        public ExBrExtraUserInfo(int id, int value)
+        internal static Packet ToPacket(int id, int value)
         {
-            _playerId = id;
-            _value = value;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0xcf);
-            p.WriteInt(_playerId);
-            p.WriteInt(_value); // event effect id
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(id);
+            p.WriteInt(value); // event effect id
             //p.WriteInt(0x00);		// Event flag, added only if event is active
+            return p;
         }
     }
 }

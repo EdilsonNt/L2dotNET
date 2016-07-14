@@ -2,25 +2,28 @@
 using L2dotNET.GameService.Model.Npcs;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class Die
     {
-        private readonly int _sId;
-        private int _mNVillage;
-        private int _mNAgit;
+        private const byte Opcode = 0x06;
+
+        private static readonly int _sId;
+        private static int _mNVillage;
+        private static int _mNAgit;
         private const int MNBattleCamp = 0;
-        private int _mNCastle;
-        private readonly int _mSpoil;
-        private int _mNOriginal;
-        private int _mNFotress;
+        private static int _mNCastle;
+        private static int _mSpoil;
+        private static int _mNOriginal;
+        private static int _mNFotress;
         private const int MNAgathion = 0;
         private const bool MBShow = false;
 
-        private List<int> _items;
+        private static List<int> _items;
 
-        public void AddItem(int id)
+        public static void AddItem(int id)
         {
             if (_items == null)
             {
@@ -30,21 +33,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _items.Add(id);
         }
 
-        public Die(L2Character cha)
-        {
-            _sId = cha.ObjId;
-
-            if (cha is L2Player)
-            {
-                DiePlayer((L2Player)cha);
-            }
-            else if (cha is L2Warrior)
-            {
-                _mSpoil = ((L2Warrior)cha).SpoilActive ? 1 : 0;
-            }
-        }
-
-        private void DiePlayer(L2Player player)
+        private static void DiePlayer(L2Player player)
         {
             _mNVillage = 1;
             _mNOriginal = player.Builder;
@@ -59,9 +48,19 @@ namespace L2dotNET.GameService.Network.Serverpackets
             AddItem(57);
         }
 
-        internal static Packet ToPacket()
+        internal static Packet ToPacket(L2Character cha)
         {
-            p.WriteInt(0x06);
+            var player = cha as L2Player;
+            if (player != null)
+            {
+                DiePlayer(player);
+            }
+            else if (cha is L2Warrior)
+            {
+                _mSpoil = ((L2Warrior)cha).SpoilActive ? 1 : 0;
+            }
+
+            Packet p = new Packet(Opcode);
             p.WriteInt(_sId);
             p.WriteInt(_mNVillage); //0
             p.WriteInt(_mNAgit); //1
@@ -76,15 +75,12 @@ namespace L2dotNET.GameService.Network.Serverpackets
             p.WriteInt(MNAgathion); //21
             p.WriteInt(_items?.Count ?? 0); //22+
 
-            if (_items == null)
-            {
-                return;
-            }
-
-            foreach (int id in _items)
-            {
-                p.WriteInt(id);
-            }
+            if (_items != null)
+                foreach (int id in _items)
+                {
+                    p.WriteInt(id);
+                }
+            return p;
         }
     }
 }

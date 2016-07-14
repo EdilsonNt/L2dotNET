@@ -1,24 +1,21 @@
 ﻿using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class GetOnVehicle
     {
-        private readonly L2Player _player;
+        private const byte Opcode = 0x5C;
 
-        public GetOnVehicle(L2Player player)
+        internal static Packet ToPacket(L2Player player)
         {
-            _player = player;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x5C);
-            p.WriteInt(_player.ObjId);
-            p.WriteInt(_player.Boat.ObjId);
-            p.WriteInt(_player.BoatX);
-            p.WriteInt(_player.BoatY);
-            p.WriteInt(_player.BoatZ);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(player.ObjId);
+            p.WriteInt(player.Boat.ObjId);
+            p.WriteInt(player.BoatX);
+            p.WriteInt(player.BoatY);
+            p.WriteInt(player.BoatZ);
+            return p;
         }
     }
 }

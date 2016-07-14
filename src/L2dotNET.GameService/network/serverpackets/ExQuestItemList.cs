@@ -2,33 +2,33 @@
 using System.Linq;
 using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExQuestItemList
     {
-        private readonly L2Item[] _items;
-        private readonly List<int> _block = new List<int>();
+        private static L2Item[] _items;
+        private static readonly List<int> _block = new List<int>();
+        private const short Opcode = 0xC5;
 
-        public ExQuestItemList(L2Player player)
+        internal static Packet ToPacket(L2Player player)
         {
-            _items = new L2Item[] {}; //player.getAllQuestItems();
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            _items = new L2Item[] { }; //player.getAllQuestItems();
 
             if (_items == null)
             {
-                return;
+                return p;
             }
 
             foreach (L2Item item in _items.Where(item => item.Blocked))
             {
                 _block.Add(item.ObjId);
             }
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0xC5);
+            
+            return p;
             //p.WriteShort(_items.Length);
 
             //foreach (L2Item item in _items)

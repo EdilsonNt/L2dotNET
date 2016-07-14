@@ -1,24 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using L2dotNET.GameService.Templates;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class CharTemplates
     {
-        private readonly List<PcTemplate> _templates;
+        private const byte Opcode = 0x17;
 
-        public CharTemplates(List<PcTemplate> templates)
+        internal static Packet ToPacket(List<PcTemplate> templates)
         {
-            _templates = templates;
-        }
+            Packet p = new Packet(Opcode);
+            p.WriteInt(templates.Count);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x17);
-            p.WriteInt(_templates.Count);
-
-            foreach (PcTemplate t in _templates.TakeWhile(t => t != null))
+            foreach (PcTemplate t in templates.TakeWhile(t => t != null))
             {
                 p.WriteInt((int)t.ClassId.ClassRace); //race id
                 p.WriteInt((int)t.ClassId.Id);
@@ -41,6 +37,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 p.WriteInt(t.BaseMen);
                 p.WriteInt(0x0a);
             }
+            return p;
         }
     }
 }

@@ -1,22 +1,20 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExShowPetitionHtml
     {
-        private readonly string _content;
+        private const short Opcode = 0xB1;
 
-        public ExShowPetitionHtml(string text)
+        internal static Packet ToPacket(string text)
         {
-            _content = text;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0xB1);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
 
             p.WriteInt(0);
             p.WriteInt(0);
-            p.WriteString(_content);
+            p.WriteString(text);
+            return p;
         }
     }
 }

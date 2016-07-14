@@ -1,24 +1,22 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExCursedWeaponList
     {
-        private readonly int[] _ids;
+        private const short Opcode = 0x46;
 
-        public ExCursedWeaponList(int[] ids)
+        internal static Packet ToPacket(int[] ids)
         {
-            _ids = ids;
-        }
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(ids.Length);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0x46);
-            p.WriteInt(_ids.Length);
-
-            foreach (int id in _ids)
+            foreach (int id in ids)
             {
                 p.WriteInt(id);
             }
+            return p;
         }
     }
 }

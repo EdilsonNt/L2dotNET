@@ -1,24 +1,20 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExBrGamePoint
     {
-        private readonly int _id;
-        private readonly long _points;
+        private const short Opcode = 0xC9;
 
-        public ExBrGamePoint(int id, long points)
+        internal static Packet ToPacket(int id, int points)
         {
-            _id = id;
-            _points = points;
-        }
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xFE);
-            p.WriteShort(0xC9);
-
-            p.WriteInt(_id);
-            p.WriteInt(_points);
+            p.WriteInt(id);
+            p.WriteInt(points);
             p.WriteInt(0);
+            return p;
         }
     }
 }

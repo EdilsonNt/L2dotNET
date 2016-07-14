@@ -1,4 +1,4 @@
-namespace L2dotNET.GameService.Network.Serverpackets
+﻿namespace L2dotNET.GameService.Enums
 {
     public enum EnchantResultVal
     {

@@ -1,25 +1,19 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ExPartyPetWindowDelete
     {
-        private readonly int _petId;
-        private readonly int _playerId;
-        private readonly string _petName;
+        private const short Opcode = 0x6a;
 
-        public ExPartyPetWindowDelete(int petId, int playerId, string petName)
+        internal static Packet ToPacket(int petId, int playerId, string petName)
         {
-            _petId = petId;
-            _playerId = playerId;
-            _petName = petName;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0x6a);
-            p.WriteInt(_petId);
-            p.WriteInt(_playerId);
-            p.WriteString(_petName);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
+            p.WriteInt(petId);
+            p.WriteInt(playerId);
+            p.WriteString(petName);
+            return p;
         }
     }
 }

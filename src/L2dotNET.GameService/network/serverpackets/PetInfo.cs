@@ -12,20 +12,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _pet = pet;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xb1);
-            WriteD(_pet.ObjectSummonType);
-            WriteD(_pet.ObjId);
+            p.WriteInt(0xb1);
+            p.WriteInt(_pet.ObjectSummonType);
+            p.WriteInt(_pet.ObjId);
             int npcId = _pet.Template.NpcId;
-            WriteD(npcId + 1000000);
-            WriteD(0); // 1=attackable
+            p.WriteInt(npcId + 1000000);
+            p.WriteInt(0); // 1=attackable
 
-            WriteD(_pet.X);
-            WriteD(_pet.Y);
-            WriteD(_pet.Z);
-            WriteD(_pet.Heading);
-            WriteD(0);
+            p.WriteInt(_pet.X);
+            p.WriteInt(_pet.Y);
+            p.WriteInt(_pet.Z);
+            p.WriteInt(_pet.Heading);
+            p.WriteInt(0);
 
             double atkspd = _pet.CharacterStat.GetStat(EffectType.BAttackSpd);
             double spd = _pet.CharacterStat.GetStat(EffectType.PSpeed);
@@ -34,75 +34,75 @@ namespace L2dotNET.GameService.Network.Serverpackets
             double runSpd = spd / anim;
             double walkSpd = (spd * .8) / anim;
             double cast = _pet.CharacterStat.GetStat(EffectType.BCastingSpd);
-            WriteD(cast);
-            WriteD(atkspd);
-            WriteD(runSpd);
-            WriteD(walkSpd);
-            WriteD(50);
-            WriteD(50);
-            WriteD(0);
-            WriteD(0);
-            WriteD(0);
-            WriteD(0);
+            p.WriteInt(cast);
+            p.WriteInt(atkspd);
+            p.WriteInt(runSpd);
+            p.WriteInt(walkSpd);
+            p.WriteInt(50);
+            p.WriteInt(50);
+            p.WriteInt(0);
+            p.WriteInt(0);
+            p.WriteInt(0);
+            p.WriteInt(0);
 
-            WriteF(anim);
-            WriteF(anim2);
+            p.WriteDouble(anim);
+            p.WriteDouble(anim2);
 
-            WriteF(_pet.Template.CollisionRadius);
-            WriteF(_pet.Template.CollisionHeight);
-            WriteD(0); // right hand weapon
-            WriteD(0); // body armor
-            WriteD(0); // left hand weapon
+            p.WriteDouble(_pet.Template.CollisionRadius);
+            p.WriteDouble(_pet.Template.CollisionHeight);
+            p.WriteInt(0); // right hand weapon
+            p.WriteInt(0); // body armor
+            p.WriteInt(0); // left hand weapon
 
-            WriteC(_pet.Owner != null ? 1 : 0); // when pet is dead and player exit game, pet doesn't show master name
-            WriteC(_pet.IsRunning);
-            WriteC(_pet.isInCombat() ? 1 : 0); // attacking 1=true
-            WriteC(_pet.Dead ? 1 : 0);
-            WriteC(_pet.AppearMethod());
-            WriteS(_pet.Name);
-            WriteS(_pet.Title);
-            WriteD(1); //show title?
+            p.WriteInt(_pet.Owner != null ? 1 : 0); // when pet is dead and player exit game, pet doesn't show master name
+            p.WriteInt(_pet.IsRunning);
+            p.WriteInt(_pet.isInCombat() ? 1 : 0); // attacking 1=true
+            p.WriteInt(_pet.Dead ? 1 : 0);
+            p.WriteInt(_pet.AppearMethod());
+            p.WriteString(_pet.Name);
+            p.WriteString(_pet.Title);
+            p.WriteInt(1); //show title?
 
-            WriteD(_pet.GetPvPStatus());
-            WriteD(_pet.GetKarma());
-            WriteD(_pet.CurrentTime);
-            WriteD(_pet.MaxTime);
-            WriteD(_pet.CurHp);
-            WriteD(_pet.CharacterStat.GetStat(EffectType.BMaxHp));
-            WriteD(_pet.CurMp);
-            WriteD(_pet.CharacterStat.GetStat(EffectType.BMaxMp));
+            p.WriteInt(_pet.GetPvPStatus());
+            p.WriteInt(_pet.GetKarma());
+            p.WriteInt(_pet.CurrentTime);
+            p.WriteInt(_pet.MaxTime);
+            p.WriteInt(_pet.CurHp);
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.BMaxHp));
+            p.WriteInt(_pet.CurMp);
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.BMaxMp));
 
-            WriteD(_pet.StatusSp);
-            WriteD(_pet.Level);
-            WriteQ(_pet.StatusExp);
-            WriteQ(_pet.GetExpCurrentLevel());
-            WriteQ(_pet.GetExpToLevelUp());
+            p.WriteInt(_pet.StatusSp);
+            p.WriteInt(_pet.Level);
+            p.WriteInt(_pet.StatusExp);
+            p.WriteInt(_pet.GetExpCurrentLevel());
+            p.WriteInt(_pet.GetExpToLevelUp());
 
-            WriteD(_pet.CurrentWeight());
-            WriteD(_pet.MaxWeight());
-            WriteD(_pet.CharacterStat.GetStat(EffectType.PPhysicalAttack));
-            WriteD(_pet.CharacterStat.GetStat(EffectType.PPhysicalDefense));
-            WriteD(_pet.CharacterStat.GetStat(EffectType.PMagicalAttack));
+            p.WriteInt(_pet.CurrentWeight());
+            p.WriteInt(_pet.MaxWeight());
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.PPhysicalAttack));
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.PPhysicalDefense));
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.PMagicalAttack));
 
-            WriteD(_pet.CharacterStat.GetStat(EffectType.PMagicalDefense));
-            WriteD(_pet.CharacterStat.GetStat(EffectType.BAccuracy));
-            WriteD(_pet.CharacterStat.GetStat(EffectType.BEvasion));
-            WriteD(_pet.CharacterStat.GetStat(EffectType.BCriticalRate));
-            WriteD(runSpd);
-            WriteD(atkspd);
-            WriteD(cast);
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.PMagicalDefense));
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.BAccuracy));
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.BEvasion));
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.BCriticalRate));
+            p.WriteInt(runSpd);
+            p.WriteInt(atkspd);
+            p.WriteInt(cast);
 
-            WriteD(_pet.AbnormalBitMask);
-            WriteH(_pet.IsMountable());
+            p.WriteInt(_pet.AbnormalBitMask);
+            p.WriteShort(_pet.IsMountable());
 
-            WriteC(0); // c2
-            WriteH(0); // ??
+            p.WriteInt(0); // c2
+            p.WriteShort(0); // ??
 
-            WriteC(_pet.TeamId);
-            WriteD(_pet.Template.SsCount);
-            WriteD(_pet.Template.SpsCount);
-            WriteD(_pet.GetForm());
-            WriteD(_pet.AbnormalBitMaskEx);
+            p.WriteInt(_pet.TeamId);
+            p.WriteInt(_pet.Template.SsCount);
+            p.WriteInt(_pet.Template.SpsCount);
+            p.WriteInt(_pet.GetForm());
+            p.WriteInt(_pet.AbnormalBitMaskEx);
         }
     }
 }

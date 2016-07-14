@@ -15,15 +15,15 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _rotationSpd = rotationSpd;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x5A);
-            WriteD(_boat.ObjId);
-            WriteD(_speed);
-            WriteD(_rotationSpd);
-            WriteD(_boat.DestX);
-            WriteD(_boat.DestY);
-            WriteD(_boat.DestZ);
+            p.WriteInt(0x5A);
+            p.WriteInt(_boat.ObjId);
+            p.WriteInt(_speed);
+            p.WriteInt(_rotationSpd);
+            p.WriteInt(_boat.DestX);
+            p.WriteInt(_boat.DestY);
+            p.WriteInt(_boat.DestZ);
         }
     }
 }

@@ -23,17 +23,17 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _souls = player.Souls;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xF3);
-            WriteD(_force);
-            WriteD(_weight);
-            WriteD(_whisper);
-            WriteD(_danger); // 1 = danger area
-            WriteD(_grade);
-            WriteD(0); // 1 = charm of courage (no xp loss in siege..)
-            //writeD(_death);
-            //writeD(_souls);
+            p.WriteInt(0xF3);
+            p.WriteInt(_force);
+            p.WriteInt(_weight);
+            p.WriteInt(_whisper);
+            p.WriteInt(_danger); // 1 = danger area
+            p.WriteInt(_grade);
+            p.WriteInt(0); // 1 = charm of courage (no xp loss in siege..)
+            //p.WriteInt(_death);
+            //p.WriteInt(_souls);
         }
     }
 }

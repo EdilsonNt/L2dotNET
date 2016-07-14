@@ -2,9 +2,9 @@
 {
     class LeaveWorld
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x7e);
+            p.WriteInt(0x7e);
         }
     }
 }

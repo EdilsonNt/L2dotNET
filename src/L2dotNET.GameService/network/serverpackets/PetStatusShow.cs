@@ -9,10 +9,10 @@
             _objectSummonType = objectSummonType;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xb1);
-            WriteD(_objectSummonType);
+            p.WriteInt(0xb1);
+            p.WriteInt(_objectSummonType);
         }
     }
 }

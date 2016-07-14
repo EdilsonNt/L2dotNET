@@ -11,17 +11,17 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _member = cm;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x3e);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x3e);
 
-            WriteD(_member.ClanType);
-            WriteS(_member.Name);
-            WriteS(_member.NickName);
-            WriteD(_member.ClanPrivs);
-            WriteS(_member.PledgeTypeName);
-            WriteS(_member.OwnerName); // name of this member's apprentice/sponsor
+            p.WriteInt(_member.ClanType);
+            p.WriteString(_member.Name);
+            p.WriteString(_member.NickName);
+            p.WriteInt(_member.ClanPrivs);
+            p.WriteString(_member.PledgeTypeName);
+            p.WriteString(_member.OwnerName); // name of this member's apprentice/sponsor
         }
     }
 }

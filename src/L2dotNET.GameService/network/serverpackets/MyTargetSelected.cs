@@ -11,11 +11,11 @@
             _color = (short)color;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xa6);
-            WriteD(_targetId);
-            WriteH(_color);
+            p.WriteInt(0xa6);
+            p.WriteInt(_targetId);
+            p.WriteShort(_color);
         }
     }
 }

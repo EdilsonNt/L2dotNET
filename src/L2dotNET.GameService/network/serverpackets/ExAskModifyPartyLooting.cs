@@ -11,12 +11,12 @@
             _mode = mode;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xBE);
-            WriteS(_leader);
-            WriteD(_mode);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xBE);
+            p.WriteString(_leader);
+            p.WriteInt(_mode);
         }
     }
 }

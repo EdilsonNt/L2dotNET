@@ -9,11 +9,11 @@
             _anim = anim;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0xb4);
-            WriteD(_anim);
+            p.WriteInt(0xfe);
+            p.WriteShort(0xb4);
+            p.WriteInt(_anim);
         }
     }
 }

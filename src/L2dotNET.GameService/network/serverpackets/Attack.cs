@@ -1,4 +1,5 @@
 ﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
@@ -48,23 +49,24 @@ namespace L2dotNET.GameService.Network.Serverpackets
             return _hits.Length > 0;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x05);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0x05);
 
-            WriteD(AttackerObjId);
-            WriteD(_hits[0].TargetId);
-            WriteD(_hits[0].Damage);
-            WriteC(_hits[0].Flags);
-            WriteD(_x);
-            WriteD(_y);
-            WriteD(_z);
-            WriteH((short)(_hits.Length - 1));
+            p.WriteInt(AttackerObjId);
+            p.WriteInt(_hits[0].TargetId);
+            p.WriteInt(_hits[0].Damage);
+            p.WriteInt(_hits[0].Flags);
+            p.WriteInt(_x);
+            p.WriteInt(_y);
+            p.WriteInt(_z);
+            p.WriteShort((short)(_hits.Length - 1));
             for (int i = 1; i < _hits.Length; i++)
             {
-                WriteD(_hits[i].TargetId);
-                WriteD(_hits[i].Damage);
-                WriteC(_hits[i].Flags);
+                p.WriteInt(_hits[i].TargetId);
+                p.WriteInt(_hits[i].Damage);
+                p.WriteInt(_hits[i].Flags);
             }
         }
     }

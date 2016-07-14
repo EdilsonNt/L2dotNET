@@ -9,10 +9,10 @@
             _cnt = cnt;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xA3);
-            WriteH(_cnt);
+            p.WriteInt(0xA3);
+            p.WriteShort(_cnt);
         }
     }
 }

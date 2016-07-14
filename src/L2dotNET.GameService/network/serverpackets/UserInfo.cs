@@ -2,6 +2,7 @@
 using L2dotNET.GameService.Model.Npcs.Cubic;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills2;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
@@ -15,113 +16,99 @@ namespace L2dotNET.GameService.Network.Serverpackets
         }
 
         //TODO: Simplify method body
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x04);
+            p.WriteInt(0x04);
 
-            WriteD(_player.X);
-            WriteD(_player.Y);
-            WriteD(_player.Z);
-            WriteD(_player.Heading);
-            WriteD(_player.ObjId);
+            p.WriteInt(_player.X);
+            p.WriteInt(_player.Y);
+            p.WriteInt(_player.Z);
+            p.WriteInt(_player.Heading);
+            p.WriteInt(_player.ObjId);
 
-            WriteS(_player.Name);
+            p.WriteString(_player.Name);
 
-            WriteD((int)_player.BaseClass.ClassId.ClassRace);
-            WriteD(_player.Sex);
-            WriteD((int)_player.BaseClass.ClassId.Id);
-            WriteD(_player.Level);
-            WriteQ(_player.Exp);
+            p.WriteInt((int)_player.BaseClass.ClassId.ClassRace);
+            p.WriteInt(_player.Sex);
+            p.WriteInt((int)_player.BaseClass.ClassId.Id);
+            p.WriteInt(_player.Level);
+            p.WriteInt(_player.Exp);
 
-            WriteD(_player.Str);
-            WriteD(_player.Dex);
-            WriteD(_player.Con);
-            WriteD(_player.Int);
-            WriteD(_player.Wit);
-            WriteD(_player.Men);
+            p.WriteInt(_player.Str);
+            p.WriteInt(_player.Dex);
+            p.WriteInt(_player.Con);
+            p.WriteInt(_player.Int);
+            p.WriteInt(_player.Wit);
+            p.WriteInt(_player.Men);
 
-            WriteD(_player.CurHp); //max hp
-            WriteD(_player.CurHp);
-            WriteD(_player.CurMp); //max mp
-            WriteD(_player.CurMp);
-            WriteD(_player.Sp);
-            WriteD(_player.CurrentWeight);
-            WriteD(_player.CharacterStat.GetStat(EffectType.BMaxWeight));
+            p.WriteInt(_player.CurHp); //max hp
+            p.WriteInt(_player.CurHp);
+            p.WriteInt(_player.CurMp); //max mp
+            p.WriteInt(_player.CurMp);
+            p.WriteInt(_player.Sp);
+            p.WriteInt(_player.CurrentWeight);
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.BMaxWeight));
 
-            WriteD(_player.Inventory.GetPaperdollItem(Inventory.PaperdollRhand) != null ? 40 : 20); // 20 no weapon, 40 weapon equipped
+            p.WriteInt(_player.Inventory.GetPaperdollItem(Inventory.PaperdollRhand) != null ? 40 : 20); // 20 no weapon, 40 weapon equipped
 
             for (byte id = 0; id < Inventory.PaperdollTotalslots; id++)
             {
-                try
-                {
-                    WriteD(_player.Inventory.Paperdoll[id].Template.ItemId);
-                }
-                catch
-                {
-                    WriteD(0);
-                }
+                    p.WriteInt(_player.Inventory.Paperdoll[id]?.Template?.ItemId ?? 0);
             }
 
             for (byte id = 0; id < Inventory.PaperdollTotalslots; id++)
             {
-                try
-                {
-                    WriteD(_player.Inventory.Paperdoll[id].Template.ItemId);
-                }
-                catch
-                {
-                    WriteD(0);
-                }
+                    p.WriteInt(_player.Inventory.Paperdoll[id]?.Template?.ItemId ?? 0);
             }
 
             // c6 new h's
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteD(0x00); //player.Inventory.getPaperdollAugmentId(InvPC.EQUIPITEM_RHand));
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteD(0x00); //player.Inventory.getPaperdollAugmentId(InvPC.EQUIPITEM_LHand));
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
-            WriteH(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteInt(0x00); //player.Inventory.getPaperdollAugmentId(InvPC.EQUIPITEM_RHand));
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteInt(0x00); //player.Inventory.getPaperdollAugmentId(InvPC.EQUIPITEM_LHand));
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
 
             double atkspd = _player.CharacterStat.GetStat(EffectType.BAttackSpd);
-            WriteD(_player.CharacterStat.GetStat(EffectType.PPhysicalAttack));
-            WriteD(atkspd);
-            WriteD(_player.CharacterStat.GetStat(EffectType.PPhysicalDefense));
-            WriteD(_player.CharacterStat.GetStat(EffectType.BEvasion));
-            WriteD(_player.CharacterStat.GetStat(EffectType.BAccuracy));
-            WriteD(_player.CharacterStat.GetStat(EffectType.BCriticalRate));
-            WriteD(_player.CharacterStat.GetStat(EffectType.PMagicalAttack));
-            WriteD(_player.CharacterStat.GetStat(EffectType.BCastingSpd));
-            WriteD(atkspd); //? еще раз?
-            WriteD(_player.CharacterStat.GetStat(EffectType.PMagicalDefense));
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.PPhysicalAttack));
+            p.WriteInt(atkspd);
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.PPhysicalDefense));
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.BEvasion));
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.BAccuracy));
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.BCriticalRate));
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.PMagicalAttack));
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.BCastingSpd));
+            p.WriteInt(atkspd); //? еще раз?
+            p.WriteInt(_player.CharacterStat.GetStat(EffectType.PMagicalDefense));
 
-            WriteD(_player.PvPStatus);
-            WriteD(_player.Karma);
+            p.WriteInt(_player.PvPStatus);
+            p.WriteInt(_player.Karma);
 
             double spd = _player.CharacterStat.GetStat(EffectType.PSpeed);
 
@@ -130,88 +117,88 @@ namespace L2dotNET.GameService.Network.Serverpackets
             double runSpd = spd / anim;
             double walkSpd = (spd * .8) / anim;
 
-            WriteD(runSpd);
-            WriteD(walkSpd);
-            WriteD(50); // swimspeed
-            WriteD(50); // swimspeed
-            WriteD(0); //?
-            WriteD(0); //?
-            WriteD(runSpd); //fly run
-            WriteD(walkSpd); //fly walk ?
-            WriteF(1); //run speed multiplier
-            WriteF(1); //atk speed multiplier
+            p.WriteInt(runSpd);
+            p.WriteInt(walkSpd);
+            p.WriteInt(50); // swimspeed
+            p.WriteInt(50); // swimspeed
+            p.WriteInt(0); //?
+            p.WriteInt(0); //?
+            p.WriteInt(runSpd); //fly run
+            p.WriteInt(walkSpd); //fly walk ?
+            p.WriteDouble(1); //run speed multiplier
+            p.WriteDouble(1); //atk speed multiplier
 
-            WriteF(_player.Radius);
-            WriteF(_player.Height);
+            p.WriteDouble(_player.Radius);
+            p.WriteDouble(_player.Height);
 
-            WriteD(_player.HairStyle);
-            WriteD(_player.HairColor);
-            WriteD(_player.Face);
-            WriteD(_player.Builder);
+            p.WriteInt(_player.HairStyle);
+            p.WriteInt(_player.HairColor);
+            p.WriteInt(_player.Face);
+            p.WriteInt(_player.Builder);
 
-            WriteS(_player.Title);
+            p.WriteString(_player.Title);
 
-            WriteD(_player.ClanId);
-            WriteD(_player.ClanCrestId);
-            WriteD(_player.AllianceId);
-            WriteD(_player.AllianceCrestId);
+            p.WriteInt(_player.ClanId);
+            p.WriteInt(_player.ClanCrestId);
+            p.WriteInt(_player.AllianceId);
+            p.WriteInt(_player.AllianceCrestId);
 
-            WriteD(_player.Sstt); //_relation
-            WriteC(_player.MountType);
-            WriteC(_player.GetPrivateStoreType()); //
-            WriteC(_player.PCreateItem > 0 ? 1 : 0);
-            WriteD(_player.PkKills);
-            WriteD(_player.PvpKills);
+            p.WriteInt(_player.Sstt); //_relation
+            p.WriteInt(_player.MountType);
+            p.WriteInt(_player.GetPrivateStoreType()); //
+            p.WriteInt(_player.PCreateItem > 0 ? 1 : 0);
+            p.WriteInt(_player.PkKills);
+            p.WriteInt(_player.PvpKills);
 
-            WriteH(_player.Cubics.Count);
+            p.WriteShort(_player.Cubics.Count);
             foreach (Cubic cub in _player.Cubics)
             {
-                WriteH(cub.Template.Id);
+                p.WriteShort(cub.Template.Id);
             }
 
-            WriteC(0); //1-isInPartyMatchRoom
+            p.WriteInt(0); //1-isInPartyMatchRoom
 
-            WriteD(_player.AbnormalBitMask);
+            p.WriteInt(_player.AbnormalBitMask);
 
             //byte flymode = 0;
 
             //if (player.TransformID > 0)
             //    flymode = player.Transform.Template.MoveMode;
 
-            WriteC(0x00);
+            p.WriteInt(0x00);
 
-            WriteD(_player.ClanPrivs);
+            p.WriteInt(_player.ClanPrivs);
 
-            WriteH(_player.RecHave); //c2  recommendations remaining
-            WriteH(_player.RecLeft); //c2  recommendations received
-            WriteD(_player.MountType > 0 ? _player.MountedTemplate.NpcId + 1000000 : 0); //moun t npcid
-            WriteH(_player.ItemLimitInventory);
+            p.WriteShort(_player.RecHave); //c2  recommendations remaining
+            p.WriteShort(_player.RecLeft); //c2  recommendations received
+            p.WriteInt(_player.MountType > 0 ? _player.MountedTemplate.NpcId + 1000000 : 0); //moun t npcid
+            p.WriteShort(_player.ItemLimitInventory);
 
-            WriteD((int)_player.ActiveClass.ClassId.Id);
-            WriteD(0); // special effects? circles around player...
-            WriteD(_player.CurCp); //max cp
-            WriteD(_player.CurCp);
-            WriteC(_player.GetEnchantValue());
-            WriteC(_player.TeamId);
-            WriteD(_player.GetClanCrestLargeId());
-            WriteC(_player.Noblesse);
+            p.WriteInt((int)_player.ActiveClass.ClassId.Id);
+            p.WriteInt(0); // special effects? circles around player...
+            p.WriteInt(_player.CurCp); //max cp
+            p.WriteInt(_player.CurCp);
+            p.WriteInt(_player.GetEnchantValue());
+            p.WriteInt(_player.TeamId);
+            p.WriteInt(_player.GetClanCrestLargeId());
+            p.WriteInt(_player.Noblesse);
 
             byte hero = _player.Heroic;
-            WriteC(hero);
+            p.WriteInt(hero);
 
-            WriteC(_player.IsFishing() ? 0x01 : 0x00); //Fishing Mode
-            WriteD(_player.GetFishx()); //fishing x
-            WriteD(_player.GetFishy()); //fishing y
-            WriteD(_player.GetFishz()); //fishing z
-            WriteD(_player.GetNameColor());
+            p.WriteInt(_player.IsFishing() ? 0x01 : 0x00); //Fishing Mode
+            p.WriteInt(_player.GetFishx()); //fishing x
+            p.WriteInt(_player.GetFishy()); //fishing y
+            p.WriteInt(_player.GetFishz()); //fishing z
+            p.WriteInt(_player.GetNameColor());
 
-            WriteC(_player.IsRunning);
+            p.WriteInt(_player.IsRunning);
 
-            WriteD(_player.ClanRank());
-            WriteD(_player.ClanType);
+            p.WriteInt(_player.ClanRank());
+            p.WriteInt(_player.ClanType);
 
-            WriteD(_player.GetTitleColor());
-            WriteD(_player.CursedWeaponLevel);
+            p.WriteInt(_player.GetTitleColor());
+            p.WriteInt(_player.CursedWeaponLevel);
         }
     }
 }

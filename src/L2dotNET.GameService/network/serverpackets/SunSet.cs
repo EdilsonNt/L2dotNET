@@ -2,9 +2,9 @@
 {
     class SunSet
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x1d);
+            p.WriteInt(0x1d);
         }
     }
 }

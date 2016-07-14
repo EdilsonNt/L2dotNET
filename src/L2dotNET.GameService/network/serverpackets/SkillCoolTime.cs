@@ -13,17 +13,17 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _list = player.Reuse.Values;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xc1);
-            WriteD(_list.Count);
+            p.WriteInt(0xc1);
+            p.WriteInt(_list.Count);
 
             foreach (L2SkillCoolTime ct in _list)
             {
-                WriteD(ct.Id);
-                WriteD(ct.Lvl);
-                WriteD(ct.Total);
-                WriteD(ct.GetDelay());
+                p.WriteInt(ct.Id);
+                p.WriteInt(ct.Lvl);
+                p.WriteInt(ct.Total);
+                p.WriteInt(ct.GetDelay());
             }
         }
     }

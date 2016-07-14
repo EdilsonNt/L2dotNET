@@ -17,12 +17,12 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _running = Convert.ToBoolean(character.IsRunning);
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x2e);
-            WriteD(_charObjId);
-            WriteD(_running ? Run : Walk);
-            WriteD(0); // c2
+            p.WriteInt(0x2e);
+            p.WriteInt(_charObjId);
+            p.WriteInt(_running ? Run : Walk);
+            p.WriteInt(0); // c2
         }
     }
 }

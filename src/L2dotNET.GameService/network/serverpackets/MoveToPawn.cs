@@ -27,20 +27,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _tz = target.Z;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x60);
+            p.WriteInt(0x60);
 
-            WriteD(_id);
-            WriteD(_target);
-            WriteD(_dist);
+            p.WriteInt(_id);
+            p.WriteInt(_target);
+            p.WriteInt(_dist);
 
-            //writeD(_x);
-            //writeD(_y);
-            //writeD(_z);
-            WriteD(_tx);
-            WriteD(_ty);
-            WriteD(_tz);
+            //p.WriteInt(_x);
+            //p.WriteInt(_y);
+            //p.WriteInt(_z);
+            p.WriteInt(_tx);
+            p.WriteInt(_ty);
+            p.WriteInt(_tz);
         }
     }
 }

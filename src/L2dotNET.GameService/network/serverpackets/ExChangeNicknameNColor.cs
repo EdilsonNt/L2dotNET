@@ -2,10 +2,10 @@
 {
     class ExChangeNicknameNColor
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0x83);
+            p.WriteInt(0xFE);
+            p.WriteShort(0x83);
         }
     }
 }

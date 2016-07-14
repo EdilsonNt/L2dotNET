@@ -9,10 +9,10 @@
             _questionId = id;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xa1);
-            WriteD(_questionId);
+            p.WriteInt(0xa1);
+            p.WriteInt(_questionId);
         }
     }
 }

@@ -16,12 +16,12 @@
             _mode = voteId;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xBF);
-            WriteD(_result);
-            WriteD(_mode);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xBF);
+            p.WriteInt(_result);
+            p.WriteInt(_mode);
         }
     }
 }

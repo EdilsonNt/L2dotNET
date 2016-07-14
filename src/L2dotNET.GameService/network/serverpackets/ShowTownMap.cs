@@ -13,12 +13,12 @@
             _y = y;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xde);
-            WriteS(_texture);
-            WriteD(_x);
-            WriteD(_y);
+            p.WriteInt(0xde);
+            p.WriteString(_texture);
+            p.WriteInt(_x);
+            p.WriteInt(_y);
         }
     }
 }

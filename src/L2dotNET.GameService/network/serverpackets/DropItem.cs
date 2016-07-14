@@ -13,18 +13,18 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _id = item.Dropper;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x0c);
-            WriteD(_id);
-            WriteD(_item.ObjId);
-            WriteD(_item.Template.ItemId);
-            WriteD(_item.X);
-            WriteD(_item.Y);
-            WriteD(_item.Z);
-            WriteD(_item.Template.Stackable ? 1 : 0);
-            WriteQ(_item.Count);
-            WriteD(1); // ?
+            p.WriteInt(0x0c);
+            p.WriteInt(_id);
+            p.WriteInt(_item.ObjId);
+            p.WriteInt(_item.Template.ItemId);
+            p.WriteInt(_item.X);
+            p.WriteInt(_item.Y);
+            p.WriteInt(_item.Z);
+            p.WriteInt(_item.Template.Stackable ? 1 : 0);
+            p.WriteInt(_item.Count);
+            p.WriteInt(1); // ?
         }
     }
 }

@@ -28,15 +28,15 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _heading = character.Heading;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x61);
+            p.WriteInt(0x61);
 
-            WriteD(_id);
-            WriteD(_x);
-            WriteD(_y);
-            WriteD(_z);
-            WriteD(_heading);
+            p.WriteInt(_id);
+            p.WriteInt(_x);
+            p.WriteInt(_y);
+            p.WriteInt(_z);
+            p.WriteInt(_heading);
         }
     }
 }

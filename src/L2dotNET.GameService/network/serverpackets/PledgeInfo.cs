@@ -13,12 +13,12 @@
             _ally = ally;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x89);
-            WriteD(_id);
-            WriteS(_name);
-            WriteS(_ally);
+            p.WriteInt(0x89);
+            p.WriteInt(_id);
+            p.WriteString(_name);
+            p.WriteString(_ally);
         }
     }
 }

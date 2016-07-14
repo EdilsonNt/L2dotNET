@@ -11,19 +11,19 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _obj = obj;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x01);
+            p.WriteInt(0x01);
 
-            WriteD(_obj.ObjId);
+            p.WriteInt(_obj.ObjId);
 
-            WriteD(_obj.DestX);
-            WriteD(_obj.DestY);
-            WriteD(_obj.DestZ);
+            p.WriteInt(_obj.DestX);
+            p.WriteInt(_obj.DestY);
+            p.WriteInt(_obj.DestZ);
 
-            WriteD(_obj.X);
-            WriteD(_obj.Y);
-            WriteD(_obj.Z);
+            p.WriteInt(_obj.X);
+            p.WriteInt(_obj.Y);
+            p.WriteInt(_obj.Z);
         }
     }
 }

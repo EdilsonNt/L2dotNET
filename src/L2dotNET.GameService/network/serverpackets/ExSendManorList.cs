@@ -11,18 +11,18 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _list = list;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0x1B);
-            WriteD(_list.Count);
+            p.WriteInt(0xFE);
+            p.WriteShort(0x1B);
+            p.WriteInt(_list.Count);
 
             int id = 1;
             foreach (string manor in _list)
             {
-                WriteD(id);
+                p.WriteInt(id);
                 id++;
-                WriteS(manor);
+                p.WriteString(manor);
             }
         }
     }

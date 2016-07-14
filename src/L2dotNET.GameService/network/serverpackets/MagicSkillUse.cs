@@ -50,30 +50,30 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _damageSuccess = flag;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x48);
-            WriteD(_casterId);
-            WriteD(_targetId);
-            WriteD(_id);
-            WriteD(_level);
-            WriteD(_hitTime);
-            WriteD(0); //_reuseDelay
-            WriteD(_x);
-            WriteD(_y);
-            WriteD(_z);
+            p.WriteInt(0x48);
+            p.WriteInt(_casterId);
+            p.WriteInt(_targetId);
+            p.WriteInt(_id);
+            p.WriteInt(_level);
+            p.WriteInt(_hitTime);
+            p.WriteInt(0); //_reuseDelay
+            p.WriteInt(_x);
+            p.WriteInt(_y);
+            p.WriteInt(_z);
             if (_damageSuccess != 0)
             {
-                WriteD(_damageSuccess);
-                WriteH(0x00);
+                p.WriteInt(_damageSuccess);
+                p.WriteShort(0x00);
             }
             else
             {
-                WriteD(0x00);
+                p.WriteInt(0x00);
             }
-            WriteD(_tx);
-            WriteD(_ty);
-            WriteD(_tz);
+            p.WriteInt(_tx);
+            p.WriteInt(_ty);
+            p.WriteInt(_tz);
         }
     }
 }

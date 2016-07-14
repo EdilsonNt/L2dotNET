@@ -11,11 +11,11 @@
             _status = status;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x03);
-            WriteS(_account.ToLower());
-            WriteC(_status ? (byte)1 : (byte)0);
+            p.WriteInt(0x03);
+            p.WriteString(_account.ToLower());
+            p.WriteInt(_status ? (byte)1 : (byte)0);
         }
     }
 }

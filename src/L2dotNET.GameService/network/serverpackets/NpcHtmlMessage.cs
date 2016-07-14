@@ -30,12 +30,12 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _itemId = 0;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x0f);
-            WriteD(_objId);
-            WriteS(Htm);
-            WriteD(_itemId);
+            p.WriteInt(0x0f);
+            p.WriteInt(_objId);
+            p.WriteString(Htm);
+            p.WriteInt(_itemId);
         }
 
         public void Replace(string p, object t)

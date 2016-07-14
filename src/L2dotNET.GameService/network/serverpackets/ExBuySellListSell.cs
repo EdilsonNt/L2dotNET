@@ -20,82 +20,82 @@ namespace L2dotNET.GameService.Network.Serverpackets
             // _refund = player.Refund._items;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xB7);
-            WriteD(1);
-            WriteH(_sells.Count);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xB7);
+            p.WriteInt(1);
+            p.WriteShort(_sells.Count);
 
             foreach (L2Item item in _sells)
             {
-                WriteD(item.ObjId);
-                WriteD(item.Template.ItemId);
-                WriteD(0);
-                WriteQ(item.Count);
-                WriteH(item.Template.Type2);
-                WriteH(item.CustomType1);
-                WriteH(0);
-                WriteD(item.Template.BodyPart);
-                WriteH(item.Enchant);
-                WriteH(item.CustomType2);
-                WriteD(item.AugmentationId);
-                WriteD(item.Durability);
-                WriteD(item.LifeTimeEnd());
+                p.WriteInt(item.ObjId);
+                p.WriteInt(item.Template.ItemId);
+                p.WriteInt(0);
+                p.WriteInt(item.Count);
+                p.WriteShort(item.Template.Type2);
+                p.WriteShort(item.CustomType1);
+                p.WriteShort(0);
+                p.WriteInt(item.Template.BodyPart);
+                p.WriteShort(item.Enchant);
+                p.WriteShort(item.CustomType2);
+                p.WriteInt(item.AugmentationId);
+                p.WriteInt(item.Durability);
+                p.WriteInt(item.LifeTimeEnd());
 
-                WriteH(item.AttrAttackType);
-                WriteH(item.AttrAttackValue);
-                WriteH(item.AttrDefenseValueFire);
-                WriteH(item.AttrDefenseValueWater);
-                WriteH(item.AttrDefenseValueWind);
-                WriteH(item.AttrDefenseValueEarth);
-                WriteH(item.AttrDefenseValueHoly);
-                WriteH(item.AttrDefenseValueUnholy);
+                p.WriteShort(item.AttrAttackType);
+                p.WriteShort(item.AttrAttackValue);
+                p.WriteShort(item.AttrDefenseValueFire);
+                p.WriteShort(item.AttrDefenseValueWater);
+                p.WriteShort(item.AttrDefenseValueWind);
+                p.WriteShort(item.AttrDefenseValueEarth);
+                p.WriteShort(item.AttrDefenseValueHoly);
+                p.WriteShort(item.AttrDefenseValueUnholy);
 
-                WriteH(item.Enchant1);
-                WriteH(item.Enchant2);
-                WriteH(item.Enchant3);
+                p.WriteShort(item.Enchant1);
+                p.WriteShort(item.Enchant2);
+                p.WriteShort(item.Enchant3);
 
-                WriteQ(item.Template.ReferencePrice / 2);
+                p.WriteInt(item.Template.ReferencePrice / 2);
             }
 
-            WriteH(_refund.Count);
+            p.WriteShort(_refund.Count);
 
             int idx = 0;
             foreach (L2Item item in _refund)
             {
-                WriteD(item.ObjId);
-                WriteD(item.Template.ItemId);
-                WriteD(0);
-                WriteQ(item.Count);
-                WriteH(item.Template.Type2);
-                WriteH(item.CustomType1);
-                WriteH(0);
-                WriteD(item.Template.BodyPart);
-                WriteH(item.Enchant);
-                WriteH(item.CustomType2);
-                WriteD(item.AugmentationId);
-                WriteD(item.Durability);
-                WriteD(item.LifeTimeEnd());
+                p.WriteInt(item.ObjId);
+                p.WriteInt(item.Template.ItemId);
+                p.WriteInt(0);
+                p.WriteInt(item.Count);
+                p.WriteShort(item.Template.Type2);
+                p.WriteShort(item.CustomType1);
+                p.WriteShort(0);
+                p.WriteInt(item.Template.BodyPart);
+                p.WriteShort(item.Enchant);
+                p.WriteShort(item.CustomType2);
+                p.WriteInt(item.AugmentationId);
+                p.WriteInt(item.Durability);
+                p.WriteInt(item.LifeTimeEnd());
 
-                WriteH(item.AttrAttackType);
-                WriteH(item.AttrAttackValue);
-                WriteH(item.AttrDefenseValueFire);
-                WriteH(item.AttrDefenseValueWater);
-                WriteH(item.AttrDefenseValueWind);
-                WriteH(item.AttrDefenseValueEarth);
-                WriteH(item.AttrDefenseValueHoly);
-                WriteH(item.AttrDefenseValueUnholy);
+                p.WriteShort(item.AttrAttackType);
+                p.WriteShort(item.AttrAttackValue);
+                p.WriteShort(item.AttrDefenseValueFire);
+                p.WriteShort(item.AttrDefenseValueWater);
+                p.WriteShort(item.AttrDefenseValueWind);
+                p.WriteShort(item.AttrDefenseValueEarth);
+                p.WriteShort(item.AttrDefenseValueHoly);
+                p.WriteShort(item.AttrDefenseValueUnholy);
 
-                WriteH(item.Enchant1);
-                WriteH(item.Enchant2);
-                WriteH(item.Enchant3);
+                p.WriteShort(item.Enchant1);
+                p.WriteShort(item.Enchant2);
+                p.WriteShort(item.Enchant3);
 
-                WriteD(idx++);
-                WriteQ((item.Template.ReferencePrice / 2) * item.Count);
+                p.WriteInt(idx++);
+                p.WriteInt((item.Template.ReferencePrice / 2) * item.Count);
             }
 
-            WriteC(0);
+            p.WriteInt(0);
         }
     }
 }

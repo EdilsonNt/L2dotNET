@@ -12,43 +12,43 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _list = list;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0xb2);
-            WriteD(_list.Count);
+            p.WriteInt(0xfe);
+            p.WriteShort(0xb2);
+            p.WriteInt(_list.Count);
 
             foreach (L2Item item in _list)
             {
-                WriteD(item.ObjId);
-                WriteD(item.Template.ItemId);
-                WriteD(0);
-                WriteQ(item.Count);
+                p.WriteInt(item.ObjId);
+                p.WriteInt(item.Template.ItemId);
+                p.WriteInt(0);
+                p.WriteInt(item.Count);
 
-                WriteH(item.Template.Type2);
-                WriteH(0);
-                WriteH(0);
+                p.WriteShort(item.Template.Type2);
+                p.WriteShort(0);
+                p.WriteShort(0);
 
-                WriteD(item.Template.BodyPart);
-                WriteH(item.Enchant);
-                WriteH(0);
+                p.WriteInt(item.Template.BodyPart);
+                p.WriteShort(item.Enchant);
+                p.WriteShort(0);
 
-                WriteD(item.AugmentationId);
-                WriteD(item.Durability);
-                WriteD(item.LifeTimeEnd());
+                p.WriteInt(item.AugmentationId);
+                p.WriteInt(item.Durability);
+                p.WriteInt(item.LifeTimeEnd());
 
-                WriteH(item.AttrAttackType);
-                WriteH(item.AttrAttackValue);
-                WriteH(item.AttrDefenseValueFire);
-                WriteH(item.AttrDefenseValueWater);
-                WriteH(item.AttrDefenseValueWind);
-                WriteH(item.AttrDefenseValueEarth);
-                WriteH(item.AttrDefenseValueHoly);
-                WriteH(item.AttrDefenseValueUnholy);
+                p.WriteShort(item.AttrAttackType);
+                p.WriteShort(item.AttrAttackValue);
+                p.WriteShort(item.AttrDefenseValueFire);
+                p.WriteShort(item.AttrDefenseValueWater);
+                p.WriteShort(item.AttrDefenseValueWind);
+                p.WriteShort(item.AttrDefenseValueEarth);
+                p.WriteShort(item.AttrDefenseValueHoly);
+                p.WriteShort(item.AttrDefenseValueUnholy);
 
-                WriteH(item.Enchant1);
-                WriteH(item.Enchant2);
-                WriteH(item.Enchant3);
+                p.WriteShort(item.Enchant1);
+                p.WriteShort(item.Enchant2);
+                p.WriteShort(item.Enchant3);
             }
         }
     }

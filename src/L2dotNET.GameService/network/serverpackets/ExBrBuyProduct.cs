@@ -9,11 +9,11 @@
             _result = result;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xCC);
-            WriteD(_result);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xCC);
+            p.WriteInt(_result);
         }
     }
 }

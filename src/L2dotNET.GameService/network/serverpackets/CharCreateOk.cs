@@ -2,10 +2,10 @@
 {
     class CharCreateOk
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x19);
-            WriteD(0x01);
+            p.WriteInt(0x19);
+            p.WriteInt(0x01);
         }
     }
 }

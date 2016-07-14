@@ -11,56 +11,56 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _list = list;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xd0);
-            WriteD(_list.Id);
-            WriteD(1); // page
-            WriteD(1); // finished
-            WriteD(_list.Container.Count); // size of pages 40
-            WriteD(_list.Container.Count);
+            p.WriteInt(0xd0);
+            p.WriteInt(_list.Id);
+            p.WriteInt(1); // page
+            p.WriteInt(1); // finished
+            p.WriteInt(_list.Container.Count); // size of pages 40
+            p.WriteInt(_list.Container.Count);
 
             int inc = 0;
             foreach (MultiSellEntry entry in _list.Container)
             {
-                WriteD(inc);
+                p.WriteInt(inc);
                 inc++;
-                WriteC(entry.Stackable);
-                WriteH(entry.Enchant);
-                WriteD(0x00); // C6
-                WriteD(0x00); // T1
+                p.WriteInt(entry.Stackable);
+                p.WriteShort(entry.Enchant);
+                p.WriteInt(0x00); // C6
+                p.WriteInt(0x00); // T1
 
-                WriteH(entry.AttrAttackType);
-                WriteH(entry.AttrAttackValue);
-                WriteH(entry.AttrDefenseValueFire);
-                WriteH(entry.AttrDefenseValueWater);
-                WriteH(entry.AttrDefenseValueWind);
-                WriteH(entry.AttrDefenseValueEarth);
-                WriteH(entry.AttrDefenseValueHoly);
-                WriteH(entry.AttrDefenseValueUnholy);
+                p.WriteShort(entry.AttrAttackType);
+                p.WriteShort(entry.AttrAttackValue);
+                p.WriteShort(entry.AttrDefenseValueFire);
+                p.WriteShort(entry.AttrDefenseValueWater);
+                p.WriteShort(entry.AttrDefenseValueWind);
+                p.WriteShort(entry.AttrDefenseValueEarth);
+                p.WriteShort(entry.AttrDefenseValueHoly);
+                p.WriteShort(entry.AttrDefenseValueUnholy);
 
-                WriteH(entry.Give.Count);
-                WriteH(entry.Take.Count);
+                p.WriteShort(entry.Give.Count);
+                p.WriteShort(entry.Take.Count);
 
                 foreach (MultiSellItem item in entry.Give)
                 {
-                    WriteD(item.ItemId);
-                    WriteD(item.BodyPartId);
-                    WriteH(item.Type2);
-                    WriteQ(item.Count);
-                    WriteH(item.Enchant);
-                    WriteD(item.Augment);
-                    WriteD(item.Durability);
+                    p.WriteInt(item.ItemId);
+                    p.WriteInt(item.BodyPartId);
+                    p.WriteShort(item.Type2);
+                    p.WriteInt(item.Count);
+                    p.WriteShort(item.Enchant);
+                    p.WriteInt(item.Augment);
+                    p.WriteInt(item.Durability);
                 }
 
                 foreach (MultiSellItem item in entry.Take)
                 {
-                    WriteD(item.ItemId);
-                    WriteH(item.Type2);
-                    WriteQ(item.Count);
-                    WriteH(item.Enchant);
-                    WriteD(item.Augment);
-                    WriteD(item.Durability);
+                    p.WriteInt(item.ItemId);
+                    p.WriteShort(item.Type2);
+                    p.WriteInt(item.Count);
+                    p.WriteShort(item.Enchant);
+                    p.WriteInt(item.Augment);
+                    p.WriteInt(item.Durability);
                 }
             }
         }

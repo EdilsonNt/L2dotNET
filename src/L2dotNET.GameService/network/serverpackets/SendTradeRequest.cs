@@ -9,10 +9,10 @@
             _sId = sId;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x5e);
-            WriteD(_sId);
+            p.WriteInt(0x5e);
+            p.WriteInt(_sId);
         }
     }
 }

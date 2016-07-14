@@ -12,29 +12,29 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _party = party;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x4e);
-            WriteD(_party.Leader.ObjId);
-            WriteD(_party.ItemDistribution);
-            WriteD(_party.Members.Count);
+            p.WriteInt(0x4e);
+            p.WriteInt(_party.Leader.ObjId);
+            p.WriteInt(_party.ItemDistribution);
+            p.WriteInt(_party.Members.Count);
 
             foreach (L2Player member in _party.Members)
             {
-                WriteD(member.ObjId);
-                WriteS(member.Name);
+                p.WriteInt(member.ObjId);
+                p.WriteString(member.Name);
 
-                WriteD(member.CurCp);
-                WriteD(member.CharacterStat.GetStat(EffectType.BMaxCp));
-                WriteD(member.CurHp);
-                WriteD(member.CharacterStat.GetStat(EffectType.BMaxHp));
-                WriteD(member.CurMp);
-                WriteD(member.CharacterStat.GetStat(EffectType.BMaxMp));
-                WriteD(member.Level);
+                p.WriteInt(member.CurCp);
+                p.WriteInt(member.CharacterStat.GetStat(EffectType.BMaxCp));
+                p.WriteInt(member.CurHp);
+                p.WriteInt(member.CharacterStat.GetStat(EffectType.BMaxHp));
+                p.WriteInt(member.CurMp);
+                p.WriteInt(member.CharacterStat.GetStat(EffectType.BMaxMp));
+                p.WriteInt(member.Level);
 
-                WriteD((int)member.ActiveClass.ClassId.Id);
-                WriteD(0x00); // writeD(0x01); ??
-                WriteD((int)member.BaseClass.ClassId.ClassRace);
+                p.WriteInt((int)member.ActiveClass.ClassId.Id);
+                p.WriteInt(0x00); // p.WriteInt(0x01); ??
+                p.WriteInt((int)member.BaseClass.ClassId.ClassRace);
             }
         }
     }

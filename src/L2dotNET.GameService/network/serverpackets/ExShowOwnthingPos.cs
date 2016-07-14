@@ -2,13 +2,13 @@
 {
     class ExShowOwnthingPos
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x93);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x93);
 
-            WriteD(0);
-            WriteD(0);
+            p.WriteInt(0);
+            p.WriteInt(0);
         }
     }
 }

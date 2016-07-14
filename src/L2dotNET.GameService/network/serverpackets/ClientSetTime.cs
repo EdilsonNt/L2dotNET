@@ -4,11 +4,11 @@ namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ClientSetTime
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xEC);
-            WriteD(GameTime.Instance.Time);
-            WriteD(6);
+            p.WriteInt(0xEC);
+            p.WriteInt(GameTime.Instance.Time);
+            p.WriteInt(6);
         }
     }
 }

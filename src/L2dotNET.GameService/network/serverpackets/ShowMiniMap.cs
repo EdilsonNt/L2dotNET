@@ -2,11 +2,11 @@
 {
     class ShowMiniMap
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x9d);
-            WriteD(1665);
-            WriteD(0); //SevenSigns.getInstance().getCurrentPeriod());
+            p.WriteInt(0x9d);
+            p.WriteInt(1665);
+            p.WriteInt(0); //SevenSigns.getInstance().getCurrentPeriod());
         }
     }
 }

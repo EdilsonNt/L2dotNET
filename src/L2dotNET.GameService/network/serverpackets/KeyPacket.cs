@@ -11,13 +11,13 @@
             _next = n;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x00);
-            WriteC(0x01);
+            p.WriteInt(0x00);
+            p.WriteInt(0x01);
             WriteB(_key);
-            WriteD(0x01);
-            WriteD(0x01);
+            p.WriteInt(0x01);
+            p.WriteInt(0x01);
         }
     }
 }

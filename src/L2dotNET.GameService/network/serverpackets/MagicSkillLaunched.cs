@@ -32,16 +32,16 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _targets = new[] { id };
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x76);
-            WriteD(_casterId);
-            WriteD(_id);
-            WriteD(_level);
-            WriteD(_targets.Length);
+            p.WriteInt(0x76);
+            p.WriteInt(_casterId);
+            p.WriteInt(_id);
+            p.WriteInt(_level);
+            p.WriteInt(_targets.Length);
             foreach (int tid in _targets)
             {
-                WriteD(tid);
+                p.WriteInt(tid);
             }
         }
     }

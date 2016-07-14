@@ -2,10 +2,10 @@
 {
     class RestartResponse
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x5f);
-            WriteD(0x01);
+            p.WriteInt(0x5f);
+            p.WriteInt(0x01);
         }
     }
 }

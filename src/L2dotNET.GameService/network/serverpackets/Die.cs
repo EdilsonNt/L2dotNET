@@ -59,22 +59,22 @@ namespace L2dotNET.GameService.Network.Serverpackets
             AddItem(57);
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x06);
-            WriteD(_sId);
-            WriteD(_mNVillage); //0
-            WriteD(_mNAgit); //1
-            WriteD(_mNCastle); //2
-            WriteD(MNBattleCamp); //4
-            WriteD(_mSpoil);
-            WriteD(_mNOriginal); //5
-            WriteD(_mNFotress); //3
+            p.WriteInt(0x06);
+            p.WriteInt(_sId);
+            p.WriteInt(_mNVillage); //0
+            p.WriteInt(_mNAgit); //1
+            p.WriteInt(_mNCastle); //2
+            p.WriteInt(MNBattleCamp); //4
+            p.WriteInt(_mSpoil);
+            p.WriteInt(_mNOriginal); //5
+            p.WriteInt(_mNFotress); //3
 
-            WriteC(0);
-            //writeC(m_bShow ? 1 : 0);
-            WriteD(MNAgathion); //21
-            WriteD(_items?.Count ?? 0); //22+
+            p.WriteInt(0);
+            //p.WriteInt(m_bShow ? 1 : 0);
+            p.WriteInt(MNAgathion); //21
+            p.WriteInt(_items?.Count ?? 0); //22+
 
             if (_items == null)
             {
@@ -83,7 +83,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
             foreach (int id in _items)
             {
-                WriteD(id);
+                p.WriteInt(id);
             }
         }
     }

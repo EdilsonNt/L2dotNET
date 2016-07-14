@@ -1,4 +1,6 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ChairSit
     {
@@ -11,11 +13,12 @@
             _staticId = staticId;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xe1);
-            WriteD(_sId);
-            WriteD(_staticId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0xe1);
+            p.WriteInt(_sId);
+            p.WriteInt(_staticId);
         }
     }
 }

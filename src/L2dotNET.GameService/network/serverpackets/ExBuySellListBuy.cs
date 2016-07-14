@@ -25,44 +25,44 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _adena = adena;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xB7);
-            WriteD(0);
-            WriteQ(_adena);
-            WriteD(_shopId);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xB7);
+            p.WriteInt(0);
+            p.WriteInt(_adena);
+            p.WriteInt(_shopId);
 
             if (_shop == null)
             {
-                WriteH(0);
+                p.WriteShort(0);
                 return;
             }
 
-            WriteH(_shop.Items.Count);
+            p.WriteShort(_shop.Items.Count);
             foreach (NDShopItem si in _shop.Items)
             {
-                WriteD(0); //objectId
-                WriteD(si.Item.ItemId);
-                WriteD(0);
-                WriteQ(si.Count < 0 ? 0 : si.Count);
-                WriteH(si.Item.Type2);
-                WriteH(0);
-                WriteH(0);
-                WriteD(si.Item.BodyPart);
+                p.WriteInt(0); //objectId
+                p.WriteInt(si.Item.ItemId);
+                p.WriteInt(0);
+                p.WriteInt(si.Count < 0 ? 0 : si.Count);
+                p.WriteShort(si.Item.Type2);
+                p.WriteShort(0);
+                p.WriteShort(0);
+                p.WriteInt(si.Item.BodyPart);
 
-                WriteH(0);
-                WriteH(0);
-                WriteD(0);
-                WriteD(0);
-                WriteD(-9999);
+                p.WriteShort(0);
+                p.WriteShort(0);
+                p.WriteInt(0);
+                p.WriteInt(0);
+                p.WriteInt(-9999);
 
                 // Enchant Effects
-                WriteH(0x00);
-                WriteH(0x00);
-                WriteH(0x00);
+                p.WriteShort(0x00);
+                p.WriteShort(0x00);
+                p.WriteShort(0x00);
 
-                WriteQ((long)(si.Item.ReferencePrice * _mod * _tax));
+                p.WriteInt((long)(si.Item.ReferencePrice * _mod * _tax));
             }
         }
     }

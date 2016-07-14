@@ -19,14 +19,14 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _z = target.Z;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x29);
-            WriteD(_objectId);
-            WriteD(_targetObjId);
-            WriteD(_x);
-            WriteD(_y);
-            WriteD(_z);
+            p.WriteInt(0x29);
+            p.WriteInt(_objectId);
+            p.WriteInt(_targetObjId);
+            p.WriteInt(_x);
+            p.WriteInt(_y);
+            p.WriteInt(_z);
         }
     }
 }

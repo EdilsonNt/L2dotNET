@@ -11,13 +11,13 @@
             _value = value;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0xcf);
-            WriteD(_playerId);
-            WriteD(_value); // event effect id
-            //writeC(0x00);		// Event flag, added only if event is active
+            p.WriteInt(0xfe);
+            p.WriteShort(0xcf);
+            p.WriteInt(_playerId);
+            p.WriteInt(_value); // event effect id
+            //p.WriteInt(0x00);		// Event flag, added only if event is active
         }
     }
 }

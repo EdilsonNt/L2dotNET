@@ -2,9 +2,9 @@
 {
     class PledgeShowMemberListDeleteAll
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x88);
+            p.WriteInt(0x88);
         }
     }
 }

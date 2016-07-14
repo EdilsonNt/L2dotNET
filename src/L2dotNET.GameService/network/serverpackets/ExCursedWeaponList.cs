@@ -9,15 +9,15 @@
             _ids = ids;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x46);
-            WriteD(_ids.Length);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x46);
+            p.WriteInt(_ids.Length);
 
             foreach (int id in _ids)
             {
-                WriteD(id);
+                p.WriteInt(id);
             }
         }
     }

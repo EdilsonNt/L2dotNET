@@ -20,27 +20,27 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _adena = player.GetAdena();
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x10);
-            WriteD(_adena);
-            WriteD(0);
-            WriteH(_sells.Count);
+            p.WriteInt(0x10);
+            p.WriteInt(_adena);
+            p.WriteInt(0);
+            p.WriteShort(_sells.Count);
 
             foreach (L2Item item in _sells)
             {
-                WriteD(item.ObjId);
-                WriteD(item.Template.ItemId);
-                WriteQ(item.Count);
+                p.WriteInt(item.ObjId);
+                p.WriteInt(item.Template.ItemId);
+                p.WriteInt(item.Count);
 
-                WriteH(item.Template.Type2);
-                WriteH(item.Template.Type1);
-                WriteD(item.Template.BodyPart);
+                p.WriteShort(item.Template.Type2);
+                p.WriteShort(item.Template.Type1);
+                p.WriteInt(item.Template.BodyPart);
 
-                WriteH(item.Enchant);
-                WriteH(item.Template.Type2);
-                WriteH(0x00);
-                WriteD((int)(item.Template.ReferencePrice * 0.5));
+                p.WriteShort(item.Enchant);
+                p.WriteShort(item.Template.Type2);
+                p.WriteShort(0x00);
+                p.WriteInt((int)(item.Template.ReferencePrice * 0.5));
             }
         }
     }

@@ -17,13 +17,13 @@
             _heading = h;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x28);
-            WriteD(_id);
-            WriteD(_x);
-            WriteD(_y);
-            WriteD(_z);
+            p.WriteInt(0x28);
+            p.WriteInt(_id);
+            p.WriteInt(_x);
+            p.WriteInt(_y);
+            p.WriteInt(_z);
         }
     }
 }

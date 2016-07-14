@@ -11,11 +11,11 @@
             _build = th.Build;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xA0);
-            WriteS(Version);
-            WriteD(_build);
+            p.WriteInt(0xA0);
+            p.WriteString(Version);
+            p.WriteInt(_build);
         }
     }
 }

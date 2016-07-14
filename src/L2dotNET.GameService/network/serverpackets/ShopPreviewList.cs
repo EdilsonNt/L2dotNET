@@ -16,22 +16,22 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _shopId = shopId;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xef);
-            WriteC(0xc0); // ?
-            WriteC(0x13); // ?
-            WriteC(0x00); // ?
-            WriteC(0x00); // ?
-            WriteD(_adena); // current money
-            WriteD(_shopId);
+            p.WriteInt(0xef);
+            p.WriteInt(0xc0); // ?
+            p.WriteInt(0x13); // ?
+            p.WriteInt(0x00); // ?
+            p.WriteInt(0x00); // ?
+            p.WriteInt(_adena); // current money
+            p.WriteInt(_shopId);
 
             foreach (NDShopItem si in _shop.Items)
             {
-                WriteD(si.Item.ItemId);
-                WriteH(si.Item.Type2);
-                WriteH(si.Item.BodyPart);
-                WriteD(10);
+                p.WriteInt(si.Item.ItemId);
+                p.WriteShort(si.Item.Type2);
+                p.WriteShort(si.Item.BodyPart);
+                p.WriteInt(10);
             }
         }
     }

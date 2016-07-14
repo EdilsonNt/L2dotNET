@@ -1,5 +1,6 @@
 ﻿using L2dotNET.GameService.Model.Npcs.Ai;
 using L2dotNET.GameService.Model.Structures;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
@@ -12,24 +13,25 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _hideout = hideout;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xf7);
-            WriteD(_hideout.ID); // clanhall id
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeHpregen)); // FUNC_RESTORE_HP (Fireplace)
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeMpregen)); // FUNC_RESTORE_MP (Carpet)
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeCpregen)); // FUNC_RESTORE_MP (Statue)
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeXprestore)); // FUNC_RESTORE_EXP (Chandelier)
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeTeleport)); // FUNC_TELEPORT (Mirror)
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeBroadcast)); // Crytal
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeCurtain)); // Curtain
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeHanging)); // FUNC_ITEM_CREATE (Magic Curtain)
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeBuff)); // FUNC_SUPPORT
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeOuterflag)); // FUNC_SUPPORT (Flag)
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypePlatform)); // Front Platform
-            WriteC(_hideout.GetFuncLevel(AgitManagerAi.DecotypeItem)); // FUNC_ITEM_CREATE
-            WriteD(0);
-            WriteD(0);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0xf7);
+            p.WriteInt(_hideout.ID); // clanhall id
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeHpregen)); // FUNC_RESTORE_HP (Fireplace)
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeMpregen)); // FUNC_RESTORE_MP (Carpet)
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeCpregen)); // FUNC_RESTORE_MP (Statue)
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeXprestore)); // FUNC_RESTORE_EXP (Chandelier)
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeTeleport)); // FUNC_TELEPORT (Mirror)
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeBroadcast)); // Crytal
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeCurtain)); // Curtain
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeHanging)); // FUNC_ITEM_CREATE (Magic Curtain)
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeBuff)); // FUNC_SUPPORT
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeOuterflag)); // FUNC_SUPPORT (Flag)
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypePlatform)); // Front Platform
+            p.WriteInt(_hideout.GetFuncLevel(AgitManagerAi.DecotypeItem)); // FUNC_ITEM_CREATE
+            p.WriteInt(0);
+            p.WriteInt(0);
         }
     }
 }

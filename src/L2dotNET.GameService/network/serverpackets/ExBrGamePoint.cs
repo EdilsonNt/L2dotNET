@@ -11,14 +11,14 @@
             _points = points;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xC9);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xC9);
 
-            WriteD(_id);
-            WriteQ(_points);
-            WriteD(0);
+            p.WriteInt(_id);
+            p.WriteInt(_points);
+            p.WriteInt(0);
         }
     }
 }

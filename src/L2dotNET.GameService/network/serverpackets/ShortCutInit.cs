@@ -13,35 +13,35 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _shortcuts = player.Shortcuts;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x45);
-            WriteD(_shortcuts.Count);
+            p.WriteInt(0x45);
+            p.WriteInt(_shortcuts.Count);
 
             foreach (L2Shortcut sc in _shortcuts)
             {
-                WriteD(sc.Type);
-                WriteD(sc.Slot + (sc.Page * 12));
+                p.WriteInt(sc.Type);
+                p.WriteInt(sc.Slot + (sc.Page * 12));
 
                 switch (sc.Type)
                 {
                     case L2Shortcut.TypeItem:
-                        WriteD(sc.Id);
-                        WriteD(0x01);
-                        WriteD(-1); //getSharedReuseGroup
-                        WriteD(0x00);
-                        WriteD(0x00);
-                        WriteD(0x00);
+                        p.WriteInt(sc.Id);
+                        p.WriteInt(0x01);
+                        p.WriteInt(-1); //getSharedReuseGroup
+                        p.WriteInt(0x00);
+                        p.WriteInt(0x00);
+                        p.WriteInt(0x00);
                         break;
                     case L2Shortcut.TypeSkill:
-                        WriteD(sc.Id);
-                        WriteD(sc.Level);
-                        WriteC(0x00); // C5
-                        WriteD(0x01); // C6
+                        p.WriteInt(sc.Id);
+                        p.WriteInt(sc.Level);
+                        p.WriteInt(0x00); // C5
+                        p.WriteInt(0x01); // C6
                         break;
                     default:
-                        WriteD(sc.Id);
-                        WriteD(0x01); // C6
+                        p.WriteInt(sc.Id);
+                        p.WriteInt(0x01); // C6
                         break;
                 }
             }

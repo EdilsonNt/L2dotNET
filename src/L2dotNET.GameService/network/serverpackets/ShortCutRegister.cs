@@ -11,29 +11,29 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _cut = cut;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x44);
+            p.WriteInt(0x44);
 
-            WriteD(_cut.Type);
-            WriteD(_cut.Slot + (_cut.Page * 12));
+            p.WriteInt(_cut.Type);
+            p.WriteInt(_cut.Slot + (_cut.Page * 12));
 
             switch (_cut.Type)
             {
                 case L2Shortcut.TypeItem:
-                    WriteD(_cut.Id);
-                    WriteD(_cut.CharacterType);
-                    WriteD(-1); //getSharedReuseGroup
+                    p.WriteInt(_cut.Id);
+                    p.WriteInt(_cut.CharacterType);
+                    p.WriteInt(-1); //getSharedReuseGroup
                     break;
                 case L2Shortcut.TypeSkill:
-                    WriteD(_cut.Id);
-                    WriteD(_cut.Level);
-                    WriteC(0x00); // C5
-                    WriteD(_cut.CharacterType);
+                    p.WriteInt(_cut.Id);
+                    p.WriteInt(_cut.Level);
+                    p.WriteInt(0x00); // C5
+                    p.WriteInt(_cut.CharacterType);
                     break;
                 default:
-                    WriteD(_cut.Id);
-                    WriteD(_cut.CharacterType);
+                    p.WriteInt(_cut.Id);
+                    p.WriteInt(_cut.CharacterType);
                     break;
             }
         }

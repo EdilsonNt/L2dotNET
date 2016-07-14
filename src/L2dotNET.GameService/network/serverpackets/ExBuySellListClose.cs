@@ -2,14 +2,14 @@
 {
     class ExBuySellListClose
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xB7);
-            WriteD(1);
-            WriteH(0);
-            WriteH(0);
-            WriteC(1);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xB7);
+            p.WriteInt(1);
+            p.WriteShort(0);
+            p.WriteShort(0);
+            p.WriteInt(1);
         }
     }
 }

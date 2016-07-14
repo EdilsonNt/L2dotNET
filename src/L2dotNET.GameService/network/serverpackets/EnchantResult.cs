@@ -13,12 +13,12 @@
             _count = count;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x81);
-            WriteD((int)_result);
-            //writeD(crystal);
-            //writeQ(count);
+            p.WriteInt(0x81);
+            p.WriteInt((int)_result);
+            //p.WriteInt(crystal);
+            //p.WriteInt(count);
         }
     }
 }

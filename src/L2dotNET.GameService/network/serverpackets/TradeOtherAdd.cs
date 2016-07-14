@@ -13,23 +13,23 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _num = num;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x20);
-            WriteH(1);
+            p.WriteInt(0x20);
+            p.WriteShort(1);
 
-            WriteH(_item.Template.Type1);
-            WriteD(0); //item.ObjID
-            WriteD(_item.Template.ItemId);
-            WriteD(_item.Count);
+            p.WriteShort(_item.Template.Type1);
+            p.WriteInt(0); //item.ObjID
+            p.WriteInt(_item.Template.ItemId);
+            p.WriteInt(_item.Count);
 
-            WriteH(_item.Template.Type2);
-            WriteH(0); // ??
+            p.WriteShort(_item.Template.Type2);
+            p.WriteShort(0); // ??
 
-            WriteD(_item.Template.BodyPart);
-            WriteH(_item.Enchant);
-            WriteH(0x00); // ?
-            WriteH(0x00);
+            p.WriteInt(_item.Template.BodyPart);
+            p.WriteShort(_item.Enchant);
+            p.WriteShort(0x00); // ?
+            p.WriteShort(0x00);
         }
     }
 }

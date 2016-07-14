@@ -9,10 +9,10 @@
             _done = done;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x1c);
-            WriteD(_done ? 1 : 0);
+            p.WriteInt(0x1c);
+            p.WriteInt(_done ? 1 : 0);
         }
     }
 }

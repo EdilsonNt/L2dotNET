@@ -19,10 +19,10 @@
             _reason = reason;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x24);
-            WriteD((int)_reason);
+            p.WriteInt(0x24);
+            p.WriteInt((int)_reason);
         }
     }
 }

@@ -111,23 +111,23 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _data.Add(new object[] { 13, val });
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x64);
-            WriteD(MessgeId);
-            WriteD(_data.Count);
+            p.WriteInt(0x64);
+            p.WriteInt(MessgeId);
+            p.WriteInt(_data.Count);
 
             foreach (object[] d in _data)
             {
                 int type = (int)d[0];
 
-                WriteD(type);
+                p.WriteInt(type);
 
                 switch (type)
                 {
                     case 0: //text
                     case 12:
-                        WriteS((string)d[1]);
+                        p.WriteString((string)d[1]);
                         break;
                     case 1: //number
                     case 2: //npcid
@@ -136,19 +136,19 @@ namespace L2dotNET.GameService.Network.Serverpackets
                     case 9:
                     case 10:
                     case 13:
-                        WriteD((int)d[1]);
+                        p.WriteInt((int)d[1]);
                         break;
                     case 4: //skillname
-                        WriteD((int)d[1]);
-                        WriteD((int)d[2]);
+                        p.WriteInt((int)d[1]);
+                        p.WriteInt((int)d[2]);
                         break;
                     case 6:
-                        WriteQ((long)d[1]);
+                        p.WriteInt((long)d[1]);
                         break;
                     case 7: //zone
-                        WriteD((int)d[1]);
-                        WriteD((int)d[2]);
-                        WriteD((int)d[3]);
+                        p.WriteInt((int)d[1]);
+                        p.WriteInt((int)d[2]);
+                        p.WriteInt((int)d[3]);
                         break;
                 }
             }

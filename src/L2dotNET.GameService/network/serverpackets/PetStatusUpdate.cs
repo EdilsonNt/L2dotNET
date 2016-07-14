@@ -12,25 +12,25 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _pet = pet;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xb6);
-            WriteD(_pet.ObjectSummonType);
-            WriteD(_pet.ObjId);
-            WriteD(_pet.X);
-            WriteD(_pet.Y);
-            WriteD(_pet.Z);
-            WriteS("");
-            WriteD(_pet.CurrentTime);
-            WriteD(_pet.MaxTime);
-            WriteD(_pet.CurHp);
-            WriteD(_pet.CharacterStat.GetStat(EffectType.BMaxHp));
-            WriteD(_pet.CurMp);
-            WriteD(_pet.CharacterStat.GetStat(EffectType.BMaxMp));
-            WriteD(_pet.Level);
-            WriteQ(_pet.StatusExp);
-            WriteQ(_pet.GetExpCurrentLevel());
-            WriteQ(_pet.GetExpToLevelUp());
+            p.WriteInt(0xb6);
+            p.WriteInt(_pet.ObjectSummonType);
+            p.WriteInt(_pet.ObjId);
+            p.WriteInt(_pet.X);
+            p.WriteInt(_pet.Y);
+            p.WriteInt(_pet.Z);
+            p.WriteString("");
+            p.WriteInt(_pet.CurrentTime);
+            p.WriteInt(_pet.MaxTime);
+            p.WriteInt(_pet.CurHp);
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.BMaxHp));
+            p.WriteInt(_pet.CurMp);
+            p.WriteInt(_pet.CharacterStat.GetStat(EffectType.BMaxMp));
+            p.WriteInt(_pet.Level);
+            p.WriteInt(_pet.StatusExp);
+            p.WriteInt(_pet.GetExpCurrentLevel());
+            p.WriteInt(_pet.GetExpToLevelUp());
         }
     }
 }

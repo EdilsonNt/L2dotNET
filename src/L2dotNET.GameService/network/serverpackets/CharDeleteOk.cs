@@ -2,9 +2,9 @@
 {
     class CharDeleteOk
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x23);
+            p.WriteInt(0x23);
         }
     }
 }

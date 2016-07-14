@@ -9,14 +9,14 @@
             _content = text;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xB1);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xB1);
 
-            WriteD(0);
-            WriteC(0);
-            WriteS(_content);
+            p.WriteInt(0);
+            p.WriteInt(0);
+            p.WriteString(_content);
         }
     }
 }

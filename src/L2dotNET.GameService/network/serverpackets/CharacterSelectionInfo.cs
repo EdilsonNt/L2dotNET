@@ -19,66 +19,66 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _sessionId = sessionId;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x13);
-            WriteD(_players.Count);
+            p.WriteInt(0x13);
+            p.WriteInt(_players.Count);
 
             foreach (L2Player player in _players)
             {
-                WriteS(player.Name);
-                WriteD(player.ObjId);
-                WriteS(_account);
-                WriteD(_sessionId);
-                WriteD(player.ClanId);
-                WriteD(0x00); // ??
+                p.WriteString(player.Name);
+                p.WriteInt(player.ObjId);
+                p.WriteString(_account);
+                p.WriteInt(_sessionId);
+                p.WriteInt(player.ClanId);
+                p.WriteInt(0x00); // ??
 
-                WriteD(player.Sex);
-                WriteD((int)player.BaseClass.ClassId.ClassRace);
+                p.WriteInt(player.Sex);
+                p.WriteInt((int)player.BaseClass.ClassId.ClassRace);
 
                 if (player.ActiveClass.ClassId.Id == player.BaseClass.ClassId.Id)
                 {
-                    WriteD((int)player.ActiveClass.ClassId.Id);
+                    p.WriteInt((int)player.ActiveClass.ClassId.Id);
                 }
                 else
                 {
-                    WriteD((int)player.BaseClass.ClassId.Id);
+                    p.WriteInt((int)player.BaseClass.ClassId.Id);
                 }
 
-                WriteD(0x01); // active ??
+                p.WriteInt(0x01); // active ??
 
-                WriteD(player.X);
-                WriteD(player.Y);
-                WriteD(player.Z);
+                p.WriteInt(player.X);
+                p.WriteInt(player.Y);
+                p.WriteInt(player.Z);
 
-                WriteF(player.CurHp);
-                WriteF(player.CurMp);
+                p.WriteDouble(player.CurHp);
+                p.WriteDouble(player.CurMp);
 
-                WriteD(player.Sp);
-                WriteQ(player.Exp);
+                p.WriteInt(player.Sp);
+                p.WriteInt(player.Exp);
 
-                WriteD(player.Level);
-                WriteD(player.Karma);
-                WriteD(player.PkKills);
-                WriteD(player.PvpKills);
+                p.WriteInt(player.Level);
+                p.WriteInt(player.Karma);
+                p.WriteInt(player.PkKills);
+                p.WriteInt(player.PvpKills);
 
-                WriteD(0);
-                WriteD(0);
-                WriteD(0);
-                WriteD(0);
-                WriteD(0);
-                WriteD(0);
-                WriteD(0);
+                p.WriteInt(0);
+                p.WriteInt(0);
+                p.WriteInt(0);
+                p.WriteInt(0);
+                p.WriteInt(0);
+                p.WriteInt(0);
+                p.WriteInt(0);
 
                 for (byte id = 0; id < Inventory.PaperdollTotalslots; id++)
                 {
                     try
                     {
-                        WriteD(player.Inventory.Paperdoll[id].Template.ItemId);
+                        p.WriteInt(player.Inventory.Paperdoll[id].Template.ItemId);
                     }
                     catch (Exception e)
                     {
-                        WriteD(0);
+                        p.WriteInt(0);
                     }
                     
                 }
@@ -87,24 +87,24 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 {
                     try
                     {
-                        WriteD(player.Inventory.Paperdoll[id].Template.ItemId);
+                        p.WriteInt(player.Inventory.Paperdoll[id].Template.ItemId);
                     }
                     catch (Exception e)
                     {
-                        WriteD(0);
+                        p.WriteInt(0);
                     }
 
                 }
 
-                WriteD(player.HairStyle);
-                WriteD(player.HairColor);
+                p.WriteInt(player.HairStyle);
+                p.WriteInt(player.HairColor);
 
-                WriteD(player.Face);
-                WriteF(player.CurHp); // hp max TODO
-                WriteF(player.CurMp); // mp max TODO
-                WriteD(0); // days left before TODO
+                p.WriteInt(player.Face);
+                p.WriteDouble(player.CurHp); // hp max TODO
+                p.WriteDouble(player.CurMp); // mp max TODO
+                p.WriteInt(0); // days left before TODO
 
-                WriteD((int)player.ActiveClass.ClassId.Id);
+                p.WriteInt((int)player.ActiveClass.ClassId.Id);
 
                 int selection = 0;
 
@@ -118,9 +118,9 @@ namespace L2dotNET.GameService.Network.Serverpackets
                     selection = 1;
                 }
 
-                WriteD(selection); // auto-select char
-                WriteC(player.GetEnchantValue());
-                WriteD(0x00); // augment
+                p.WriteInt(selection); // auto-select char
+                p.WriteInt(player.GetEnchantValue());
+                p.WriteInt(0x00); // augment
             }
         }
     }

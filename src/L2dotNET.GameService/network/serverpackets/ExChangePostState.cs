@@ -16,16 +16,16 @@
             _status = status;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0xb3);
-            WriteD(_receivedBoard ? 1 : 0);
-            WriteD(_msgs.Length);
+            p.WriteInt(0xfe);
+            p.WriteShort(0xb3);
+            p.WriteInt(_receivedBoard ? 1 : 0);
+            p.WriteInt(_msgs.Length);
             foreach (int postId in _msgs)
             {
-                WriteD(postId);
-                WriteD(_status);
+                p.WriteInt(postId);
+                p.WriteInt(_status);
             }
         }
     }

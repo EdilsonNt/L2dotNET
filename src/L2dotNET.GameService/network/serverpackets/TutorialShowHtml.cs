@@ -52,10 +52,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _content = _content.Replace(p, t.ToString());
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xa0);
-            WriteS(_content);
+            p.WriteInt(0xa0);
+            p.WriteString(_content);
         }
     }
 }

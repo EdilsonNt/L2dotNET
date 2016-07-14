@@ -13,12 +13,12 @@
             _points = points;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xA4);
-            WriteS(_account.ToLower());
-            WriteC(_status);
-            WriteQ(_points);
+            p.WriteInt(0xA4);
+            p.WriteString(_account.ToLower());
+            p.WriteInt(_status);
+            p.WriteInt(_points);
         }
     }
 }

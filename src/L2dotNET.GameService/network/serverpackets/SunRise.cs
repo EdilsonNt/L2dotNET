@@ -2,9 +2,9 @@
 {
     class SunRise
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x1c);
+            p.WriteInt(0x1c);
         }
     }
 }

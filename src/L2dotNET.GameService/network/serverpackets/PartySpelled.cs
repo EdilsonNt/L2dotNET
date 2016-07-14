@@ -22,22 +22,22 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _timers.Add(new[] { iconId, lvl, duration });
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
             if (_character == null)
             {
                 return;
             }
 
-            WriteC(0xee);
-            WriteD(_summonType);
-            WriteD(_id);
-            WriteD(_timers.Count);
+            p.WriteInt(0xee);
+            p.WriteInt(_summonType);
+            p.WriteInt(_id);
+            p.WriteInt(_timers.Count);
 
             foreach (int[] f in _timers)
             {
-                WriteD(f[0]); //id
-                WriteH((short)f[1]); //lvl
+                p.WriteInt(f[0]); //id
+                p.WriteShort((short)f[1]); //lvl
 
                 int duration = f[2];
 
@@ -51,7 +51,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                     duration = -1;
                 }
 
-                WriteD(duration);
+                p.WriteInt(duration);
             }
         }
     }

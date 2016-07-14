@@ -28,14 +28,14 @@
             _defaultActionList = actionIds;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x5f);
-            WriteD(_defaultActionList.Length);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x5f);
+            p.WriteInt(_defaultActionList.Length);
             foreach (int i in _defaultActionList)
             {
-                WriteD(i);
+                p.WriteInt(i);
             }
         }
     }

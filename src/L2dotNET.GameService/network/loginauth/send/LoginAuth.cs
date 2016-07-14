@@ -2,17 +2,17 @@
 {
     class LoginAuth
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xA1);
-            WriteH(Config.Config.Instance.ServerConfig.Port);
-            WriteS(Config.Config.Instance.ServerConfig.Host);
-            WriteS("");
-            WriteS(Config.Config.Instance.ServerConfig.AuthCode);
-            WriteD(0);
-            WriteH(Config.Config.Instance.ServerConfig.MaxPlayers);
-            WriteC(Config.Config.Instance.ServerConfig.IsGmOnly ? 0x01 : 0x00);
-            WriteC(Config.Config.Instance.ServerConfig.IsTestServer ? 0x01 : 0x00);
+            p.WriteInt(0xA1);
+            p.WriteShort(Config.Config.Instance.ServerConfig.Port);
+            p.WriteString(Config.Config.Instance.ServerConfig.Host);
+            p.WriteString("");
+            p.WriteString(Config.Config.Instance.ServerConfig.AuthCode);
+            p.WriteInt(0);
+            p.WriteShort(Config.Config.Instance.ServerConfig.MaxPlayers);
+            p.WriteInt(Config.Config.Instance.ServerConfig.IsGmOnly ? 0x01 : 0x00);
+            p.WriteInt(Config.Config.Instance.ServerConfig.IsTestServer ? 0x01 : 0x00);
         }
     }
 }

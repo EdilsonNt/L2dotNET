@@ -19,22 +19,22 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _names.Add("schuttgart");
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x92);
-            WriteD(_names.Count);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x92);
+            p.WriteInt(_names.Count);
 
             byte x = 81;
             foreach (string str in _names)
             {
-                WriteD(x); // Territory Id
-                WriteS(str + "_dominion"); // territory name
-                WriteS("");
-                WriteD(0); // Emblem Count
+                p.WriteInt(x); // Territory Id
+                p.WriteString(str + "_dominion"); // territory name
+                p.WriteString("");
+                p.WriteInt(0); // Emblem Count
                 //  for(int i:t.getOwnedWardIds())
-                //    writeD(i); // Emblem ID - should be in for loop for emblem count
-                WriteD(0);
+                //    p.WriteInt(i); // Emblem ID - should be in for loop for emblem count
+                p.WriteInt(0);
 
                 x++;
             }

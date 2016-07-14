@@ -13,33 +13,33 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _templates = templates;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x17);
-            WriteD(_templates.Count);
+            p.WriteInt(0x17);
+            p.WriteInt(_templates.Count);
 
             foreach (PcTemplate t in _templates.TakeWhile(t => t != null))
             {
-                WriteD((int)t.ClassId.ClassRace); //race id
-                WriteD((int)t.ClassId.Id);
-                WriteD(0x46);
-                WriteD(t.BaseStr);
-                WriteD(0x0a);
-                WriteD(0x46);
-                WriteD(t.BaseDex);
-                WriteD(0x0a);
-                WriteD(0x46);
-                WriteD(t.BaseCon);
-                WriteD(0x0a);
-                WriteD(0x46);
-                WriteD(t.BaseInt);
-                WriteD(0x0a);
-                WriteD(0x46);
-                WriteD(t.BaseWit);
-                WriteD(0x0a);
-                WriteD(0x46);
-                WriteD(t.BaseMen);
-                WriteD(0x0a);
+                p.WriteInt((int)t.ClassId.ClassRace); //race id
+                p.WriteInt((int)t.ClassId.Id);
+                p.WriteInt(0x46);
+                p.WriteInt(t.BaseStr);
+                p.WriteInt(0x0a);
+                p.WriteInt(0x46);
+                p.WriteInt(t.BaseDex);
+                p.WriteInt(0x0a);
+                p.WriteInt(0x46);
+                p.WriteInt(t.BaseCon);
+                p.WriteInt(0x0a);
+                p.WriteInt(0x46);
+                p.WriteInt(t.BaseInt);
+                p.WriteInt(0x0a);
+                p.WriteInt(0x46);
+                p.WriteInt(t.BaseWit);
+                p.WriteInt(0x0a);
+                p.WriteInt(0x46);
+                p.WriteInt(t.BaseMen);
+                p.WriteInt(0x0a);
             }
         }
     }

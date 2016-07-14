@@ -13,15 +13,15 @@
             _z = z;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xdf);
-            WriteD(_x);
-            WriteD(_y);
-            WriteD(_z);
-            WriteC(0x00);
-            WriteC(0xc0);
-            WriteC(0x00);
+            p.WriteInt(0xdf);
+            p.WriteInt(_x);
+            p.WriteInt(_y);
+            p.WriteInt(_z);
+            p.WriteInt(0x00);
+            p.WriteInt(0xc0);
+            p.WriteInt(0x00);
         }
     }
 }

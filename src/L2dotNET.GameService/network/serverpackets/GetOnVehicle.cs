@@ -11,14 +11,14 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _player = player;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x5C);
-            WriteD(_player.ObjId);
-            WriteD(_player.Boat.ObjId);
-            WriteD(_player.BoatX);
-            WriteD(_player.BoatY);
-            WriteD(_player.BoatZ);
+            p.WriteInt(0x5C);
+            p.WriteInt(_player.ObjId);
+            p.WriteInt(_player.Boat.ObjId);
+            p.WriteInt(_player.BoatX);
+            p.WriteInt(_player.BoatY);
+            p.WriteInt(_player.BoatZ);
         }
     }
 }

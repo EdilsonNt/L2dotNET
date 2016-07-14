@@ -18,27 +18,27 @@ namespace L2dotNET.GameService.Network.Serverpackets
             //    trade.Add(item);
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x1E);
-            WriteD(_partnerId);
-            WriteH(_trade.Count);
+            p.WriteInt(0x1E);
+            p.WriteInt(_partnerId);
+            p.WriteShort(_trade.Count);
 
             foreach (L2Item item in _trade)
             {
-                WriteH(item.Template.Type1);
-                WriteD(item.ObjId);
-                WriteD(item.Template.ItemId);
-                WriteD(item.Count);
+                p.WriteShort(item.Template.Type1);
+                p.WriteInt(item.ObjId);
+                p.WriteInt(item.Template.ItemId);
+                p.WriteInt(item.Count);
 
-                WriteH(item.Template.Type2);
-                WriteH(item.CustomType1);
+                p.WriteShort(item.Template.Type2);
+                p.WriteShort(item.CustomType1);
 
-                WriteD(item.Template.BodyPart);
-                WriteH(item.Enchant);
-                WriteH(item.CustomType2);
+                p.WriteInt(item.Template.BodyPart);
+                p.WriteShort(item.Enchant);
+                p.WriteShort(item.CustomType2);
 
-                WriteH(0x00);
+                p.WriteShort(0x00);
             }
         }
     }

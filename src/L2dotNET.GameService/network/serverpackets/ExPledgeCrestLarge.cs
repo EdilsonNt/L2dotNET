@@ -16,14 +16,14 @@
             _picture = picture;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x1b);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x1b);
 
-            WriteD(0x00); //???
-            WriteD(_id);
-            WriteD(_picture.Length);
+            p.WriteInt(0x00); //???
+            p.WriteInt(_id);
+            p.WriteInt(_picture.Length);
             WriteB(_picture);
         }
     }

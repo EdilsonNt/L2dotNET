@@ -15,13 +15,13 @@
             _speed = speed;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x62);
-            WriteD(_sId);
-            WriteD(_degree);
-            WriteD(_side);
-            WriteD(_speed);
+            p.WriteInt(0x62);
+            p.WriteInt(_sId);
+            p.WriteInt(_degree);
+            p.WriteInt(_side);
+            p.WriteInt(_speed);
         }
     }
 }

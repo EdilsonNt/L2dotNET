@@ -2,9 +2,9 @@
 {
     class PartySmallWindowDeleteAll
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x50);
+            p.WriteInt(0x50);
         }
     }
 }

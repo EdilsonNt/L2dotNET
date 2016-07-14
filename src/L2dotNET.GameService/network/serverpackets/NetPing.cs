@@ -9,10 +9,10 @@
             _request = request;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xd9);
-            WriteD(_request);
+            p.WriteInt(0xd9);
+            p.WriteInt(_request);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using L2dotNET.GameService.Model.Skills2;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
@@ -20,19 +21,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _skillType = type;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x8a);
-            WriteD((int)_skillType);
-            WriteD(_list.Count);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0x8a);
+            p.WriteInt((int)_skillType);
+            p.WriteInt(_list.Count);
 
             foreach (AcquireSkill sk in _list)
             {
-                WriteD(sk.Id);
-                WriteD(sk.Lv);
-                WriteD(sk.Lv);
-                WriteD(sk.LvUpSp);
-                WriteD(0); //reqs
+                p.WriteInt(sk.Id);
+                p.WriteInt(sk.Lv);
+                p.WriteInt(sk.Lv);
+                p.WriteInt(sk.LvUpSp);
+                p.WriteInt(0); //reqs
             }
         }
     }

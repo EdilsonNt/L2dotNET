@@ -2,11 +2,11 @@
 {
     class FriendList
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfa);
-            WriteH(0x00);
-            WriteH(0x00);
+            p.WriteInt(0xfa);
+            p.WriteShort(0x00);
+            p.WriteShort(0x00);
         }
     }
 }

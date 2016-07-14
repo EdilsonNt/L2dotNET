@@ -23,13 +23,13 @@ namespace L2dotNET.GameService.Network.Serverpackets
             Text = text;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x4a);
-            WriteD(_objectId);
-            WriteD((byte)_type);
-            WriteS(_charName);
-            WriteS(Text);
+            p.WriteInt(0x4a);
+            p.WriteInt(_objectId);
+            p.WriteInt((byte)_type);
+            p.WriteString(_charName);
+            p.WriteString(Text);
         }
     }
 }

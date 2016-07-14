@@ -22,33 +22,33 @@ namespace L2dotNET.GameService.Network.Serverpackets
             Update.Add(new object[] { item, (short)3 });
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x27);
-            WriteH(Update.Count);
+            p.WriteInt(0x27);
+            p.WriteShort(Update.Count);
 
             foreach (object[] obj in Update)
             {
-                WriteH((short)obj[1]);
+                p.WriteShort((short)obj[1]);
 
                 L2Item item = (L2Item)obj[0];
 
-                WriteD(item.ObjId);
-                WriteD(item.Template.ItemId);
-                WriteD(item.SlotLocation); //loc
-                WriteQ(item.Count);
+                p.WriteInt(item.ObjId);
+                p.WriteInt(item.Template.ItemId);
+                p.WriteInt(item.SlotLocation); //loc
+                p.WriteInt(item.Count);
 
-                WriteH(item.Template.Type2);
-                WriteH(item.CustomType1);
-                WriteH(item.IsEquipped);
+                p.WriteShort(item.Template.Type2);
+                p.WriteShort(item.CustomType1);
+                p.WriteShort(item.IsEquipped);
 
-                WriteD(item.Template.BodyPart);
-                WriteH(item.Enchant);
-                WriteH(item.CustomType2);
+                p.WriteInt(item.Template.BodyPart);
+                p.WriteShort(item.Enchant);
+                p.WriteShort(item.CustomType2);
 
-                WriteD(item.AugmentationId);
-                WriteD(item.Durability);
-                //writeD(item.LifeTimeEnd());
+                p.WriteInt(item.AugmentationId);
+                p.WriteInt(item.Durability);
+                //p.WriteInt(item.LifeTimeEnd());
             }
         }
     }

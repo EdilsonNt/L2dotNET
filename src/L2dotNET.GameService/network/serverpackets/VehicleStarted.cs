@@ -11,11 +11,11 @@
             _type = type;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xBA);
-            WriteD(_sId);
-            WriteD(_type);
+            p.WriteInt(0xBA);
+            p.WriteInt(_sId);
+            p.WriteInt(_type);
         }
     }
 }

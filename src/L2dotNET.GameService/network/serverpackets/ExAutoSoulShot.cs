@@ -11,12 +11,12 @@
             _type = type;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0x12);
-            WriteD(_itemId);
-            WriteD(_type);
+            p.WriteInt(0xFE);
+            p.WriteShort(0x12);
+            p.WriteInt(_itemId);
+            p.WriteInt(_type);
         }
     }
 }

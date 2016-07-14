@@ -16,11 +16,11 @@
             _picture = picture;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x6a);
-            WriteD(_id);
-            WriteD(_picture.Length);
+            p.WriteInt(0x6a);
+            p.WriteInt(_id);
+            p.WriteInt(_picture.Length);
             WriteB(_picture);
         }
     }

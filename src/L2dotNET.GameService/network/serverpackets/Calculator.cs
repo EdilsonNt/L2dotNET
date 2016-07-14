@@ -1,11 +1,14 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class Calculator
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xe2);
-            WriteD(4393);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0xe2);
+            p.WriteInt(4393);
         }
     }
 }

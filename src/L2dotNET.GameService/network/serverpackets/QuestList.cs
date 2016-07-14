@@ -13,15 +13,15 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _list = player.GetAllActiveQuests();
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x86);
-            WriteH((short)_list.Count);
+            p.WriteInt(0x86);
+            p.WriteShort((short)_list.Count);
 
             foreach (QuestInfo qi in _list)
             {
-                WriteD(qi.Id);
-                WriteD(qi.Stage);
+                p.WriteInt(qi.Id);
+                p.WriteInt(qi.Stage);
             }
 
             WriteB(new byte[128]);

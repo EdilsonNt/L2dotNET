@@ -9,14 +9,14 @@
             _id = id;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0xBA);
+            p.WriteInt(0xFE);
+            p.WriteShort(0xBA);
 
-            //  writeD(id);
-            //  writeQ(0);
-            //  writeD(0);
+            //  p.WriteInt(id);
+            //  p.WriteInt(0);
+            //  p.WriteInt(0);
         }
     }
 }

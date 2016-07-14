@@ -18,16 +18,16 @@
             }
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x9e);
-            WriteD(_type);
-            WriteS(_file);
-            WriteD(0);
-            WriteD(0);
-            WriteD(X);
-            WriteD(Y);
-            WriteD(Z);
+            p.WriteInt(0x9e);
+            p.WriteInt(_type);
+            p.WriteString(_file);
+            p.WriteInt(0);
+            p.WriteInt(0);
+            p.WriteInt(X);
+            p.WriteInt(Y);
+            p.WriteInt(Z);
         }
     }
 }

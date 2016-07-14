@@ -39,35 +39,35 @@ namespace L2dotNET.GameService.Network.Serverpackets
             }
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x1b);
-            WriteH(_showWindow ? 1 : 0);
-            WriteH(_items.Count);
+            p.WriteInt(0x1b);
+            p.WriteShort(_showWindow ? 1 : 0);
+            p.WriteShort(_items.Count);
 
             foreach (ItemListItem item in _items)
             {
-                WriteD(item.ObjectId);
-                WriteD(item.ItemId);
-                WriteD(item.Slot);
-                WriteQ(item.Count);
-                WriteH(item.Type2);
-                WriteH(item.CType1);
-                WriteH(item.Equip);
-                WriteD(item.Bodypart);
-                WriteH(item.Enchant);
-                WriteH(item.CType2);
-                WriteD(item.Augment);
-                WriteD(item.Mana);
-                //writeD(item.TimeLeft);
+                p.WriteInt(item.ObjectId);
+                p.WriteInt(item.ItemId);
+                p.WriteInt(item.Slot);
+                p.WriteInt(item.Count);
+                p.WriteShort(item.Type2);
+                p.WriteShort(item.CType1);
+                p.WriteShort(item.Equip);
+                p.WriteInt(item.Bodypart);
+                p.WriteShort(item.Enchant);
+                p.WriteShort(item.CType2);
+                p.WriteInt(item.Augment);
+                p.WriteInt(item.Mana);
+                //p.WriteInt(item.TimeLeft);
             }
 
-            //writeH(blocked.Count);
+            //p.WriteShort(blocked.Count);
             //if (blocked.Count > 0)
             //{
-            //    writeC(2);
+            //    p.WriteInt(2);
             //    foreach (int id in blocked)
-            //        writeD(id);
+            //        p.WriteInt(id);
             //}
 
             //items = null;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
@@ -18,22 +19,23 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _mode = skillType;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x8b);
-            WriteD(_id);
-            WriteD(_level);
-            WriteD(_spCost);
-            WriteD(_mode);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0x8b);
+            p.WriteInt(_id);
+            p.WriteInt(_level);
+            p.WriteInt(_spCost);
+            p.WriteInt(_mode);
 
-            WriteD(Reqs.Count);
+            p.WriteInt(Reqs.Count);
 
             foreach (int[] r in Reqs)
             {
-                WriteD(r[0]);
-                WriteD(r[1]);
-                WriteD(r[2]);
-                WriteD(r[3]);
+                p.WriteInt(r[0]);
+                p.WriteInt(r[1]);
+                p.WriteInt(r[2]);
+                p.WriteInt(r[3]);
             }
         }
     }

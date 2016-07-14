@@ -12,20 +12,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _summon = summon;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x18);
-            WriteD(_summon.ObjId);
-            WriteD(_summon.Template.NpcId + 1000000);
-            WriteD(_summon.ObjectSummonType);
-            WriteD(_summon.Owner.ObjId);
-            WriteS(_summon.Name);
-            WriteD(_summon.CurHp);
-            WriteD(_summon.CharacterStat.GetStat(EffectType.BMaxHp));
-            WriteD(_summon.CurMp);
-            WriteD(_summon.CharacterStat.GetStat(EffectType.BMaxMp));
-            WriteD(_summon.Level);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x18);
+            p.WriteInt(_summon.ObjId);
+            p.WriteInt(_summon.Template.NpcId + 1000000);
+            p.WriteInt(_summon.ObjectSummonType);
+            p.WriteInt(_summon.Owner.ObjId);
+            p.WriteString(_summon.Name);
+            p.WriteInt(_summon.CurHp);
+            p.WriteInt(_summon.CharacterStat.GetStat(EffectType.BMaxHp));
+            p.WriteInt(_summon.CurMp);
+            p.WriteInt(_summon.CharacterStat.GetStat(EffectType.BMaxMp));
+            p.WriteInt(_summon.Level);
         }
     }
 }

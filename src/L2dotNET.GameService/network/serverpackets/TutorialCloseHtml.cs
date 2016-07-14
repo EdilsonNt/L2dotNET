@@ -2,9 +2,9 @@
 {
     class TutorialCloseHtml
     {
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xa3);
+            p.WriteInt(0xa3);
         }
     }
 }

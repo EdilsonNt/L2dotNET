@@ -29,19 +29,19 @@ namespace L2dotNET.GameService.Network.Serverpackets
             }
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xdc);
-            WriteD(_type);
-            WriteD(_mp);
+            p.WriteInt(0xdc);
+            p.WriteInt(_type);
+            p.WriteInt(_mp);
 
-            WriteD(_book.Count);
+            p.WriteInt(_book.Count);
 
             int x = 0;
             foreach (L2Recipe rec in _book)
             {
-                WriteD(rec.RecipeId);
-                WriteD(x);
+                p.WriteInt(rec.RecipeId);
+                p.WriteInt(x);
                 x++; //?
             }
         }

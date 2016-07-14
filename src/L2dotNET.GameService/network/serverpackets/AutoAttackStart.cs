@@ -1,18 +1,22 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class AutoAttackStart
+    static class AutoAttackStart
     {
-        private readonly int _sId;
+        private static readonly int _sId;
 
         public AutoAttackStart(int sId)
         {
             _sId = sId;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x2b);
-            WriteD(_sId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0x2b);
+            p.WriteInt(_sId);
+            return p;
         }
     }
 }

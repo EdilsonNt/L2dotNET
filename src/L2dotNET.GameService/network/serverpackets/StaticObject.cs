@@ -11,11 +11,11 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _obj = obj;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x99);
-            WriteD(_obj.StaticId);
-            WriteD(_obj.ObjId);
+            p.WriteInt(0x99);
+            p.WriteInt(_obj.StaticId);
+            p.WriteInt(_obj.ObjId);
         }
     }
 }

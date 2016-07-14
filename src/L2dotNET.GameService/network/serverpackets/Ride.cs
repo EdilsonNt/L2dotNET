@@ -52,16 +52,16 @@ namespace L2dotNET.GameService.Network.Serverpackets
             player.MountType = _rideType;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x86);
-            WriteD(_id);
-            WriteD(_bRide);
-            WriteD(_rideType);
-            WriteD(_npcId);
-            //writeD(x);
-            //writeD(y);
-            //writeD(z);
+            p.WriteInt(0x86);
+            p.WriteInt(_id);
+            p.WriteInt(_bRide);
+            p.WriteInt(_rideType);
+            p.WriteInt(_npcId);
+            //p.WriteInt(x);
+            //p.WriteInt(y);
+            //p.WriteInt(z);
         }
     }
 }

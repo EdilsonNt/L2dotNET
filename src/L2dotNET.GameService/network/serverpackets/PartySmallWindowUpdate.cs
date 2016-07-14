@@ -12,19 +12,19 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _member = member;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x52);
-            WriteD(_member.ObjId);
-            WriteS(_member.Name);
-            WriteD(_member.CurCp);
-            WriteD(_member.CharacterStat.GetStat(EffectType.BMaxCp));
-            WriteD(_member.CurHp);
-            WriteD(_member.CharacterStat.GetStat(EffectType.BMaxHp));
-            WriteD(_member.CurMp);
-            WriteD(_member.CharacterStat.GetStat(EffectType.BMaxMp));
-            WriteD(_member.Level);
-            WriteD((int)_member.ActiveClass.ClassId.Id);
+            p.WriteInt(0x52);
+            p.WriteInt(_member.ObjId);
+            p.WriteString(_member.Name);
+            p.WriteInt(_member.CurCp);
+            p.WriteInt(_member.CharacterStat.GetStat(EffectType.BMaxCp));
+            p.WriteInt(_member.CurHp);
+            p.WriteInt(_member.CharacterStat.GetStat(EffectType.BMaxHp));
+            p.WriteInt(_member.CurMp);
+            p.WriteInt(_member.CharacterStat.GetStat(EffectType.BMaxMp));
+            p.WriteInt(_member.Level);
+            p.WriteInt((int)_member.ActiveClass.ClassId.Id);
         }
     }
 }

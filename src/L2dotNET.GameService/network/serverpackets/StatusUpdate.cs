@@ -50,20 +50,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _id = id;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x0e);
-            WriteD(_id);
-            WriteD(Attrs.Count);
+            p.WriteInt(0x0e);
+            p.WriteInt(_id);
+            p.WriteInt(Attrs.Count);
 
             foreach (object[] d in Attrs)
             {
                 int type = (int)d[0];
-                WriteD(type);
+                p.WriteInt(type);
                 //if(type == EXP)
-                //    writeQ((long)d[1]);
+                //    p.WriteInt((long)d[1]);
                 //else
-                WriteD((int)d[1]);
+                p.WriteInt((int)d[1]);
             }
         }
     }

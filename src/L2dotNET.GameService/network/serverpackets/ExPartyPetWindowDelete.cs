@@ -13,13 +13,13 @@
             _petName = petName;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x6a);
-            WriteD(_petId);
-            WriteD(_playerId);
-            WriteS(_petName);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x6a);
+            p.WriteInt(_petId);
+            p.WriteInt(_playerId);
+            p.WriteString(_petName);
         }
     }
 }

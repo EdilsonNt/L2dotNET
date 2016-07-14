@@ -21,13 +21,13 @@
             _time = time;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x6d);
-            //writeD(_id);
-            WriteD((int)_color);
-            WriteD(_time);
-            WriteD(_time); //c2
+            p.WriteInt(0x6d);
+            //p.WriteInt(_id);
+            p.WriteInt((int)_color);
+            p.WriteInt(_time);
+            p.WriteInt(_time); //c2
         }
     }
 }

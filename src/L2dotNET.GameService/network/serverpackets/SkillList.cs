@@ -19,17 +19,17 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _blockSkill = blockSkill;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x58);
-            WriteD(_skills.Count);
+            p.WriteInt(0x58);
+            p.WriteInt(_skills.Count);
 
             foreach (Skill skill in _skills)
             {
                 int passive = skill.IsPassive();
-                WriteD(passive);
-                WriteD(skill.Level);
-                WriteD(skill.SkillId);
+                p.WriteInt(passive);
+                p.WriteInt(skill.Level);
+                p.WriteInt(skill.SkillId);
 
                 byte blocked = 0;
                 if (passive == 0)
@@ -55,7 +55,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                     }
                 }
 
-                WriteC(blocked);
+                p.WriteInt(blocked);
             }
         }
     }

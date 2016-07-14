@@ -27,20 +27,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             //_quest = player.ItemLimit_Quest;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xfe);
-            WriteH(0x2e);
+            p.WriteInt(0xfe);
+            p.WriteShort(0x2e);
 
-            WriteD(_inventory);
-            WriteD(_warehouse);
-            WriteD(_clan);
-            WriteD(_privateSell);
-            WriteD(_privateBuy);
-            WriteD(_receipeD);
-            WriteD(_recipe);
-            //writeD(_extra);
-            //writeD(_quest);
+            p.WriteInt(_inventory);
+            p.WriteInt(_warehouse);
+            p.WriteInt(_clan);
+            p.WriteInt(_privateSell);
+            p.WriteInt(_privateBuy);
+            p.WriteInt(_receipeD);
+            p.WriteInt(_recipe);
+            //p.WriteInt(_extra);
+            //p.WriteInt(_quest);
         }
     }
 }

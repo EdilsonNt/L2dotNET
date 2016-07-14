@@ -23,14 +23,14 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _type = type;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x2f);
-            WriteD(_sId);
-            WriteD(_type);
-            WriteD(_x);
-            WriteD(_y);
-            WriteD(_z);
+            p.WriteInt(0x2f);
+            p.WriteInt(_sId);
+            p.WriteInt(_type);
+            p.WriteInt(_x);
+            p.WriteInt(_y);
+            p.WriteInt(_z);
         }
     }
 }

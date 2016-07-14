@@ -9,10 +9,10 @@
             _response = response;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x3a);
-            WriteD(_response);
+            p.WriteInt(0x3a);
+            p.WriteInt(_response);
         }
     }
 }

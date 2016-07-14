@@ -8,19 +8,19 @@
         //    this.runner = runner;
         //}
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x2f);
+            p.WriteInt(0x2f);
 
-            //writeD(runner.id);
+            //p.WriteInt(runner.id);
 
-            //writeD(runner.dx);
-            //writeD(runner.dy);
-            //writeD(runner.dz);
+            //p.WriteInt(runner.dx);
+            //p.WriteInt(runner.dy);
+            //p.WriteInt(runner.dz);
 
-            //writeD(runner.x);
-            //writeD(runner.y);
-            //writeD(runner.z);
+            //p.WriteInt(runner.x);
+            //p.WriteInt(runner.y);
+            //p.WriteInt(runner.z);
         }
     }
 }

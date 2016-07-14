@@ -11,11 +11,11 @@
             _objId = objId;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xb6);
-            WriteD(_objectSummonType);
-            WriteD(_objId);
+            p.WriteInt(0xb6);
+            p.WriteInt(_objectSummonType);
+            p.WriteInt(_objId);
         }
     }
 }

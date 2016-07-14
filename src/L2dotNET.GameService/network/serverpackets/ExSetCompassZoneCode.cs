@@ -17,11 +17,11 @@
             _zoneCode = type;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0xFE);
-            WriteH(0x33);
-            WriteD(_zoneCode);
+            p.WriteInt(0xFE);
+            p.WriteShort(0x33);
+            p.WriteInt(_zoneCode);
         }
     }
 }

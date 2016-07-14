@@ -1,4 +1,6 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class AskJoinParty
     {
@@ -11,11 +13,12 @@
             _itemDistribution = itemDistribution;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x39);
-            WriteS(_asker);
-            WriteD(_itemDistribution);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(0x39);
+            p.WriteString(_asker);
+            p.WriteInt(_itemDistribution);
         }
     }
 }

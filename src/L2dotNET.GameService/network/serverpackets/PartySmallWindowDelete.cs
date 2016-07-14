@@ -11,11 +11,11 @@
             _name = name;
         }
 
-        protected internal override void Write()
+        internal static Packet ToPacket()
         {
-            WriteC(0x51);
-            WriteD(_id);
-            WriteS(_name);
+            p.WriteInt(0x51);
+            p.WriteInt(_id);
+            p.WriteString(_name);
         }
     }
 }

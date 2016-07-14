@@ -2,23 +2,16 @@
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
-    class ChairSit
+    internal class ChairSit
     {
-        private readonly int _sId;
-        private readonly int _staticId;
+        private const byte Opcode = 0xe1;
 
-        public ChairSit(int sId, int staticId)
-        {
-            _sId = sId;
-            _staticId = staticId;
-        }
-
-        internal static Packet ToPacket()
+        internal static Packet ToPacket(int sId, int staticId)
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(0xe1);
-            p.WriteInt(_sId);
-            p.WriteInt(_staticId);
+            p.WriteInt(sId);
+            p.WriteInt(staticId);
+            return p;
         }
     }
 }

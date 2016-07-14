@@ -1,4 +1,6 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class CharMoveToLocationMonrace
     {
@@ -7,10 +9,11 @@
         //{
         //    this.runner = runner;
         //}
-
+        private const byte Opcode = 0x2f;
         internal static Packet ToPacket()
         {
-            p.WriteInt(0x2f);
+            Packet p = new Packet(Opcode);
+            return p;
 
             //p.WriteInt(runner.id);
 

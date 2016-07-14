@@ -1,29 +1,20 @@
 ﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class CharMoveToLocation
     {
-        private readonly L2Object _obj;
+        private const byte Opcode = 0x01;
 
-        public CharMoveToLocation(L2Object obj)
+        internal static Packet ToPacket(L2Object obj)
         {
-            _obj = obj;
-        }
+            Packet p = new Packet(Opcode);
+            p.WriteInt(obj.ObjId);
+            p.WriteInt(obj.DestX, obj.DestY, obj.DestZ);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x01);
-
-            p.WriteInt(_obj.ObjId);
-
-            p.WriteInt(_obj.DestX);
-            p.WriteInt(_obj.DestY);
-            p.WriteInt(_obj.DestZ);
-
-            p.WriteInt(_obj.X);
-            p.WriteInt(_obj.Y);
-            p.WriteInt(_obj.Z);
+            p.WriteInt(obj.X, obj.Y, obj.Z);
+            return p;
         }
     }
 }

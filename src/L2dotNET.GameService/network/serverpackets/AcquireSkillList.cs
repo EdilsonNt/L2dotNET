@@ -13,29 +13,20 @@ namespace L2dotNET.GameService.Network.Serverpackets
             Clan = 2
         }
 
-        private List<AcquireSkill> _list;
-        private readonly SkillType _skillType;
+        private const byte Opcode = 0x8a;
 
-        public AcquireSkillList(SkillType type)
-        {
-            _skillType = type;
-        }
+        private static readonly List<AcquireSkill> _list = new List<AcquireSkill>();
 
-        internal static Packet ToPacket()
+        internal static Packet ToPacket(SkillType type)
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(0x8a);
-            p.WriteInt((int)_skillType);
-            p.WriteInt(_list.Count);
+            p.WriteInt((int)type, _list.Count);
 
             foreach (AcquireSkill sk in _list)
             {
-                p.WriteInt(sk.Id);
-                p.WriteInt(sk.Lv);
-                p.WriteInt(sk.Lv);
-                p.WriteInt(sk.LvUpSp);
-                p.WriteInt(0); //reqs
+                p.WriteInt(sk.Id, sk.Lv, sk.Lv, sk.LvUpSp, 0); //reqs
             }
+            return p;
         }
     }
 }

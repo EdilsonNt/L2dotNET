@@ -4,18 +4,12 @@ namespace L2dotNET.GameService.Network.Serverpackets
 {
     static class AutoAttackStart
     {
-        private static readonly int _sId;
+        private const byte Opcode = 0x2b;
 
-        public AutoAttackStart(int sId)
-        {
-            _sId = sId;
-        }
-
-        internal static Packet ToPacket()
+        internal static Packet ToPacket(int sId)
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(0x2b);
-            p.WriteInt(_sId);
+            p.WriteInt(sId);
             return p;
         }
     }

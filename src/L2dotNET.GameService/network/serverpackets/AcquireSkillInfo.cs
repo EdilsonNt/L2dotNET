@@ -5,38 +5,21 @@ namespace L2dotNET.GameService.Network.Serverpackets
 {
     class AcquireSkillInfo
     {
-        private readonly int _id;
-        private readonly int _level;
-        private readonly int _spCost;
-        private readonly int _mode;
-        public List<int[]> Reqs = new List<int[]>();
+        private const byte Opcode = 0x8b;
 
-        public AcquireSkillInfo(int id, int level, int sp, int skillType)
-        {
-            _id = id;
-            _level = level;
-            _spCost = sp;
-            _mode = skillType;
-        }
+        public static List<int[]> Reqs = new List<int[]>();
 
-        internal static Packet ToPacket()
+        internal static Packet ToPacket(int id, int level, int sp, int skillType)
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(0x8b);
-            p.WriteInt(_id);
-            p.WriteInt(_level);
-            p.WriteInt(_spCost);
-            p.WriteInt(_mode);
-
-            p.WriteInt(Reqs.Count);
+            p.WriteInt(id, level, sp, skillType, Reqs.Count);
 
             foreach (int[] r in Reqs)
             {
-                p.WriteInt(r[0]);
-                p.WriteInt(r[1]);
-                p.WriteInt(r[2]);
-                p.WriteInt(r[3]);
+                p.WriteInt(r[0], r[1], r[2], r[3]);
             }
+
+            return p;
         }
     }
 }

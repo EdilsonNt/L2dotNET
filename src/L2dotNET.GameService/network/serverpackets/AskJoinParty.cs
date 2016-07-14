@@ -4,21 +4,14 @@ namespace L2dotNET.GameService.Network.Serverpackets
 {
     class AskJoinParty
     {
-        private readonly string _asker;
-        private readonly int _itemDistribution;
+        private const byte Opcode = 0x39;
 
-        public AskJoinParty(string asker, int itemDistribution)
-        {
-            _asker = asker;
-            _itemDistribution = itemDistribution;
-        }
-
-        internal static Packet ToPacket()
+        internal static Packet ToPacket(string asker, int itemDistribution)
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(0x39);
-            p.WriteString(_asker);
-            p.WriteInt(_itemDistribution);
+            p.WriteString(asker);
+            p.WriteInt(itemDistribution);
+            return p;
         }
     }
 }

@@ -4,10 +4,11 @@ namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ActionFailed
     {
+        private const byte Opcode = 0x25;
+
         internal static Packet ToPacket()
         {
-            Packet p = new Packet(Opcode);
-            p.WriteInt(0x25);
+            return new Packet(Opcode);
         }
     }
 }

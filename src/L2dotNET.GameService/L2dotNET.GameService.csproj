@@ -114,6 +114,8 @@
     <Compile Include="Enums\ActionType.cs" />
     <Compile Include="Enums\ArmorType.cs" />
     <Compile Include="Enums\ArmorTypeId.cs" />
+    <Compile Include="Enums\CharCreateFailReason.cs" />
+    <Compile Include="Enums\CharDeleteFailReason.cs" />
     <Compile Include="Enums\ClassId.cs" />
     <Compile Include="Enums\ClassIds.cs" />
     <Compile Include="Enums\ClassRace.cs" />

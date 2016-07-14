@@ -1,36 +1,21 @@
 ﻿using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ChangeWaitType
     {
-        private readonly int _sId;
-        private readonly int _type;
-        private readonly int _x;
-        private readonly int _y;
-        private readonly int _z;
-        public static int Sit = 0;
-        public static int Stand = 1;
-        public static int Fake = 2;
-        public static int FakeStop = 3;
+        private const byte Opcode = 0x2f;
 
-        public ChangeWaitType(L2Player player, int type)
+        internal static Packet ToPacket(L2Player player, int type)
         {
-            _sId = player.ObjId;
-            _x = player.X;
-            _y = player.Y;
-            _z = player.Z;
-            _type = type;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x2f);
-            p.WriteInt(_sId);
-            p.WriteInt(_type);
-            p.WriteInt(_x);
-            p.WriteInt(_y);
-            p.WriteInt(_z);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(player.ObjId);
+            p.WriteInt(type);
+            p.WriteInt(player.X);
+            p.WriteInt(player.Y);
+            p.WriteInt(player.Z);
+            return p;
         }
     }
 }

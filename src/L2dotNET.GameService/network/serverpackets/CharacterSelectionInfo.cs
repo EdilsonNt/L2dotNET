@@ -2,34 +2,27 @@
 using System.Collections.Generic;
 using L2dotNET.GameService.Model.Inventory;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class CharacterSelectionInfo
     {
-        private readonly List<L2Player> _players;
-        public int CharId = -1;
-        private readonly string _account;
-        private readonly int _sessionId;
+        private const byte Opcode = 0x13;
+        public static int CharId = -1;
 
-        public CharacterSelectionInfo(string account, List<L2Player> players, int sessionId)
+        internal static Packet ToPacket(string account, List<L2Player> players, int sessionId)
         {
-            _players = players;
-            _account = account;
-            _sessionId = sessionId;
-        }
+            Packet p = new Packet(Opcode);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x13);
-            p.WriteInt(_players.Count);
+            p.WriteInt(players.Count);
 
-            foreach (L2Player player in _players)
+            foreach (L2Player player in players)
             {
                 p.WriteString(player.Name);
                 p.WriteInt(player.ObjId);
-                p.WriteString(_account);
-                p.WriteInt(_sessionId);
+                p.WriteString(account);
+                p.WriteInt(sessionId);
                 p.WriteInt(player.ClanId);
                 p.WriteInt(0x00); // ??
 
@@ -46,62 +39,28 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 }
 
                 p.WriteInt(0x01); // active ??
-
-                p.WriteInt(player.X);
-                p.WriteInt(player.Y);
-                p.WriteInt(player.Z);
-
-                p.WriteDouble(player.CurHp);
-                p.WriteDouble(player.CurMp);
-
+                p.WriteInt(player.X, player.Y, player.Z);
+                p.WriteDouble(player.CurHp, player.CurMp);
                 p.WriteInt(player.Sp);
-                p.WriteInt(player.Exp);
+                p.WriteLong(player.Exp);
 
-                p.WriteInt(player.Level);
-                p.WriteInt(player.Karma);
-                p.WriteInt(player.PkKills);
-                p.WriteInt(player.PvpKills);
+                p.WriteInt(player.Level, player.Karma, player.PkKills, player.PvpKills);
 
-                p.WriteInt(0);
-                p.WriteInt(0);
-                p.WriteInt(0);
-                p.WriteInt(0);
-                p.WriteInt(0);
-                p.WriteInt(0);
-                p.WriteInt(0);
+                p.WriteInt(0, 0 , 0 , 0 , 0 , 0, 0);
 
                 for (byte id = 0; id < Inventory.PaperdollTotalslots; id++)
                 {
-                    try
-                    {
-                        p.WriteInt(player.Inventory.Paperdoll[id].Template.ItemId);
-                    }
-                    catch (Exception e)
-                    {
-                        p.WriteInt(0);
-                    }
-                    
+                    p.WriteInt(player.Inventory.Paperdoll?[id]?.Template?.ItemId ?? 0);
+
                 }
 
                 for (byte id = 0; id < Inventory.PaperdollTotalslots; id++)
                 {
-                    try
-                    {
-                        p.WriteInt(player.Inventory.Paperdoll[id].Template.ItemId);
-                    }
-                    catch (Exception e)
-                    {
-                        p.WriteInt(0);
-                    }
-
+                     p.WriteInt(player.Inventory.Paperdoll?[id]?.Template?.ItemId ?? 0);
                 }
 
-                p.WriteInt(player.HairStyle);
-                p.WriteInt(player.HairColor);
-
-                p.WriteInt(player.Face);
-                p.WriteDouble(player.CurHp); // hp max TODO
-                p.WriteDouble(player.CurMp); // mp max TODO
+                p.WriteInt(player.HairStyle, player.HairColor, player.Face);
+                p.WriteDouble(player.MaxHp, player.MaxMp);
                 p.WriteInt(0); // days left before TODO
 
                 p.WriteInt((int)player.ActiveClass.ClassId.Id);
@@ -119,9 +78,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 }
 
                 p.WriteInt(selection); // auto-select char
-                p.WriteInt(player.GetEnchantValue());
+                p.WriteByte(player.GetEnchantValue());
                 p.WriteInt(0x00); // augment
             }
+            return p;
         }
     }
 }

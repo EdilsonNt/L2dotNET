@@ -274,17 +274,17 @@ namespace L2dotNET.GameService.Model.Player
             return 0xFFFFFF;
         }
 
-        internal uint GetFishz()
+        internal int GetFishz()
         {
             return 0;
         }
 
-        internal uint GetFishy()
+        internal int GetFishy()
         {
             return 0;
         }
 
-        internal uint GetFishx()
+        internal int GetFishx()
         {
             return 0;
         }
@@ -294,7 +294,7 @@ namespace L2dotNET.GameService.Model.Player
             return false;
         }
 
-        public override void SendPacket(GameServerNetworkPacket pk)
+        public override void SendPacket(Packet pk)
         {
             Gameclient.SendPacket(pk);
         }

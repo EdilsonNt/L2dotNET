@@ -1,24 +1,18 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ObservationReturn
     {
-        private readonly int _x;
-        private readonly int _y;
-        private readonly int _z;
+        private const byte Opcode = 0xe0;
 
-        public ObservationReturn(int x, int y, int z)
+        internal static Packet ToPacket(int x, int y, int z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xe0);
-            p.WriteInt(_x);
-            p.WriteInt(_y);
-            p.WriteInt(_z);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(x);
+            p.WriteInt(y);
+            p.WriteInt(z);
+            return p;
         }
     }
 }

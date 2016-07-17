@@ -1,10 +1,14 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class LeaveWorld
     {
+        private const byte Opcode = 0x7e;
+
         internal static Packet ToPacket()
         {
-            p.WriteInt(0x7e);
+            return new Packet(Opcode);
         }
     }
 }

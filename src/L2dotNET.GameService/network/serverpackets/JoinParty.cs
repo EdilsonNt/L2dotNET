@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class JoinParty
     {
-        private readonly int _response;
+        private const byte Opcode = 0x3a;
 
-        public JoinParty(int response)
+        internal static Packet ToPacket(int response)
         {
-            _response = response;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x3a);
-            p.WriteInt(_response);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(response);
+            return p;
         }
     }
 }

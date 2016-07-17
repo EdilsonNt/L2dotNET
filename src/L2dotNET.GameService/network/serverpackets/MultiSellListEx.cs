@@ -1,27 +1,23 @@
 ﻿using L2dotNET.GameService.Tables.Multisell;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class MultiSellListEx
     {
-        private readonly MultiSellList _list;
+        private const byte Opcode = 0xd0;
 
-        public MultiSellListEx(MultiSellList list)
+        internal static Packet ToPacket(MultiSellList list)
         {
-            _list = list;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xd0);
-            p.WriteInt(_list.Id);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(list.Id);
             p.WriteInt(1); // page
             p.WriteInt(1); // finished
-            p.WriteInt(_list.Container.Count); // size of pages 40
-            p.WriteInt(_list.Container.Count);
+            p.WriteInt(list.Container.Count); // size of pages 40
+            p.WriteInt(list.Container.Count);
 
             int inc = 0;
-            foreach (MultiSellEntry entry in _list.Container)
+            foreach (MultiSellEntry entry in list.Container)
             {
                 p.WriteInt(inc);
                 inc++;
@@ -39,8 +35,8 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 p.WriteShort(entry.AttrDefenseValueHoly);
                 p.WriteShort(entry.AttrDefenseValueUnholy);
 
-                p.WriteShort(entry.Give.Count);
-                p.WriteShort(entry.Take.Count);
+                p.WriteShort((short)entry.Give.Count);
+                p.WriteShort((short)entry.Take.Count);
 
                 foreach (MultiSellItem item in entry.Give)
                 {
@@ -63,6 +59,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                     p.WriteInt(item.Durability);
                 }
             }
+            return p;
         }
     }
 }

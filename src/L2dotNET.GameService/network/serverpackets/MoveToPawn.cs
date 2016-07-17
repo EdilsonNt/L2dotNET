@@ -1,46 +1,21 @@
 ﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class MoveToPawn
     {
-        private readonly int _id;
-        private readonly int _target;
-        private readonly int _dist;
-        private int _x;
-        private readonly int _tx;
-        private int _y;
-        private readonly int _ty;
-        private int _z;
-        private readonly int _tz;
+        private const byte Opcode = 0x60;
 
-        public MoveToPawn(int id, L2Object target, int dist, int x, int y, int z)
+        internal static Packet ToPacket(L2Character cha, L2Object target, int dist)
         {
-            _id = id;
-            _target = target.ObjId;
-            _dist = dist;
-            _x = x;
-            _y = y;
-            _z = z;
-            _tx = target.X;
-            _ty = target.Y;
-            _tz = target.Z;
-        }
+            Packet p = new Packet(Opcode);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x60);
-
-            p.WriteInt(_id);
-            p.WriteInt(_target);
-            p.WriteInt(_dist);
-
-            //p.WriteInt(_x);
-            //p.WriteInt(_y);
-            //p.WriteInt(_z);
-            p.WriteInt(_tx);
-            p.WriteInt(_ty);
-            p.WriteInt(_tz);
+            p.WriteInt(cha.ObjId);
+            p.WriteInt(target.ObjId);
+            p.WriteInt(dist);
+            p.WriteInt(cha.X, cha.Y, cha.Z);
+            return p;
         }
     }
 }

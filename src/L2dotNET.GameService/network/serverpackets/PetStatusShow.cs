@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PetStatusShow
     {
-        private readonly byte _objectSummonType;
+        private const byte Opcode = 0xb1;
 
-        public PetStatusShow(byte objectSummonType)
+        internal static Packet ToPacket(byte objectSummonType)
         {
-            _objectSummonType = objectSummonType;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xb1);
-            p.WriteInt(_objectSummonType);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(objectSummonType);
+            return p;
         }
     }
 }

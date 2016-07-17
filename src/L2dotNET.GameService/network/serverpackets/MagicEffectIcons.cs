@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     public class MagicEffectIcons
     {
-        private readonly List<int[]> _timers = new List<int[]>();
+        private static readonly List<int[]> _timers = new List<int[]>();
+        private const byte Opcode = 0x85;
 
         public void AddIcon(int id, int lvl, int duration)
         {
@@ -13,7 +15,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
         internal static Packet ToPacket()
         {
-            p.WriteInt(0x85);
+            Packet p = new Packet(Opcode);
             p.WriteShort((short)_timers.Count);
 
             foreach (int[] f in _timers)
@@ -35,6 +37,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
                 p.WriteInt(duration);
             }
+            return p;
         }
     }
 }

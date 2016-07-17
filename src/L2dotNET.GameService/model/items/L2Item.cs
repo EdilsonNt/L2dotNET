@@ -13,7 +13,7 @@ namespace L2dotNET.GameService.Model.Items
         public ItemTemplate Template;
         public int Count;
         public short IsEquipped;
-        public int Enchant;
+        public short Enchant;
         public short Enchant1;
         public short Enchant2;
         public short Enchant3;
@@ -141,8 +141,8 @@ namespace L2dotNET.GameService.Model.Items
 
         private bool _lifeTimeEndEnabled;
         private DateTime _lifeTimeEndTime;
-        public int CustomType1;
-        public int CustomType2;
+        public short CustomType1;
+        public short CustomType2;
         public bool Soulshot = false,
                     Spiritshot = false,
                     BlessSpiritshot = false;

@@ -452,7 +452,6 @@
     <Compile Include="Network\Serverpackets\Hit.cs" />
     <Compile Include="Network\Serverpackets\ItemListItem.cs" />
     <Compile Include="Network\Serverpackets\MultiSellListEx.cs" />
-    <Compile Include="Network\Serverpackets\NetPing.cs" />
     <Compile Include="Network\Serverpackets\RadarControl.cs" />
     <Compile Include="Network\Serverpackets\ShowBoard.cs" />
     <Compile Include="Network\Serverpackets\StopRotation.cs" />
@@ -474,7 +473,6 @@
     <Compile Include="Network\Serverpackets\GetOnVehicle.cs" />
     <Compile Include="Network\Serverpackets\MoveToLocationInVehicle.cs" />
     <Compile Include="Network\Serverpackets\VehicleInfo.cs" />
-    <Compile Include="Network\Serverpackets\NpcInfoMonrace.cs" />
     <Compile Include="Network\Serverpackets\ShowTownMap.cs" />
     <Compile Include="Network\Serverpackets\StaticObject.cs" />
     <Compile Include="Network\Serverpackets\LeaveWorld.cs" />

@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     public class MagicSkillCanceld
     {
-        private readonly int _id;
+        private const byte Opcode = 0x49;
 
-        public MagicSkillCanceld(int id)
+        internal static Packet ToPacket(int id)
         {
-            _id = id;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x49);
-            p.WriteInt(_id);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
+            return p;
         }
     }
 }

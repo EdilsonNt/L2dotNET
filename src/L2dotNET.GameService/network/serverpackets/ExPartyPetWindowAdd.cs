@@ -13,7 +13,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
             Packet p = new Packet(0xFE);
             p.WriteShort(Opcode);
             p.WriteInt(summon.ObjId);
-            p.WriteInt(summon.Template.NpcId + 1000000);
+            p.WriteInt(summon.NpcHashId);
             p.WriteInt(summon.ObjectSummonType);
             p.WriteInt(summon.Owner.ObjId);
             p.WriteString(summon.Name);

@@ -1,21 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PetDelete
     {
-        private readonly byte _objectSummonType;
-        private readonly int _objId;
+        private const byte Opcode = 0xb6;
 
-        public PetDelete(byte objectSummonType, int objId)
+        internal static Packet ToPacket(byte objectSummonType, int objId)
         {
-            _objectSummonType = objectSummonType;
-            _objId = objId;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xb6);
-            p.WriteInt(_objectSummonType);
-            p.WriteInt(_objId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(objectSummonType);
+            p.WriteInt(objId);
+            return p;
         }
     }
 }

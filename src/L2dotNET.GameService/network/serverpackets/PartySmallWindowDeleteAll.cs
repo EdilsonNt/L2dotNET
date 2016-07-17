@@ -1,10 +1,14 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PartySmallWindowDeleteAll
     {
+        private const byte Opcode = 0x50;
+
         internal static Packet ToPacket()
         {
-            p.WriteInt(0x50);
+            return new Packet(Opcode);
         }
     }
 }

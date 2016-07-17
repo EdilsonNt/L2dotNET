@@ -1,21 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class MyTargetSelected
     {
-        private readonly int _targetId;
-        private readonly short _color;
+        private const byte Opcode = 0xa6;
 
-        public MyTargetSelected(int target, int color)
+        internal static Packet ToPacket(int targetId, short color)
         {
-            _targetId = target;
-            _color = (short)color;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xa6);
-            p.WriteInt(_targetId);
-            p.WriteShort(_color);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(targetId);
+            p.WriteShort(color);
+            return p;
         }
     }
 }

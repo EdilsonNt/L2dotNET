@@ -1,21 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class VehicleStarted
     {
-        private readonly int _sId;
-        private readonly int _type;
+        private const byte Opcode = 0xBA;
 
-        public VehicleStarted(int sId, int type)
+        internal static Packet ToPacket(int sId, int type)
         {
-            _sId = sId;
-            _type = type;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xBA);
-            p.WriteInt(_sId);
-            p.WriteInt(_type);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(sId);
+            p.WriteInt(type);
+            return p;
         }
     }
 }

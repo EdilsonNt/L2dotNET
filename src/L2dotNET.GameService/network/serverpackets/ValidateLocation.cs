@@ -1,42 +1,22 @@
 ﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ValidateLocation
     {
-        private readonly int _x;
-        private readonly int _id;
-        private readonly int _y;
-        private readonly int _z;
-        private readonly int _heading;
+        private const byte Opcode = 0x61;
 
-        public ValidateLocation(int id, int x, int y, int z, int heading)
+        internal static Packet ToPacket(L2Character character)
         {
-            _id = id;
-            _x = x;
-            _y = y;
-            _z = z;
-            _heading = heading;
-        }
+            Packet p = new Packet(Opcode);
 
-        public ValidateLocation(L2Character character)
-        {
-            _id = character.ObjId;
-            _x = character.X;
-            _y = character.Y;
-            _z = character.Z;
-            _heading = character.Heading;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x61);
-
-            p.WriteInt(_id);
-            p.WriteInt(_x);
-            p.WriteInt(_y);
-            p.WriteInt(_z);
-            p.WriteInt(_heading);
+            p.WriteInt(character.ObjId);
+            p.WriteInt(character.X);
+            p.WriteInt(character.Y);
+            p.WriteInt(character.Z);
+            p.WriteInt(character.Heading);
+            return p;
         }
     }
 }

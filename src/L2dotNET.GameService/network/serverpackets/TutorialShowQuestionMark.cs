@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class TutorialShowQuestionMark
     {
-        private readonly int _questionId;
+        private const byte Opcode = 0xa1;
 
-        public TutorialShowQuestionMark(int id)
+        internal static Packet ToPacket(int id)
         {
-            _questionId = id;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xa1);
-            p.WriteInt(_questionId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
+            return p;
         }
     }
 }

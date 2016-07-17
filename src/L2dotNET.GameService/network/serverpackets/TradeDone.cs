@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class TradeDone
     {
-        private readonly bool _done;
+        private const byte Opcode = 0x1c;
 
-        public TradeDone(bool done = true)
+        internal static Packet ToPacket(bool done = true)
         {
-            _done = done;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x1c);
-            p.WriteInt(_done ? 1 : 0);
+            Packet p = new Packet(Opcode);
+            p.WriteByte(done ? (byte)1 : (byte)0);
+            return p;
         }
     }
 }

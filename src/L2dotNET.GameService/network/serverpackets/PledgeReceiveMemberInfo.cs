@@ -1,27 +1,24 @@
 ﻿using L2dotNET.GameService.Model.Communities;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PledgeReceiveMemberInfo
     {
-        private readonly ClanMember _member;
+        private const byte Opcode = 0x3d;
 
-        public PledgeReceiveMemberInfo(ClanMember cm)
+        internal static Packet ToPacket(ClanMember member)
         {
-            _member = cm;
-        }
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0x3e);
-
-            p.WriteInt(_member.ClanType);
-            p.WriteString(_member.Name);
-            p.WriteString(_member.NickName);
-            p.WriteInt(_member.ClanPrivs);
-            p.WriteString(_member.PledgeTypeName);
-            p.WriteString(_member.OwnerName); // name of this member's apprentice/sponsor
+            p.WriteInt(member.ClanType);
+            p.WriteString(member.Name);
+            p.WriteString(member.NickName);
+            p.WriteInt(member.ClanPrivs);
+            p.WriteString(member.PledgeTypeName);
+            p.WriteString(member.OwnerName); // name of this member's apprentice/sponsor
+            return p;
         }
     }
 }

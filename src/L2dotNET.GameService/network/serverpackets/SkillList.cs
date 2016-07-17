@@ -1,30 +1,20 @@
 ﻿using System.Collections.Generic;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills2;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class SkillList
     {
-        private readonly IList<Skill> _skills;
-        private readonly int _blockAct;
-        private readonly int _blockSpell;
-        private readonly int _blockSkill;
+        private const byte Opcode = 0x58;
 
-        public SkillList(L2Player player, int blockAct, int blockSpell, int blockSkill)
+        internal static Packet ToPacket(L2Player player, int blockAct, int blockSpell, int blockSkill)
         {
-            _skills = player.Skills.Values;
-            _blockAct = blockAct;
-            _blockSpell = blockSpell;
-            _blockSkill = blockSkill;
-        }
+            Packet p = new Packet(Opcode);
+            p.WriteInt(player.Skills.Values.Count);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x58);
-            p.WriteInt(_skills.Count);
-
-            foreach (Skill skill in _skills)
+            foreach (Skill skill in player.Skills.Values)
             {
                 int passive = skill.IsPassive();
                 p.WriteInt(passive);
@@ -34,7 +24,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 byte blocked = 0;
                 if (passive == 0)
                 {
-                    if (_blockAct == 1)
+                    if (blockAct == 1)
                     {
                         blocked = 1;
                     }
@@ -43,10 +33,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
                         switch (skill.IsMagic)
                         {
                             case 0:
-                                blocked = (byte)_blockSkill;
+                                blocked = (byte)blockSkill;
                                 break;
                             case 1:
-                                blocked = (byte)_blockSpell;
+                                blocked = (byte)blockSpell;
                                 break;
                             default:
                                 blocked = 0;
@@ -57,6 +47,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
                 p.WriteInt(blocked);
             }
+            return p;
         }
     }
 }

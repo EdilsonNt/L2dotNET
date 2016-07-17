@@ -1,29 +1,20 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class TeleportToLocation
     {
-        private readonly int _x;
-        private readonly int _y;
-        private readonly int _z;
-        private readonly int _id;
-        private int _heading;
+        private const byte Opcode = 0x28;
 
-        public TeleportToLocation(int id, int x, int y, int z, int h)
+        internal static Packet ToPacket(L2Object obj, int x, int y, int z)
         {
-            _x = x;
-            _y = y;
-            _z = z;
-            _id = id;
-            _heading = h;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x28);
-            p.WriteInt(_id);
-            p.WriteInt(_x);
-            p.WriteInt(_y);
-            p.WriteInt(_z);
+            Packet p =  new Packet(Opcode);
+            p.WriteInt(obj.ObjId);
+            p.WriteInt(x);
+            p.WriteInt(y);
+            p.WriteInt(z);
+            return p;
         }
     }
 }

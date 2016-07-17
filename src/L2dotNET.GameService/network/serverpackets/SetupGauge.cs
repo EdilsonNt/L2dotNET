@@ -1,4 +1,6 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class SetupGauge
     {
@@ -10,24 +12,15 @@
             Green = 3
         }
 
-        private readonly SgColor _color;
-        private readonly int _time;
-        private int _id;
+        private const byte Opcode = 0x6d;
 
-        public SetupGauge(int id, SgColor color, int time)
+        internal static Packet ToPacket(SgColor color, int time)
         {
-            _id = id;
-            _color = color;
-            _time = time;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x6d);
-            //p.WriteInt(_id);
-            p.WriteInt((int)_color);
-            p.WriteInt(_time);
-            p.WriteInt(_time); //c2
+            Packet p = new Packet(Opcode);
+            p.WriteInt((int)color);
+            p.WriteInt(time);
+            p.WriteInt(time); //c2
+            return p;
         }
     }
 }

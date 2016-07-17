@@ -1,10 +1,13 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class TutorialCloseHtml
     {
+        private const byte Opcode = 0xa3;
         internal static Packet ToPacket()
         {
-            p.WriteInt(0xa3);
+            return new Packet(Opcode);
         }
     }
 }

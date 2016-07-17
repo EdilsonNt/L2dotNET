@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
@@ -37,7 +38,9 @@ namespace L2dotNET.GameService.Network.Serverpackets
         public static int CurCp = 0x21;
         public static int MaxCp = 0x22;
 
-        public List<object[]> Attrs = new List<object[]>();
+        private const byte Opcode = 0x0e;
+
+        public static List<object[]> Attrs = new List<object[]>();
         private readonly int _id;
 
         public void Add(int type, object val)
@@ -45,15 +48,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
             Attrs.Add(new[] { type, val });
         }
 
-        public StatusUpdate(int id)
+        internal static Packet ToPacket(int id)
         {
-            _id = id;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x0e);
-            p.WriteInt(_id);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
             p.WriteInt(Attrs.Count);
 
             foreach (object[] d in Attrs)
@@ -65,6 +63,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 //else
                 p.WriteInt((int)d[1]);
             }
+            return p;
         }
     }
 }

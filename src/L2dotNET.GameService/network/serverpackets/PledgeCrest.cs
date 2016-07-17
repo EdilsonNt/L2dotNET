@@ -1,27 +1,25 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PledgeCrest
     {
-        private readonly int _id;
-        private readonly byte[] _picture;
+        private const byte Opcode = 0x6a;
 
-        public PledgeCrest(int id, byte[] picture)
+        internal static Packet ToPacket(int id, byte[] picture)
         {
-            _id = id;
-            if (picture == null)
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
+            if (picture != null)
             {
-                picture = new byte[0];
+                p.WriteInt(picture.Length);
+                p.WriteBytesArray(picture);
             }
-
-            _picture = picture;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x6a);
-            p.WriteInt(_id);
-            p.WriteInt(_picture.Length);
-            WriteB(_picture);
+            else
+            {
+                p.WriteInt(0);
+            }
+            return p;
         }
     }
 }

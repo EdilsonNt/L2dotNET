@@ -1,24 +1,18 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PledgeInfo
     {
-        private readonly int _id;
-        private readonly string _name;
-        private readonly string _ally;
+        private const byte Opcode = 0x83;
 
-        public PledgeInfo(int id, string name, string ally)
+        internal static Packet ToPacket(int id, string name, string ally)
         {
-            _id = id;
-            _name = name;
-            _ally = ally;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x89);
-            p.WriteInt(_id);
-            p.WriteString(_name);
-            p.WriteString(_ally);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
+            p.WriteString(name);
+            p.WriteString(ally);
+            return p;
         }
     }
 }

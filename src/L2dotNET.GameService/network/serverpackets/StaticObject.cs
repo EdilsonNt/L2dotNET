@@ -1,21 +1,18 @@
 ﻿using L2dotNET.GameService.Model.Npcs.Decor;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class StaticObject
     {
-        private readonly L2StaticObject _obj;
+        private const byte Opcode = 0x99;
 
-        public StaticObject(L2StaticObject obj)
+        internal static Packet ToPacket(L2StaticObject obj)
         {
-            _obj = obj;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x99);
-            p.WriteInt(_obj.StaticId);
-            p.WriteInt(_obj.ObjId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(obj.StaticId);
+            p.WriteInt(obj.ObjId);
+            return p;
         }
     }
 }

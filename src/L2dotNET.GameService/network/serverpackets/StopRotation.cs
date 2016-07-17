@@ -1,25 +1,19 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class StopRotation
     {
-        private readonly int _sId;
-        private readonly int _degree;
-        private readonly int _speed;
+        private const byte Opcode = 0x63;
 
-        public StopRotation(int sId, int degree, int speed)
+        internal static Packet ToPacket(int sId, int degree, int speed)
         {
-            _sId = sId;
-            _degree = degree;
-            _speed = speed;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x63);
-            p.WriteInt(_sId);
-            p.WriteInt(_degree);
-            p.WriteInt(_speed);
-            p.WriteInt(_degree);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(sId);
+            p.WriteInt(degree);
+            p.WriteInt(speed);
+            p.WriteByte((byte)degree);
+            return p;
         }
     }
 }

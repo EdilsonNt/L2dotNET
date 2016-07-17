@@ -1,25 +1,22 @@
 ﻿using L2dotNET.GameService.Model.Communities;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PledgeReceiveSubPledgeCreated
     {
-        private readonly EClanSub _sub;
+        private const byte Opcode = 0x3f;
 
-        public PledgeReceiveSubPledgeCreated(EClanSub sub)
+        internal static Packet ToPacket(EClanSub sub)
         {
-            _sub = sub;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xfe);
-            p.WriteShort(0x40);
+            Packet p = new Packet(0xFE);
+            p.WriteShort(Opcode);
 
             p.WriteInt(0x01);
-            p.WriteInt((short)_sub.Type);
-            p.WriteString(_sub.Name);
-            p.WriteString(_sub.LeaderName);
+            p.WriteInt((short)sub.Type);
+            p.WriteString(sub.Name);
+            p.WriteString(sub.LeaderName);
+            return p;
         }
     }
 }

@@ -3,47 +3,39 @@ using System.Linq;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills2;
 using L2dotNET.GameService.Tables;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class RecipeBookItemList
     {
-        private readonly int _type;
-        private readonly int _mp;
-        private readonly List<L2Recipe> _book;
+        private const byte Opcode = 0xD6;
 
-        public RecipeBookItemList(L2Player player, int type)
+        internal static Packet ToPacket(L2Player player, int type)
         {
-            _type = type;
-            _mp = (int)player.CharacterStat.GetStat(EffectType.BMaxMp);
-            _book = new List<L2Recipe>();
-
-            if (player.RecipeBook == null)
+            List<L2Recipe> book = new List<L2Recipe>();
+            Packet p = new Packet(Opcode);
+            if (player.RecipeBook != null)
             {
-                return;
+                foreach (L2Recipe rec in player.RecipeBook.Where(rec => rec.Iscommonrecipe == type))
+                {
+                    book.Add(rec);
+                }
+                
+                p.WriteInt(type);
+                p.WriteInt((int) player.CharacterStat.GetStat(EffectType.BMaxMp));
+
+                p.WriteInt(book.Count);
+
+                int x = 0;
+                foreach (L2Recipe rec in book)
+                {
+                    p.WriteInt(rec.RecipeId);
+                    p.WriteInt(x);
+                    x++; //?
+                }
             }
-
-            foreach (L2Recipe rec in player.RecipeBook.Where(rec => rec.Iscommonrecipe == type))
-            {
-                _book.Add(rec);
-            }
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xdc);
-            p.WriteInt(_type);
-            p.WriteInt(_mp);
-
-            p.WriteInt(_book.Count);
-
-            int x = 0;
-            foreach (L2Recipe rec in _book)
-            {
-                p.WriteInt(rec.RecipeId);
-                p.WriteInt(x);
-                x++; //?
-            }
+            return p;
         }
     }
 }

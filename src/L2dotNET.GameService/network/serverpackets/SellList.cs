@@ -2,46 +2,42 @@
 using System.Linq;
 using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class SellList
     {
-        private readonly List<L2Item> _sells = new List<L2Item>();
-        private readonly int _adena;
+        private const byte Opcode = 0x10;
+        private static readonly List<L2Item> Sells = new List<L2Item>();
 
-        public SellList(L2Player player)
+        internal static Packet ToPacket(L2Player player)
         {
             foreach (L2Item item in player.GetAllItems().Where(item => item.Template.Tradable && (item.AugmentationId <= 0) && (item.IsEquipped != 1)))
             {
-                _sells.Add(item);
+                Sells.Add(item);
             }
-
-            _adena = player.GetAdena();
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x10);
-            p.WriteInt(_adena);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(player.GetAdena());
             p.WriteInt(0);
-            p.WriteShort(_sells.Count);
+            p.WriteShort((short)Sells.Count);
 
-            foreach (L2Item item in _sells)
+            foreach (L2Item item in Sells)
             {
                 p.WriteInt(item.ObjId);
                 p.WriteInt(item.Template.ItemId);
                 p.WriteInt(item.Count);
 
-                p.WriteShort(item.Template.Type2);
-                p.WriteShort(item.Template.Type1);
+                p.WriteShort((short)item.Template.Type2);
+                p.WriteShort((short)item.Template.Type1);
                 p.WriteInt(item.Template.BodyPart);
 
                 p.WriteShort(item.Enchant);
-                p.WriteShort(item.Template.Type2);
+                p.WriteShort((short)item.Template.Type2);
                 p.WriteShort(0x00);
                 p.WriteInt((int)(item.Template.ReferencePrice * 0.5));
             }
+            return p;
         }
     }
 }

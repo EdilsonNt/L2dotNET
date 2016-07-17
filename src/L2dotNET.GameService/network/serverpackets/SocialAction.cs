@@ -1,21 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class SocialAction
     {
-        private readonly int _social;
-        private readonly int _id;
+        private const byte Opcode = 0x2d;
 
-        public SocialAction(int id, int social)
+        internal static Packet ToPacket(int id, int social)
         {
-            _social = social;
-            _id = id;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x2d);
-            p.WriteInt(_id);
-            p.WriteInt(_social);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(id);
+            p.WriteInt(social);
+            return p;
         }
     }
 }

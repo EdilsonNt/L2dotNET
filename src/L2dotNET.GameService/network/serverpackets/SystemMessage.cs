@@ -4,53 +4,42 @@ using L2dotNET.GameService.Model.Npcs;
 using L2dotNET.GameService.Model.Playable;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     public class SystemMessage
     {
-        private readonly List<object[]> _data = new List<object[]>();
-        public int MessgeId;
+        private static readonly List<object[]> _data = new List<object[]>();
 
-        public SystemMessage(SystemMessageId msgId)
-        {
-            MessgeId = (int)msgId;
-        }
-
-        public SystemMessage AddString(string val)
+        public void AddString(string val)
         {
             _data.Add(new object[] { 0, val });
-            return this;
         }
 
-        public SystemMessage AddNumber(int val)
+        public void AddNumber(int val)
         {
             _data.Add(new object[] { 1, val });
-            return this;
         }
 
-        public SystemMessage AddNumber(double val)
+        public void AddNumber(double val)
         {
             _data.Add(new object[] { 1, (int)val });
-            return this;
         }
 
-        public SystemMessage AddNpcName(int val)
+        public void AddNpcName(int val)
         {
             _data.Add(new object[] { 2, 1000000 + val });
-            return this;
         }
 
-        public SystemMessage AddItemName(int val)
+        public void AddItemName(int val)
         {
             _data.Add(new object[] { 3, val });
-            return this;
         }
 
-        public SystemMessage AddSkillName(int val, int lvl)
+        public void AddSkillName(int val, int lvl)
         {
             _data.Add(new object[] { 4, val, lvl });
-            return this;
         }
 
         public void AddCastleName(int val)
@@ -78,43 +67,46 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _data.Add(new object[] { 10, val });
         }
 
-        public SystemMessage AddPlayerName(string val)
+        public void AddPlayerName(string val)
         {
             _data.Add(new object[] { 12, val });
-            return this;
         }
 
-        public SystemMessage AddName(L2Object obj)
+        public void AddName(L2Object obj)
         {
             if (obj is L2Player)
             {
-                return AddPlayerName(((L2Player)obj).Name);
+                AddPlayerName(((L2Player)obj).Name);
             }
-            if (obj is L2Npc)
+            else if (obj is L2Npc)
             {
-                return AddNpcName(((L2Npc)obj).NpcId);
+                AddNpcName(((L2Npc)obj).NpcId);
             }
-            if (obj is L2Summon)
+            else if (obj is L2Summon)
             {
-                return AddNpcName(((L2Summon)obj).NpcId);
+                AddNpcName(((L2Summon)obj).NpcId);
             }
-            if (obj is L2Item)
+            else if(obj is L2Item)
             {
-                return AddItemName(((L2Item)obj).Template.ItemId);
+                AddItemName(((L2Item)obj).Template.ItemId);
             }
-
-            return AddString(obj.AsString());
+            else
+            {
+                AddString(obj.AsString());
+            }
+            
         }
 
         public void AddSysStr(int val)
         {
             _data.Add(new object[] { 13, val });
         }
+        private const byte Opcode = 0x64;
 
-        internal static Packet ToPacket()
+        internal static Packet ToPacket(SystemMessageId msgId)
         {
-            p.WriteInt(0x64);
-            p.WriteInt(MessgeId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt((int)msgId);
             p.WriteInt(_data.Count);
 
             foreach (object[] d in _data)
@@ -143,7 +135,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                         p.WriteInt((int)d[2]);
                         break;
                     case 6:
-                        p.WriteInt((long)d[1]);
+                        p.WriteInt((int)d[1]);
                         break;
                     case 7: //zone
                         p.WriteInt((int)d[1]);
@@ -152,6 +144,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                         break;
                 }
             }
+            return p;
         }
 
         public enum SystemMessageId

@@ -1,24 +1,21 @@
 ﻿using L2dotNET.GameService.Model.Vehicles;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class VehicleInfo
     {
-        private readonly L2Boat _boat;
+        private const byte Opcode = 0x59;
 
-        public VehicleInfo(L2Boat boat)
+        internal static Packet ToPacket(L2Boat boat)
         {
-            _boat = boat;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x59);
-            p.WriteInt(_boat.ObjId);
-            p.WriteInt(_boat.X);
-            p.WriteInt(_boat.Y);
-            p.WriteInt(_boat.Z);
-            p.WriteInt(_boat.Heading);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(boat.ObjId);
+            p.WriteInt(boat.X);
+            p.WriteInt(boat.Y);
+            p.WriteInt(boat.Z);
+            p.WriteInt(boat.Heading);
+            return p;
         }
     }
 }

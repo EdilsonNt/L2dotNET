@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class SendTradeRequest
     {
-        private readonly int _sId;
+        private const byte Opcode = 0x5e;
 
-        public SendTradeRequest(int sId)
+        internal static Packet ToPacket(int senderId)
         {
-            _sId = sId;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x5e);
-            p.WriteInt(_sId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(senderId);
+            return p;
         }
     }
 }

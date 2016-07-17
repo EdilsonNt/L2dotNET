@@ -1,18 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class Revive
     {
-        private readonly int _objId;
+        private const byte Opcode = 0x07;
 
-        public Revive(int objId)
+        internal static Packet ToPacket(L2Object obj)
         {
-            _objId = objId;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x07);
-            p.WriteInt(_objId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(obj.ObjId);
+            return p;
         }
     }
 }

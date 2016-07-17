@@ -1,24 +1,20 @@
 ﻿using System.Collections.Generic;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Player.General;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class ShortCutInit
     {
-        private readonly List<L2Shortcut> _shortcuts;
+        private const byte Opcode = 0x45;
 
-        public ShortCutInit(L2Player player)
+        internal static Packet ToPacket(L2Player player)
         {
-            _shortcuts = player.Shortcuts;
-        }
+            Packet p = new Packet(Opcode);
+            p.WriteInt(player.Shortcuts.Count);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x45);
-            p.WriteInt(_shortcuts.Count);
-
-            foreach (L2Shortcut sc in _shortcuts)
+            foreach (L2Shortcut sc in player.Shortcuts)
             {
                 p.WriteInt(sc.Type);
                 p.WriteInt(sc.Slot + (sc.Page * 12));
@@ -45,6 +41,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                         break;
                 }
             }
+            return p;
         }
     }
 }

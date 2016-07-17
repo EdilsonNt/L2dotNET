@@ -1,32 +1,21 @@
 ﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class TargetSelected
     {
-        private readonly int _x;
-        private readonly int _y;
-        private readonly int _z;
-        private readonly int _objectId;
-        private readonly int _targetObjId;
-
-        public TargetSelected(int selecterId, L2Object target)
+        private const byte Opcode = 0x29;
+        
+        internal static Packet ToPacket(int objectId, int targetId, int x, int y, int z)
         {
-            _objectId = selecterId;
-            _targetObjId = target.ObjId;
-            _x = target.X;
-            _y = target.Y;
-            _z = target.Z;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x29);
-            p.WriteInt(_objectId);
-            p.WriteInt(_targetObjId);
-            p.WriteInt(_x);
-            p.WriteInt(_y);
-            p.WriteInt(_z);
+            Packet p =  new Packet(Opcode);
+            p.WriteInt(objectId);
+            p.WriteInt(targetId);
+            p.WriteInt(x);
+            p.WriteInt(y);
+            p.WriteInt(z);
+            return p;
         }
     }
 }

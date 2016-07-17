@@ -1,35 +1,29 @@
 ﻿using L2dotNET.GameService.Model.Communities;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PledgeShowInfoUpdate
     {
-        private readonly L2Clan _clan;
+        private const byte Opcode = 0x88;
 
-        public PledgeShowInfoUpdate(L2Clan clan)
+        internal static Packet ToPacket(L2Clan clan)
         {
-            _clan = clan;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x8e);
-            p.WriteInt(_clan.ClanId);
-            p.WriteInt(_clan.CrestId);
-            p.WriteInt(_clan.Level);
-            p.WriteInt(_clan.CastleId);
-            p.WriteInt(_clan.HideoutId);
-            p.WriteInt(_clan.FortressId);
-            p.WriteInt(_clan.ClanRank);
-            p.WriteInt(_clan.ClanNameValue);
-            p.WriteInt(_clan.Status);
-            p.WriteInt(_clan.Guilty);
-            p.WriteInt(_clan.AllianceId);
-            p.WriteString(_clan.AllianceName);
-            p.WriteInt(_clan.AllianceCrestId);
-            p.WriteInt(_clan.InWar);
-            p.WriteInt(_clan.LargeCrestId);
-            p.WriteInt(_clan.JoinDominionWarId);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(clan.ClanId);
+            p.WriteInt(clan.CrestId);
+            p.WriteInt(clan.Level);
+            p.WriteInt(clan.CastleId);
+            p.WriteInt(clan.HideoutId);
+            p.WriteInt(clan.ClanRank);
+            p.WriteInt(clan.ClanNameValue);
+            p.WriteInt(clan.Status);
+            p.WriteInt(clan.Guilty);
+            p.WriteInt(clan.AllianceId);
+            p.WriteString(clan.AllianceName);
+            p.WriteInt(clan.AllianceCrestId);
+            p.WriteInt(clan.InWar);
+            return p;
         }
     }
 }

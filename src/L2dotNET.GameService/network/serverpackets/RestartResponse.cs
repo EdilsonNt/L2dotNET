@@ -1,11 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class RestartResponse
     {
-        internal static Packet ToPacket()
+        private const byte Opcode = 0x5f;
+
+        internal static Packet ToPacket(bool result)
         {
-            p.WriteInt(0x5f);
+            Packet p = new Packet(Opcode);
             p.WriteInt(0x01);
+            return p;
         }
     }
 }

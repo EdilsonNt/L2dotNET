@@ -1,30 +1,27 @@
 ﻿using System.Collections.Generic;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class SkillCoolTime
     {
-        private readonly ICollection<L2SkillCoolTime> _list;
+        private const byte Opcode = 0xc1;
 
-        public SkillCoolTime(L2Player player)
+        internal static Packet ToPacket(L2Player player)
         {
-            _list = player.Reuse.Values;
-        }
+            Packet p = new Packet(Opcode);
+            p.WriteInt(player.Reuse.Values.Count);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xc1);
-            p.WriteInt(_list.Count);
-
-            foreach (L2SkillCoolTime ct in _list)
+            foreach (L2SkillCoolTime ct in player.Reuse.Values)
             {
                 p.WriteInt(ct.Id);
                 p.WriteInt(ct.Lvl);
                 p.WriteInt(ct.Total);
                 p.WriteInt(ct.GetDelay());
             }
+            return p;
         }
     }
 }

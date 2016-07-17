@@ -1,34 +1,23 @@
 ﻿using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills2;
 using L2dotNET.GameService.Tables;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class RecipeItemMakeInfo
     {
-        private readonly int _recipeId;
-        private readonly int _type;
-        private readonly int _currentMp;
-        private readonly int _maxMp;
-        private readonly int _makingResult;
+        private const byte Opcode = 0xD7;
 
-        public RecipeItemMakeInfo(L2Player player, L2Recipe rec, int result)
+        internal static Packet ToPacket(L2Player player, L2Recipe rec, int result)
         {
-            _recipeId = rec.RecipeId;
-            _type = rec.Iscommonrecipe;
-            _currentMp = (int)player.CurMp;
-            _maxMp = (int)player.CharacterStat.GetStat(EffectType.BMaxMp);
-            _makingResult = result;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xdd);
-            p.WriteInt(_recipeId);
-            p.WriteInt(_type);
-            p.WriteInt(_currentMp);
-            p.WriteInt(_maxMp);
-            p.WriteInt(_makingResult);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(rec.RecipeId);
+            p.WriteInt(rec.Iscommonrecipe);
+            p.WriteInt((int)player.CurMp);
+            p.WriteInt((int)player.CharacterStat.GetStat(EffectType.BMaxMp));
+            p.WriteInt(result);
+            return p;
         }
     }
 }

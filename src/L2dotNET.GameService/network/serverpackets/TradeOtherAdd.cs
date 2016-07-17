@@ -1,35 +1,30 @@
 ﻿using L2dotNET.GameService.Model.Items;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class TradeOtherAdd
     {
-        private readonly L2Item _item;
-        private long _num;
+        private const byte Opcode = 0x21;
 
-        public TradeOtherAdd(L2Item item, long num)
+        internal static Packet ToPacket(L2Item item)
         {
-            _item = item;
-            _num = num;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x20);
+            Packet p =  new Packet(Opcode);
             p.WriteShort(1);
 
-            p.WriteShort(_item.Template.Type1);
-            p.WriteInt(0); //item.ObjID
-            p.WriteInt(_item.Template.ItemId);
-            p.WriteInt(_item.Count);
+            p.WriteShort((short)item.Template.Type1);
+            p.WriteInt(item.ObjId); //item.ObjID
+            p.WriteInt(item.Template.ItemId);
+            p.WriteInt(item.Count);
 
-            p.WriteShort(_item.Template.Type2);
+            p.WriteShort((short)item.Template.Type2);
             p.WriteShort(0); // ??
 
-            p.WriteInt(_item.Template.BodyPart);
-            p.WriteShort(_item.Enchant);
+            p.WriteInt(item.Template.BodyPart);
+            p.WriteShort(item.Enchant);
             p.WriteShort(0x00); // ?
             p.WriteShort(0x00);
+            return p;
         }
     }
 }

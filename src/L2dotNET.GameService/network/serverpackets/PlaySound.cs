@@ -1,33 +1,22 @@
-﻿namespace L2dotNET.GameService.Network.Serverpackets
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.Serverpackets
 {
     class PlaySound
     {
-        private readonly string _file;
-        private readonly int _type;
-        private const uint X = 0;
-        private const uint Y = 0;
-        private const uint Z = 0;
+        private const byte Opcode = 0x98;
 
-        public PlaySound(string file, bool ogg = false)
+        internal static Packet ToPacket(string file, int questShip1 = 0, int questShip2 = 0, int x = 0, int y = 0, int z = 0, bool ogg = false)
         {
-            _file = file;
-
-            if (ogg)
-            {
-                _type = 1;
-            }
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x9e);
-            p.WriteInt(_type);
-            p.WriteString(_file);
-            p.WriteInt(0);
-            p.WriteInt(0);
-            p.WriteInt(X);
-            p.WriteInt(Y);
-            p.WriteInt(Z);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(ogg ? 1 : 0);
+            p.WriteString(file);
+            p.WriteInt(questShip1);// 0 for quest; 1 for ship;
+            p.WriteInt(questShip2);// 0 for quest; objectId of ship
+            p.WriteInt(x);
+            p.WriteInt(y);
+            p.WriteInt(z);
+            return p;
         }
     }
 }

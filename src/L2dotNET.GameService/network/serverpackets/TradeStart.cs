@@ -1,37 +1,31 @@
 ﻿using System.Collections.Generic;
 using L2dotNET.GameService.Model.Items;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class TradeStart
     {
-        private L2Player _player;
-        private readonly List<L2Item> _trade = new List<L2Item>();
-        private readonly int _partnerId;
+        private const byte Opcode = 0x1E;
+        private static List<L2Item> trade = new List<L2Item>();
 
-        public TradeStart(L2Player player)
+        internal static Packet ToPacket(L2Player player)
         {
-            _player = player;
-            _partnerId = player.Requester.ObjId;
             //foreach (L2Item item in player.getAllNonQuestItems().Where(item => (item.Template.is_trade != 0) && (item.AugmentationID <= 0) && (item._isEquipped != 1) && (item.Template.Type != ItemTemplate.L2ItemType.asset)))
             //    trade.Add(item);
-        }
+            Packet p =  new Packet(Opcode);
+            p.WriteInt(player.Requester.ObjId);
+            p.WriteShort((short)trade.Count);
 
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x1E);
-            p.WriteInt(_partnerId);
-            p.WriteShort(_trade.Count);
-
-            foreach (L2Item item in _trade)
+            foreach (L2Item item in trade)
             {
-                p.WriteShort(item.Template.Type1);
+                p.WriteShort((short)item.Template.Type1);
                 p.WriteInt(item.ObjId);
                 p.WriteInt(item.Template.ItemId);
                 p.WriteInt(item.Count);
 
-                p.WriteShort(item.Template.Type2);
+                p.WriteShort((short)item.Template.Type2);
                 p.WriteShort(item.CustomType1);
 
                 p.WriteInt(item.Template.BodyPart);
@@ -40,6 +34,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
                 p.WriteShort(0x00);
             }
+            return p;
         }
     }
 }

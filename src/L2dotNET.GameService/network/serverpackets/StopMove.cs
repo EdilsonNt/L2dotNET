@@ -1,32 +1,21 @@
 ﻿using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
 {
     class StopMove
     {
-        private readonly int _id;
-        private readonly int _x;
-        private readonly int _y;
-        private readonly int _z;
-        private readonly int _h;
+        private const byte Opcode = 0x47;
 
-        public StopMove(L2Character cha)
+        internal static Packet ToPacket(L2Character cha)
         {
-            _id = cha.ObjId;
-            _x = cha.X;
-            _y = cha.Y;
-            _z = cha.Z;
-            _h = cha.Heading;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0x47);
-            p.WriteInt(_id);
-            p.WriteInt(_x);
-            p.WriteInt(_y);
-            p.WriteInt(_z);
-            p.WriteInt(_h);
+            Packet p = new Packet(Opcode);
+            p.WriteInt(cha.ObjId);
+            p.WriteInt(cha.X);
+            p.WriteInt(cha.Y);
+            p.WriteInt(cha.Z);
+            p.WriteInt(cha.Heading);
+            return p;
         }
     }
 }

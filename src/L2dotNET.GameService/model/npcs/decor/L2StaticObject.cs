@@ -3,6 +3,7 @@ using System.Linq;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Model.Npcs.Decor
 {
@@ -17,7 +18,7 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
         public int StructureId = 0;
         public int Type = 0;
         public byte Closed = 1;
-        public ShowTownMap TownMap;
+        public Packet TownMap;
         public string Htm;
         public int Pdef;
         public int Mdef;
@@ -29,7 +30,7 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
         {
             foreach (L2Player obj in KnownObjects.Values.OfType<L2Player>())
             {
-                obj.SendPacket(new StaticObject(this));
+                obj.SendPacket(StaticObject.ToPacket(this));
             }
         }
 
@@ -70,7 +71,7 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
 
         public void SetTex(string[] d)
         {
-            TownMap = new ShowTownMap("town_map." + d[0], Convert.ToInt32(d[1]), Convert.ToInt32(d[2]));
+            TownMap = ShowTownMap.ToPacket("town_map." + d[0], Convert.ToInt32(d[1]), Convert.ToInt32(d[2]));
         }
     }
 }

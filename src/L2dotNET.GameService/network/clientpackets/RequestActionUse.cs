@@ -164,7 +164,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             if (socialId != -1)
             {
-                player.BroadcastPacket(new SocialAction(player.ObjId, socialId));
+                player.BroadcastPacket(SocialAction.ToPacket(player.ObjId, socialId));
             }
         }
 

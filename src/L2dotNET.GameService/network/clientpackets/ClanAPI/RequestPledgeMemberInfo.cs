@@ -42,7 +42,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.ClanAPI
                 return;
             }
 
-            player.SendPacket(new PledgeReceiveMemberInfo(m));
+            player.SendPacket(PledgeReceiveMemberInfo.ToPacket(m));
         }
     }
 }

@@ -15,19 +15,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            List<string> manorsName = new List<string>
-                                      {
-                                          "gludio",
-                                          "dion",
-                                          "giran",
-                                          "oren",
-                                          "aden",
-                                          "innadril",
-                                          "goddard",
-                                          "rune",
-                                          "schuttgart"
-                                      };
-            _client.SendPacket(new ExSendManorList(manorsName));
+            _client.SendPacket(ExSendManorList.ToPacket());
         }
     }
 }

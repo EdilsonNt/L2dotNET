@@ -178,7 +178,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
             byte hero = player.Heroic;
             p.WriteByte(hero);
 
-            p.WriteInt(player.IsFishing() ? 0x01 : 0x00); //Fishing Mode
+            p.WriteByte(player.IsFishing() ? (byte)0x01 : (byte)0x00); //Fishing Mode
             p.WriteInt(player.GetFishx()); //fishing x
             p.WriteInt(player.GetFishy()); //fishing y
             p.WriteInt(player.GetFishz()); //fishing z

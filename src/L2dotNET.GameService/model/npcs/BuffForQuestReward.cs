@@ -18,7 +18,7 @@ namespace L2dotNET.GameService.Model.Npcs
             Cha = target;
             _skillId = skillId;
             _skill = SkillTable.Instance.Get(skillId);
-            Cha.BroadcastPacket(new MagicSkillUse(npc, Cha, _skill, _skill.SkillHitTime));
+            Cha.BroadcastPacket(MagicSkillUse.ToPacket(npc, Cha, _skill, _skill.SkillHitTime));
 
             new Thread(Run).Start();
         }

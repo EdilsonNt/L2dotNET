@@ -10,15 +10,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
         private int _ownerId;
         private int _skillId;
         private int _skillLv;
-
+        private GameClient _client;
         public RequestDispel(Packet packet, GameClient client)
         {
             packet.MoveOffset(2);
             _client = client;
-        }
-
-        public override void Read()
-        {
             _ownerId = packet.ReadInt();
             _skillId = packet.ReadInt();
             _skillLv = packet.ReadInt();
@@ -26,7 +22,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (_ownerId != player.ObjId)
             {

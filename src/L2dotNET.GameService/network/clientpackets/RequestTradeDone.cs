@@ -39,7 +39,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             if (_bDone)
             {
                 player.TradeState = 4;
-                player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1ConfirmedTrade).AddPlayerName(player.Name));
+                player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1ConfirmedTrade).AddPlayerName(player.Name).ToPacket());
 
                 if (player.Requester.TradeState == 4)
                 {
@@ -48,11 +48,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
             else
             {
-                TradeDone end = new TradeDone(false);
+                Packet end = TradeDone.ToPacket(false);
                 player.TradeState = 0;
                 player.CurrentTrade.Clear();
                 player.SendPacket(end);
-                player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1CanceledTrade).AddPlayerName(player.Name));
+                player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1CanceledTrade).AddPlayerName(player.Name).ToPacket());
 
                 player.Requester.TradeState = 0;
                 player.Requester.CurrentTrade.Clear();

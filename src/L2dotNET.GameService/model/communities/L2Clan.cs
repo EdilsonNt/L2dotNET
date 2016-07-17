@@ -8,6 +8,7 @@ using L2dotNET.GameService.Model.Structures;
 using L2dotNET.GameService.Network;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.Tables;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Model.Communities
 {
@@ -129,16 +130,16 @@ namespace L2dotNET.GameService.Model.Communities
                 player.ClanPrivs = CpAll;
             }
 
-            player.SendPacket(new PledgeShowMemberListAll(this, EClanType.ClanMain));
+            player.SendPacket(PledgeShowMemberListAll.ToPacket(this, EClanType.ClanMain));
 
             foreach (EClanSub sub in GetAllSubs())
             {
-                player.SendPacket(new PledgeReceiveSubPledgeCreated(sub));
-                player.SendPacket(new PledgeShowMemberListAll(this, sub.Type));
+                player.SendPacket(PledgeReceiveSubPledgeCreated.ToPacket(sub));
+                player.SendPacket(PledgeShowMemberListAll.ToPacket(this, sub.Type));
             }
         }
 
-        public void BroadcastToMembers(GameServerNetworkPacket pk)
+        public void BroadcastToMembers(Packet pk)
         {
             foreach (ClanMember cm in Members.Where(cm => cm.Online == 1))
             {
@@ -367,7 +368,7 @@ namespace L2dotNET.GameService.Model.Communities
 
             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S1HasWithdrawnFromTheClan);
             sm.AddPlayerName(player.Name);
-            BroadcastToOnline(sm);
+            BroadcastToOnline(sm.ToPacket());
 
             foreach (ClanMember cm in Members.Where(cm => cm.ObjId == player.ObjId))
             {
@@ -386,7 +387,7 @@ namespace L2dotNET.GameService.Model.Communities
 
             player.Title = "";
             player.SendSystemMessage(SystemMessage.SystemMessageId.YouHaveWithdrawnFromClan);
-            player.SendPacket(new PledgeShowMemberListDeleteAll());
+            player.SendPacket(PledgeShowMemberListDeleteAll.ToPacket());
             player.BroadcastUserInfo();
 
             player.setPenalty_ClanJoin(DateTime.Now.AddHours(24), false);
@@ -395,7 +396,7 @@ namespace L2dotNET.GameService.Model.Communities
             // player.updateDb();
         }
 
-        private void BroadcastToOnline(GameServerNetworkPacket p)
+        private void BroadcastToOnline(Packet p)
         {
             foreach (ClanMember cm in Members.Where(cm => cm.Online == 1))
             {

@@ -20,7 +20,7 @@ namespace L2dotNET.GameService.Model.Items.Effects
                 return;
             }
 
-            player.SendPacket(new ChooseInventoryItem(item.Template.ItemId));
+            player.SendPacket(ChooseInventoryItem.ToPacket(item.Template.ItemId));
             player.EnchantScroll = item;
             player.EnchantState = ItemEnchantManager.StatePutItem;
             player.SendSystemMessage(SystemMessage.SystemMessageId.SelectItemToEnchant);

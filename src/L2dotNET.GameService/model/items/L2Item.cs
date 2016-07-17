@@ -94,7 +94,7 @@ namespace L2dotNET.GameService.Model.Items
             X = x;
             Y = y;
             Z = z;
-            DropItem pk = new DropItem(this);
+
             if (dropper != null)
             {
                 Dropper = dropper.ObjId;
@@ -102,7 +102,7 @@ namespace L2dotNET.GameService.Model.Items
 
             Location = ItemLocation.Void;
 
-            killer?.AddKnownObject(this, pk, true);
+            killer?.AddKnownObject(this, DropItem.ToPacket(this), true);
 
             L2World.Instance.AddObject(this);
         }
@@ -120,8 +120,8 @@ namespace L2dotNET.GameService.Model.Items
             {
                 foreach (L2Player o in KnownObjects.Values.OfType<L2Player>())
                 {
-                    o.SendPacket(new GetItem(player.ObjId, ObjId, X, Y, Z));
-                    o.SendPacket(new DeleteObject(ObjId));
+                    o.SendPacket(GetItem.ToPacket(player.ObjId, ObjId, X, Y, Z));
+                    o.SendPacket(DeleteObject.ToPacket(ObjId));
                 }
 
                 player.OnPickUp(this);

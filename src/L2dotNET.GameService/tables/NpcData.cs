@@ -11,6 +11,7 @@ using L2dotNET.GameService.Network;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.Tables.Admin_Bypass;
 using L2dotNET.GameService.Tables.Ndextend;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Tables
 {
@@ -121,7 +122,7 @@ namespace L2dotNET.GameService.Tables
             }
 
             NDShop shop = Shops[trader.Template.NpcId];
-            GameServerNetworkPacket pk;
+            Packet pk;
             if (!shop.Lists.ContainsKey(reply))
             {
                 reply -= 2; // примерка
@@ -133,13 +134,13 @@ namespace L2dotNET.GameService.Tables
                 }
                 else
                 {
-                    pk = new ShopPreviewList(player, shop.Lists[reply], reply);
+                    pk = ShopPreviewList.ToPacket(player, shop.Lists[reply], reply);
                 }
             }
             else
             {
-                player.SendPacket(new ExBuySellListBuy(player, shop.Lists[reply], 1.10, 1.0, reply));
-                player.SendPacket(new ExBuySellListSell(player));
+                player.SendPacket(ExBuySellListBuy.ToPacket(player, shop.Lists[reply], 1.10, 1.0, reply));
+                player.SendPacket(ExBuySellListSell.ToPacket(player));
             }
         }
 

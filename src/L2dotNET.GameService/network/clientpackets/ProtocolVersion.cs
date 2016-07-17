@@ -7,41 +7,37 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class ProtocolVersion : PacketBase
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ProtocolVersion));
-
+        private GameClient _client;
         public ProtocolVersion(Packet packet, GameClient client)
         {
             _client = client;
+            _protocol = packet.ReadInt();
         }
 
         private int _protocol;
-
-        public override void Read()
-        {
-            _protocol = packet.ReadInt();
-        }
 
         public override void RunImpl()
         {
             if ((_protocol != 746) && (_protocol != 251))
             {
                 Log.Error($"Protocol fail {_protocol}");
-                GetClient().SendPacket(new KeyPacket(GetClient(), 0));
-                GetClient().Termination();
+                _client.SendPacket(KeyPacket.ToPacket(_client, 0));
+                _client.Termination();
                 return;
             }
 
             if (_protocol == -1)
             {
                 Log.Info($"Ping received {_protocol}");
-                GetClient().SendPacket(new KeyPacket(GetClient(), 0));
-                GetClient().Termination();
+                _client.SendPacket(KeyPacket.ToPacket(_client, 0));
+                _client.Termination();
                 return;
             }
 
             Log.Info($"Accepted {_protocol} client");
 
-            GetClient().SendPacket(new KeyPacket(GetClient(), 1));
-            GetClient().Protocol = _protocol;
+            _client.SendPacket(KeyPacket.ToPacket(_client, 1));
+            _client.Protocol = _protocol;
         }
     }
 }

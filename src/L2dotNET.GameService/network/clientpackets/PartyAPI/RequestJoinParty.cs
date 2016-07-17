@@ -51,7 +51,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
             {
                 SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S1IsAlreadyInParty);
                 sm.AddPlayerName(target.Name);
-                player.SendPacket(sm);
+                player.SendPacket(sm.ToPacket());
                 player.SendActionFailed();
                 return;
             }
@@ -72,7 +72,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
 
             if ((target.TradeState == 1) || (target.TradeState == 2))
             {
-                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1IsBusyTryLater).AddPlayerName(target.Name));
+                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1IsBusyTryLater).AddPlayerName(target.Name).ToPacket());
                 player.SendActionFailed();
                 return;
             }
@@ -98,7 +98,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
                 return;
             }
 
-            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.YouInvitedS1ToParty).AddPlayerName(target.Name));
+            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.YouInvitedS1ToParty).AddPlayerName(target.Name).ToPacket());
             target.PendToJoinParty(player, _itemDistribution);
         }
     }

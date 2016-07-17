@@ -1,18 +1,16 @@
-﻿namespace L2dotNET.GameService.Network.LoginAuth.Send
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.LoginAuth.Send
 {
     class PlayerCount
     {
-        private readonly short _cnt;
+        private const byte Opcode = 0xA3;
 
-        public PlayerCount(short cnt)
+        internal static Packet ToPacket(short cnt)
         {
-            _cnt = cnt;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xA3);
-            p.WriteShort(_cnt);
+            Packet p = new Packet(Opcode);
+            p.WriteShort(cnt);
+            return p;
         }
     }
 }

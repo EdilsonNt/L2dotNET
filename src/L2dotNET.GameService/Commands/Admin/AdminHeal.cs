@@ -33,17 +33,17 @@ namespace L2dotNET.GameService.Commands.Admin
             StatusUpdate su = new StatusUpdate(target.ObjId);
             su.Add(StatusUpdate.CurHp, (int)target.CurHp);
             su.Add(StatusUpdate.CurMp, (int)target.CurMp);
-            target.SendPacket(su);
+            target.SendPacket(su.ToPacket());
 
             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2HpRestoredByS1);
             sm.AddPlayerName(admin.Name);
             sm.AddNumber((int)hpval);
-            target.SendPacket(sm);
+            target.SendPacket(sm.ToPacket());
 
             sm = new SystemMessage(SystemMessage.SystemMessageId.S2MpRestoredByS1);
             sm.AddPlayerName(admin.Name);
             sm.AddNumber((int)mpval);
-            target.SendPacket(sm);
+            target.SendPacket(sm.ToPacket());
         }
     }
 }

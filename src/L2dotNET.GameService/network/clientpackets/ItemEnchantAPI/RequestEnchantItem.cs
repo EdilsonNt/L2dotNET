@@ -1,5 +1,6 @@
 ﻿using System;
 using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Enums;
 using L2dotNET.GameService.Managers;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
@@ -65,7 +66,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
                 iu = new InventoryUpdate();
                 iu.AddModItem(player.EnchantItem);
 
-                player.SendPacket(new EnchantResult(EnchantResultVal.Success));
+                player.SendPacket(EnchantResult.ToPacket(EnchantResultVal.Success));
 
                 equip = player.EnchantItem.IsEquipped == 1;
 
@@ -88,10 +89,10 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
                         iu = new InventoryUpdate();
                         iu.AddModItem(player.EnchantItem);
 
-                        player.SendPacket(new EnchantResult(EnchantResultVal.BreakToOne));
+                        player.SendPacket(EnchantResult.ToPacket(EnchantResultVal.BreakToOne));
                         break;
                     case EnchantType.Ancient:
-                        player.SendPacket(new EnchantResult(EnchantResultVal.SafeBreak));
+                        player.SendPacket(EnchantResult.ToPacket(EnchantResultVal.SafeBreak));
                         break;
                     default:
                     {
@@ -122,7 +123,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
 
             if (iu != null)
             {
-                player.SendPacket(iu);
+                player.SendPacket(iu.ToPacket());
             }
 
             player.EnchantItem = null;

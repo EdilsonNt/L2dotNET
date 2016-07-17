@@ -336,7 +336,6 @@
     <Compile Include="Network\LoginAuth\Recv\LoginServLoginFail.cs" />
     <Compile Include="Network\LoginAuth\Recv\LoginServPingResponse.cs" />
     <Compile Include="Network\LoginAuth\Send\AccountInGame.cs" />
-    <Compile Include="Network\LoginAuth\Send\PremiumStatusUpdate.cs" />
     <Compile Include="Network\LoginAuth\Send\PlayerCount.cs" />
     <Compile Include="Network\LoginAuth\Send\LoginAuth.cs" />
     <Compile Include="Network\PacketHandlerAuth.cs" />

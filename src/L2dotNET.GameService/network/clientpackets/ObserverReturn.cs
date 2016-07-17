@@ -17,7 +17,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
         {
             L2Player player = _client.CurrentPlayer;
 
-            player.SendPacket(new ObservationReturn(player.Obsx, player.Obsy, player.Obsz));
+            player.SendPacket(ObservationReturn.ToPacket(player.Obsx, player.Obsy, player.Obsz));
         }
     }
 }

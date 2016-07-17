@@ -54,7 +54,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             //        RqItemManager.getInstance().postItem(item);
             //}
 
-            CreatureSay cs = new CreatureSay(player.ObjId, _type, player.Name, _text);
+            Packet cs = CreatureSay.ToPacket(_type, _text, player.Name, player.ObjId);
 
             switch (_type)
             {

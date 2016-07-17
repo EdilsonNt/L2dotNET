@@ -13,7 +13,7 @@ namespace L2dotNET.GameService.Model.Vehicles
         {
             foreach (L2Player obj in KnownObjects.Values.OfType<L2Player>())
             {
-                obj.SendPacket(new VehicleInfo(this));
+                obj.SendPacket(VehicleInfo.ToPacket(this));
             }
         }
     }

@@ -18,12 +18,12 @@ namespace L2dotNET.GameService.Network.Clientpackets
         {
             L2Player player = _client.CurrentPlayer;
 
-            player.SendPacket(new UserInfo(player));
-            player.SendPacket(new ExBrExtraUserInfo(player.ObjId, player.AbnormalBitMaskEvent));
+            player.SendPacket(UserInfo.ToPacket(player));
+            player.SendPacket(ExBrExtraUserInfo.ToPacket(player.ObjId, player.AbnormalBitMaskEvent));
 
             foreach (L2Object obj in player.KnownObjects.Values)
             {
-                player.OnAddObject(obj, null, "Player " + player.Name + " recording replay with your character.");
+                player.OnAddObject(obj, default(Packet), "Player " + player.Name + " recording replay with your character.");
             }
         }
     }

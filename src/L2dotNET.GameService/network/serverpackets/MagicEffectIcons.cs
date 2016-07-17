@@ -13,7 +13,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _timers.Add(new[] { id, lvl, duration });
         }
 
-        internal static Packet ToPacket()
+        internal Packet ToPacket()
         {
             Packet p = new Packet(Opcode);
             p.WriteShort((short)_timers.Count);

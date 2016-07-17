@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using L2dotNET.GameService.Enums;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.Network;
@@ -11,18 +12,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         [Inject]
         public IPlayerService PlayerService => GameServer.Kernel.Get<IPlayerService>();
-
+        private GameClient _client;
         public CharacterDelete(Packet packet, GameClient client)
         {
             _client = client;
+            _charSlot = packet.ReadInt();
         }
 
         private int _charSlot;
-
-        public override void Read()
-        {
-            _charSlot = packet.ReadInt();
-        }
 
         public override void RunImpl()
         {
@@ -32,11 +29,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
             //	return;
             //}
 
-            L2Player player = GetClient().AccountChars.FirstOrDefault(filter => filter.CharSlot == _charSlot);
+            L2Player player = _client.AccountChars.FirstOrDefault(filter => filter.CharSlot == _charSlot);
 
             if (player == null)
             {
-                GetClient().SendPacket(new CharDeleteFail(CharDeleteFail.CharDeleteFailReason.DeletionFailed));
+                _client.SendPacket(CharDeleteFail.ToPacket(CharDeleteFailReason.DeletionFailed));
                 return;
             }
 
@@ -44,11 +41,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
             {
                 if (player.Clan.LeaderId == player.ObjId)
                 {
-                    GetClient().SendPacket(new CharDeleteFail(CharDeleteFail.CharDeleteFailReason.ClanLeadersMayNotBeDeleted));
+                    _client.SendPacket(CharDeleteFail.ToPacket(CharDeleteFailReason.ClanLeadersMayNotBeDeleted));
                     return;
                 }
 
-                GetClient().SendPacket(new CharDeleteFail(CharDeleteFail.CharDeleteFailReason.YouMayNotDeleteClanMember));
+                _client.SendPacket(CharDeleteFail.ToPacket(CharDeleteFailReason.YouMayNotDeleteClanMember));
                 return;
             }
 
@@ -56,24 +53,23 @@ namespace L2dotNET.GameService.Network.Clientpackets
             {
                 if (!PlayerService.DeleteCharByObjId(player.ObjId))
                 {
-                    GetClient().SendPacket(new CharDeleteFail(CharDeleteFail.CharDeleteFailReason.DeletionFailed));
+                    _client.SendPacket(CharDeleteFail.ToPacket(CharDeleteFailReason.DeletionFailed));
                     return;
                 }
 
-                GetClient().RemoveAccountCharAndResetSlotIndex(_charSlot);
+                _client.RemoveAccountCharAndResetSlotIndex(_charSlot);
             }
             else
             {
                 if (!PlayerService.MarkToDeleteChar(player.ObjId))
                 {
-                    GetClient().SendPacket(new CharDeleteFail(CharDeleteFail.CharDeleteFailReason.DeletionFailed));
+                    _client.SendPacket(CharDeleteFail.ToPacket(CharDeleteFailReason.DeletionFailed));
                     return;
                 }
             }
 
-            GetClient().SendPacket(new CharDeleteOk());
-            CharacterSelectionInfo csl = new CharacterSelectionInfo(GetClient().AccountName, GetClient().AccountChars, GetClient().SessionId);
-            GetClient().SendPacket(csl);
+            _client.SendPacket(CharDeleteOk.ToPacket());
+            _client.SendPacket(CharacterSelectionInfo.ToPacket(_client.AccountName, _client.AccountChars, _client.SessionId));
         }
     }
 }

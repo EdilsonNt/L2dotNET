@@ -114,7 +114,7 @@ namespace L2dotNET.GameService.AI.NpcAI
                             htm.Replace("<?kingdom_name?>", FString.GetInstance().Get(Myself.ResidenceId < 7 ? 1001000 : 1001100));
                             htm.Replace("<?feud_name?>", FString.GetInstance().Get(Myself.ResidenceId + 1001000));
 
-                            talker.SendPacket(htm);
+                            talker.SendPacket(htm.ToPacket());
                             break;
                     }
 

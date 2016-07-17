@@ -48,10 +48,15 @@ namespace L2dotNET.GameService.Network.Serverpackets
             Attrs.Add(new[] { type, val });
         }
 
-        internal static Packet ToPacket(int id)
+        public StatusUpdate(int id)
+        {
+            _id = id;
+        }
+
+        internal Packet ToPacket()
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(id);
+            p.WriteInt(_id);
             p.WriteInt(Attrs.Count);
 
             foreach (object[] d in Attrs)

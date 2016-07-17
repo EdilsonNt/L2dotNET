@@ -50,14 +50,14 @@ namespace L2dotNET.GameService.Network.Clientpackets
             L2Player target = (L2Player)player.CurrentTarget;
             if (target.TradeState != 0)
             {
-                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1AlreadyTrading).AddPlayerName(target.Name));
+                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1AlreadyTrading).AddPlayerName(target.Name).ToPacket());
                 player.SendActionFailed();
                 return;
             }
 
             if (target.PartyState == 1)
             {
-                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1IsBusyTryLater).AddPlayerName(target.Name));
+                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1IsBusyTryLater).AddPlayerName(target.Name).ToPacket());
                 player.SendActionFailed();
                 return;
             }
@@ -68,10 +68,10 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 return;
             }
 
-            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.RequestS1ForTrade).AddPlayerName(target.Name));
+            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.RequestS1ForTrade).AddPlayerName(target.Name).ToPacket());
             target.Requester = player;
             player.Requester = target;
-            target.SendPacket(new SendTradeRequest(player.ObjId));
+            target.SendPacket(SendTradeRequest.ToPacket(player.ObjId));
             target.TradeState = 2; // жмакает ответ
             player.TradeState = 1; // запросил
         }

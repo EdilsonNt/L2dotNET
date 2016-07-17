@@ -49,7 +49,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S1S2);
                 sm.AddItemName(item.Template.ItemId);
                 sm.AddString("cannot be destroyed.");
-                player.SendPacket(sm);
+                player.SendPacket(sm.ToPacket());
                 player.SendActionFailed();
                 return;
             }

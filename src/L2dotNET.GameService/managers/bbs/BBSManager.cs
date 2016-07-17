@@ -37,7 +37,7 @@ namespace L2dotNET.GameService.Managers.BBS
             }
             else
             {
-                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.CbOffline));
+                player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.CbOffline).ToPacket());
             }
         }
     }

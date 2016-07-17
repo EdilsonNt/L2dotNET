@@ -4,6 +4,7 @@ using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Zones.Forms;
 using L2dotNET.GameService.Network;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Model.Zones
 {
@@ -111,7 +112,7 @@ namespace L2dotNET.GameService.Model.Zones
             return CharacterList;
         }
 
-        public void BroadcastPacket(GameServerNetworkPacket packet)
+        public void BroadcastPacket(Packet packet)
         {
             if (CharacterList.Count == 0)
             {

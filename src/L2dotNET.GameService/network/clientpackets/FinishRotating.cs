@@ -20,7 +20,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
         {
             L2Player player = _client.CurrentPlayer;
 
-            player.BroadcastPacket(new StopRotation(player.ObjId, _degree, 0));
+            player.BroadcastPacket(StopRotation.ToPacket(player.ObjId, _degree, 0));
         }
     }
 }

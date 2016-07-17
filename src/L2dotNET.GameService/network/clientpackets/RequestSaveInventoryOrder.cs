@@ -8,15 +8,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
     {
         private int _count;
         private int[] _items;
-
+        private GameClient _client;
         public RequestSaveInventoryOrder(Packet packet, GameClient client)
         {
             packet.MoveOffset(2);
             _client = client;
-        }
-
-        public override void Read()
-        {
             _count = packet.ReadInt();
 
             //  _count = Math.Min(125, _count); мм?зачем
@@ -30,7 +26,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            L2Player player = GetClient().CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             foreach (L2Item item in player.Inventory.Items)
                 for (int i = 0; i < _count; i++)

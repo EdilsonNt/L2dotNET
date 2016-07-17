@@ -53,7 +53,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     break;
             }
 
-            player.SendPacket(asi);
+            player.SendPacket(asi.ToPacket());
         }
     }
 }

@@ -26,7 +26,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 y = player.Obsy;
             }
 
-            player.SendPacket(new UserInfo(player));
+            player.SendPacket(UserInfo.ToPacket(player));
             player.ValidateVisibleObjects(x, y, false);
             player.UpdateVisibleStatus();
 

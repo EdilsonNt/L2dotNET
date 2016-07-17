@@ -7,21 +7,32 @@ namespace L2dotNET.GameService.Network.Serverpackets
     class PartySpelled
     {
         private const byte Opcode = 0xee;
+
+        public PartySpelled(L2Character character)
+        {
+            _id = character.ObjId;
+            _summonType = character.ObjectSummonType;
+            _character = character;
+        }
+
         private static readonly List<int[]> _timers = new List<int[]>();
+        private readonly int _id;
+        private static L2Character _character;
+        private readonly int _summonType;
 
         public void AddIcon(int iconId, int lvl, int duration)
         {
             _timers.Add(new[] { iconId, lvl, duration });
         }
 
-        internal static Packet ToPacket(L2Character character)
+        internal Packet ToPacket()
         {
             Packet p = new Packet(Opcode);
-            if (character != null)
+            if (_character != null)
             {
                 
-                p.WriteInt(character.ObjectSummonType);
-                p.WriteInt(character.ObjId);
+                p.WriteInt(_character.ObjectSummonType);
+                p.WriteInt(_character.ObjId);
                 p.WriteInt(_timers.Count);
 
                 foreach (int[] f in _timers)

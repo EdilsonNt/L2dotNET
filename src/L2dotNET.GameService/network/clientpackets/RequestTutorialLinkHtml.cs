@@ -24,21 +24,21 @@ namespace L2dotNET.GameService.Network.Clientpackets
             if (_link.Contains(":"))
             {
                 string[] link = _link.Split(':');
-                player.SendPacket(new TutorialShowHtml(player, link[0], link[1], player.ViewingAdminPage > 0));
+                player.SendPacket(TutorialShowHtml.ToPacket(_link));
             }
             else if (_link.StartsWithIgnoreCase("tutorial_close_"))
             {
-                player.SendPacket(new TutorialCloseHtml());
+                player.SendPacket(TutorialCloseHtml.ToPacket());
             }
             else if (_link.EqualsIgnoreCase("admin_close"))
             {
-                player.SendPacket(new TutorialCloseHtml());
+                player.SendPacket(TutorialCloseHtml.ToPacket());
                 player.ViewingAdminPage = 0;
                 player.ViewingAdminTeleportGroup = -1;
             }
             else
             {
-                player.SendPacket(new TutorialShowHtml(player, _link, player.ViewingAdminPage > 0));
+                player.SendPacket(TutorialShowHtml.ToPacket(_link));
             }
         }
     }

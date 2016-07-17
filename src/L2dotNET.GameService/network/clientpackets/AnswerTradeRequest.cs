@@ -55,17 +55,17 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 case 0:
                     player.TradeState = 0;
                     player.Requester.TradeState = 0;
-                    player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1DeniedTradeRequest).AddPlayerName(player.Name));
+                    player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1DeniedTradeRequest).AddPlayerName(player.Name).ToPacket());
                     player.Requester.Requester = null;
                     player.Requester = null;
                     break;
                 case 1:
-                    player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.BeginTradeWithS1).AddPlayerName(player.Name));
-                    player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.BeginTradeWithS1).AddPlayerName(player.Requester.Name));
+                    player.Requester.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.BeginTradeWithS1).AddPlayerName(player.Name).ToPacket());
+                    player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.BeginTradeWithS1).AddPlayerName(player.Requester.Name).ToPacket());
                     player.TradeState = 3;
                     player.Requester.TradeState = 3;
-                    player.SendPacket(new TradeStart(player));
-                    player.Requester.SendPacket(new TradeStart(player.Requester));
+                    player.SendPacket(TradeStart.ToPacket(player));
+                    player.Requester.SendPacket(TradeStart.ToPacket(player.Requester));
                     break;
             }
         }

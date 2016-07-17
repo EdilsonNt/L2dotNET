@@ -1,21 +1,17 @@
-﻿namespace L2dotNET.GameService.Network.LoginAuth.Send
+﻿using L2dotNET.Network;
+
+namespace L2dotNET.GameService.Network.LoginAuth.Send
 {
     class LoginServPing
     {
-        public string Version;
-        private readonly int _build;
+        private const byte Opcode = 0xA0;
 
-        public LoginServPing(AuthThread th)
+        internal static Packet ToPacket(AuthThread th)
         {
-            Version = th.Version;
-            _build = th.Build;
-        }
-
-        internal static Packet ToPacket()
-        {
-            p.WriteInt(0xA0);
-            p.WriteString(Version);
-            p.WriteInt(_build);
+            Packet p = new Packet(Opcode);
+            p.WriteString(th.Version);
+            p.WriteInt(th.Build);
+            return p;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            _client.CurrentPlayer.UpdatePing(_request, _msec, _unk2);
+            
         }
     }
 }

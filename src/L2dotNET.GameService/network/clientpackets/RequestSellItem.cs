@@ -101,7 +101,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             player.AddAdena(added, true);
             player.SendItemList(true);
-            player.SendPacket(new ExBuySellListClose());
+            player.SendPacket(ExBuySellListClose.ToPacket());
 
             if (weight != 0)
             {

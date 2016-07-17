@@ -16,7 +16,7 @@ namespace L2dotNET.GameService.Model.Skills2.SpecEffects
 
             StatusUpdate su = new StatusUpdate(player.ObjId);
             su.Add(StatusUpdate.Evasion, (int)player.CharacterStat.GetStat(EffectType.BEvasion));
-            player.SendPacket(su);
+            player.SendPacket(su.ToPacket());
         }
 
         public override void OnStopMoving(L2Player player)
@@ -25,7 +25,7 @@ namespace L2dotNET.GameService.Model.Skills2.SpecEffects
 
             StatusUpdate su = new StatusUpdate(player.ObjId);
             su.Add(StatusUpdate.Evasion, (int)player.CharacterStat.GetStat(EffectType.BEvasion));
-            player.SendPacket(su);
+            player.SendPacket(su.ToPacket());
         }
     }
 }

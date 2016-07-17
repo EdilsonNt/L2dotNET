@@ -7,6 +7,7 @@ using L2dotNET.GameService.Model.Zones;
 using L2dotNET.GameService.Model.Zones.Classes;
 using L2dotNET.GameService.Network;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.World
 {
@@ -41,13 +42,13 @@ namespace L2dotNET.GameService.World
 
         public virtual void OnForcedAttack(L2Player player) { }
 
-        public virtual void SendPacket(GameServerNetworkPacket pk) { }
+        public virtual void SendPacket(Packet pk) { }
 
         public virtual void AddAbnormal(Skill skill, L2Character caster, bool permanent, bool unlim) { }
 
         public virtual void OnRemObject(L2Object obj) { }
 
-        public virtual void OnAddObject(L2Object obj, GameServerNetworkPacket pk, string msg = null) { }
+        public virtual void OnAddObject(L2Object obj, Packet pk = default(Packet), string msg = null) { }
 
         public virtual void BroadcastUserInfo() { }
 
@@ -66,7 +67,7 @@ namespace L2dotNET.GameService.World
             BroadcastUserInfo();
         }
 
-        public virtual void BroadcastPacket(GameServerNetworkPacket pk, bool excludeYourself)
+        public virtual void BroadcastPacket(Packet pk, bool excludeYourself)
         {
             if (!excludeYourself)
             {
@@ -79,7 +80,7 @@ namespace L2dotNET.GameService.World
             }
         }
 
-        public virtual void BroadcastPacket(GameServerNetworkPacket pk)
+        public virtual void BroadcastPacket(Packet pk)
         {
             BroadcastPacket(pk, false);
         }
@@ -90,7 +91,7 @@ namespace L2dotNET.GameService.World
         {
             foreach (L2Player o in KnownObjects.Values.OfType<L2Player>())
             {
-                o.SendPacket(new DeleteObject(ObjId));
+                o.SendPacket(DeleteObject.ToPacket(ObjId));
             }
 
             StopRegeneration();
@@ -106,7 +107,7 @@ namespace L2dotNET.GameService.World
 
                 if (deleteMe && this is L2Player)
                 {
-                    SendPacket(new DeleteObject(o.ObjId));
+                    SendPacket(DeleteObject.ToPacket(o.ObjId));
                 }
             }
 
@@ -196,7 +197,7 @@ namespace L2dotNET.GameService.World
 
             if (deleteMe && target is L2Player)
             {
-                target.SendPacket(new DeleteObject(ObjId));
+                target.SendPacket(DeleteObject.ToPacket(ObjId));
             }
         }
 
@@ -217,7 +218,7 @@ namespace L2dotNET.GameService.World
             }
         }
 
-        public void AddKnownObject(L2Object obj, GameServerNetworkPacket pk, bool pkuse)
+        public void AddKnownObject(L2Object obj, Packet pk, bool pkuse)
         {
             if (KnownObjects.ContainsKey(obj.ObjId))
             {
@@ -241,7 +242,7 @@ namespace L2dotNET.GameService.World
         {
             foreach (L2Object o in KnownObjects.Values.Where(o => o.Visible))
             {
-                OnAddObject(o, null);
+                OnAddObject(o);
             }
         }
 
@@ -271,7 +272,7 @@ namespace L2dotNET.GameService.World
 
             if (obj.Visible)
             {
-                OnAddObject(obj, null);
+                OnAddObject(obj);
             }
         }
 
@@ -347,7 +348,7 @@ namespace L2dotNET.GameService.World
                 if (LastCode != ExSetCompassZoneCode.Pvpzone)
                 {
                     LastCode = ExSetCompassZoneCode.Pvpzone;
-                    SendPacket(new ExSetCompassZoneCode(ExSetCompassZoneCode.Pvpzone));
+                    SendPacket(ExSetCompassZoneCode.ToPacket(ExSetCompassZoneCode.Pvpzone));
                     return;
                 }
             }
@@ -370,12 +371,12 @@ namespace L2dotNET.GameService.World
             if ((LastCode != -1) && (LastCode != code))
             {
                 LastCode = code;
-                SendPacket(new ExSetCompassZoneCode(code));
+                SendPacket(ExSetCompassZoneCode.ToPacket(code));
             }
             else
             {
                 LastCode = code;
-                SendPacket(new ExSetCompassZoneCode(code));
+                SendPacket(ExSetCompassZoneCode.ToPacket(code));
             }
         }
 

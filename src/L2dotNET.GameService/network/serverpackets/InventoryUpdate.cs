@@ -24,7 +24,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
             Update.Add(new object[] { item, (short)3 });
         }
 
-        internal static Packet ToPacket()
+        internal Packet ToPacket()
         {
             Packet p = new Packet(Opcode);
             p.WriteShort((short)Update.Count);

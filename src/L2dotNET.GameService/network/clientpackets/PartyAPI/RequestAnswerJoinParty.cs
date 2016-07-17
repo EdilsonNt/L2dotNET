@@ -33,7 +33,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
                 player.Requester.SendSystemMessage(SystemMessage.SystemMessageId.UserCurrentlyParticipatingInOlympiadCannotSendPartyAndFriendInvitations);
             }
 
-            player.Requester.SendPacket(new JoinParty(_response));
+            player.Requester.SendPacket(JoinParty.ToPacket(_response));
 
             switch (_response)
             {
@@ -41,7 +41,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.PartyAPI
                 {
                     SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.C1IsSetToRefusePartyRequests);
                     sm.AddPlayerName(player.Name);
-                    player.Requester.SendPacket(sm);
+                    player.Requester.SendPacket(sm.ToPacket());
                 }
                     break;
                 case 1:

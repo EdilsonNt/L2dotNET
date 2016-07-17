@@ -80,7 +80,7 @@ namespace L2dotNET.GameService.World
 
             if (newtarget)
             {
-                player.SendPacket(new MyTargetSelected(ObjId, 0));
+                player.SendPacket(MyTargetSelected.ToPacket(ObjId, 0));
             }
         }
 
@@ -103,7 +103,7 @@ namespace L2dotNET.GameService.World
 
             if (newtarget)
             {
-                player.SendPacket(new MyTargetSelected(ObjId, 0));
+                player.SendPacket(MyTargetSelected.ToPacket(ObjId, 0));
             }
             else
             {
@@ -218,11 +218,11 @@ namespace L2dotNET.GameService.World
                         su.Add(stat, (int)result.Sus[stat]);
                     }
 
-                    BroadcastPacket(su, false);
+                    BroadcastPacket(su.ToPacket(), false);
 
                     if (this is L2Player && (result.HpMpCp == 1))
                     {
-                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                        ((L2Player)this).Party?.BroadcastToMembers(PartySmallWindowUpdate.ToPacket((L2Player)this));
                     }
                 }
             }
@@ -263,11 +263,11 @@ namespace L2dotNET.GameService.World
                         su.Add(stat, (int)result.Sus[stat]);
                     }
 
-                    BroadcastPacket(su, false);
+                    BroadcastPacket(su.ToPacket(), false);
 
                     if (this is L2Player && (result.HpMpCp == 1))
                     {
-                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                        ((L2Player)this).Party?.BroadcastToMembers(PartySmallWindowUpdate.ToPacket((L2Player)this));
                     }
                 }
             }
@@ -307,11 +307,11 @@ namespace L2dotNET.GameService.World
                         su.Add(stat, (int)result.Sus[stat]);
                     }
 
-                    BroadcastPacket(su, false);
+                    BroadcastPacket(su.ToPacket(), false);
 
                     if (this is L2Player && (result.HpMpCp == 1))
                     {
-                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                        ((L2Player)this).Party?.BroadcastToMembers(PartySmallWindowUpdate.ToPacket((L2Player)this));
                     }
                 }
             }
@@ -352,11 +352,11 @@ namespace L2dotNET.GameService.World
                         su.Add(stat, (int)result.Sus[stat]);
                     }
 
-                    BroadcastPacket(su, false);
+                    BroadcastPacket(su.ToPacket(), false);
 
                     if (this is L2Player && (result.HpMpCp == 1))
                     {
-                        ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                        ((L2Player)this).Party?.BroadcastToMembers(PartySmallWindowUpdate.ToPacket((L2Player)this));
                     }
                 }
             }
@@ -399,7 +399,7 @@ namespace L2dotNET.GameService.World
 
             if (msg)
             {
-                SendPacket(new SystemMessage(SystemMessage.SystemMessageId.EffectS1Disappeared).AddSkillName(ave.Id, ave.Lvl));
+                SendPacket(new SystemMessage(SystemMessage.SystemMessageId.EffectS1Disappeared).AddSkillName(ave.Id, ave.Lvl).ToPacket());
             }
 
             if (uis)
@@ -530,7 +530,7 @@ namespace L2dotNET.GameService.World
             {
                 SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YouFeelS1Effect);
                 sm.AddSkillName(ic.Id, ic.Lvl);
-                SendPacket(sm);
+                SendPacket(sm.ToPacket());
             }
 
             UpdateMagicEffectIcons();
@@ -668,7 +668,7 @@ namespace L2dotNET.GameService.World
                 pl.Summon.IsTeleporting = true;
             }
 
-            BroadcastPacket(new TeleportToLocation(ObjId, x, y, z, Heading));
+            BroadcastPacket(TeleportToLocation.ToPacket(this, x, y, z));
         }
 
         public int GetSkillLevel(int id)
@@ -717,7 +717,7 @@ namespace L2dotNET.GameService.World
 
                 if (this is L2Player)
                 {
-                    SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Cyan, breath * 1000));
+                    SendPacket(SetupGauge.ToPacket(SetupGauge.SgColor.Cyan, breath * 1000));
                 }
             }
             else
@@ -731,7 +731,7 @@ namespace L2dotNET.GameService.World
 
                 if (this is L2Player)
                 {
-                    SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Cyan, 1));
+                    SendPacket(SetupGauge.ToPacket(SetupGauge.SgColor.Cyan, 1));
                 }
             }
 
@@ -796,7 +796,7 @@ namespace L2dotNET.GameService.World
             StatusUpdate su = new StatusUpdate(ObjId);
             su.Add(StatusUpdate.CurHp, (int)CurHp);
             su.Add(StatusUpdate.MaxHp, (int)CharacterStat.GetStat(EffectType.BMaxHp));
-            BroadcastPacket(su);
+            BroadcastPacket(su.ToPacket());
 
             if (CurHp <= 0)
             {
@@ -808,7 +808,7 @@ namespace L2dotNET.GameService.World
 
             if (this is L2Player)
             {
-                SendPacket(new SystemMessage((SystemMessage.SystemMessageId)msgId).AddNumber(damage));
+                SendPacket(new SystemMessage((SystemMessage.SystemMessageId)msgId).AddNumber(damage).ToPacket());
             }
         }
 
@@ -838,7 +838,7 @@ namespace L2dotNET.GameService.World
             StatusUpdate su = new StatusUpdate(ObjId);
             su.Add(StatusUpdate.CurHp, (int)CurHp);
             su.Add(StatusUpdate.CurCp, (int)CurCp);
-            BroadcastPacket(su);
+            BroadcastPacket(su.ToPacket());
 
             if (CurHp <= 0)
             {
@@ -867,11 +867,11 @@ namespace L2dotNET.GameService.World
             CurHp = 0;
             StatusUpdate su = new StatusUpdate(ObjId);
             su.Add(StatusUpdate.CurHp, 0);
-            BroadcastPacket(su);
+            BroadcastPacket(su.ToPacket());
 
             SendMessage("You died from " + killer.Name);
             killer.SendMessage("You killed " + Name);
-            BroadcastPacket(new Die(this));
+            BroadcastPacket(Die.ToPacket(this));
 
             UpdateMagicEffectIcons();
 
@@ -894,7 +894,7 @@ namespace L2dotNET.GameService.World
 
             Effects.Clear();
 
-            BroadcastPacket(new DeleteObject(ObjId));
+            BroadcastPacket(DeleteObject.ToPacket(ObjId));
             L2World.Instance.RemoveObject(this);
         }
 
@@ -1006,7 +1006,7 @@ namespace L2dotNET.GameService.World
             AttackToEnd.Interval = timeAtk;
             AttackToEnd.Enabled = true;
 
-            BroadcastPacket(atk);
+            BroadcastPacket(atk.ToPacket());
         }
 
         public class Hit
@@ -1060,14 +1060,14 @@ namespace L2dotNET.GameService.World
 
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit1.Damage));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit1.Damage).ToPacket());
                     }
                 }
                 else
                 {
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this).ToPacket());
                         ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
@@ -1085,14 +1085,14 @@ namespace L2dotNET.GameService.World
                     CurrentTarget.ReduceHp(this, Hit2.Damage);
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit2.Damage));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit2.Damage).ToPacket());
                     }
                 }
                 else
                 {
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this).ToPacket());
                         ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
@@ -1185,7 +1185,7 @@ namespace L2dotNET.GameService.World
                 return;
             }
 
-            BroadcastPacket(new MagicSkillUse(this, this, skillId, 1, 0));
+            BroadcastPacket(MagicSkillUse.ToPacket(this, this, skillId, 1, 0));
             SendSystemMessage(SystemMessage.SystemMessageId.EnabledSoulshot);
         }
 
@@ -1284,7 +1284,7 @@ namespace L2dotNET.GameService.World
         {
             if (target == null)
             {
-                BroadcastPacket(new TargetUnselected(this));
+                BroadcastPacket(TargetUnselected.ToPacket(this));
                 CurrentTarget = null;
             }
             else
@@ -1293,7 +1293,7 @@ namespace L2dotNET.GameService.World
                 {
                     if (CurrentTarget.ObjId != target.ObjId)
                     {
-                        BroadcastPacket(new TargetUnselected(this));
+                        BroadcastPacket(TargetUnselected.ToPacket(this));
                     }
                     else
                     {
@@ -1304,7 +1304,7 @@ namespace L2dotNET.GameService.World
 
                 CurrentTarget = target;
 
-                BroadcastPacket(new TargetSelected(ObjId, target));
+                BroadcastPacket(TargetSelected.ToPacket(ObjId, target.ObjId,target.X, target.Y,target.Z));
                 OnNewTargetSelection(target);
             }
         }
@@ -1343,16 +1343,16 @@ namespace L2dotNET.GameService.World
                 su.Add(StatusUpdate.CurCp, (int)CurCp);
             }
 
-            BroadcastPacket(su);
+            BroadcastPacket(su.ToPacket());
 
             if (this is L2Summon)
             {
-                ((L2Summon)this).Owner?.SendPacket(new PetStatusUpdate((L2Summon)this));
+                ((L2Summon)this).Owner?.SendPacket(PetStatusUpdate.ToPacket((L2Summon)this));
             }
 
             if (this is L2Player)
             {
-                ((L2Player)this).Party?.BroadcastToMembers(new PartySmallWindowUpdate((L2Player)this));
+                ((L2Player)this).Party?.BroadcastToMembers(PartySmallWindowUpdate.ToPacket((L2Player)this));
             }
         }
 
@@ -1408,7 +1408,7 @@ namespace L2dotNET.GameService.World
                 CastTime.Enabled = false;
             }
 
-            BroadcastPacket(new MagicSkillCanceld(ObjId));
+            BroadcastPacket(MagicSkillCanceld.ToPacket(ObjId));
             CurrentCast = null;
         }
 
@@ -1506,7 +1506,7 @@ namespace L2dotNET.GameService.World
 
                 StatusUpdate su = new StatusUpdate(ObjId);
                 su.Add(StatusUpdate.CurHp, (int)CurHp);
-                BroadcastPacket(su);
+                BroadcastPacket(su.ToPacket());
             }
 
             if (skill.MpConsume1 > 0)
@@ -1515,7 +1515,7 @@ namespace L2dotNET.GameService.World
 
                 StatusUpdate su = new StatusUpdate(ObjId);
                 su.Add(StatusUpdate.CurMp, (int)CurMp);
-                BroadcastPacket(su);
+                BroadcastPacket(su.ToPacket());
             }
 
             int hitTime = skill.SkillHitTime;
@@ -1523,7 +1523,7 @@ namespace L2dotNET.GameService.World
             int hitT = hitTime > 0 ? (int)(hitTime * 0.95) : 0;
             CurrentCast = skill;
 
-            BroadcastPacket(new MagicSkillUse(this, target, skill, hitTime == 0 ? 20 : hitTime));
+            BroadcastPacket(MagicSkillUse.ToPacket(this, target, skill, hitTime == 0 ? 20 : hitTime));
 
             if (hitTime > 50)
             {
@@ -1559,7 +1559,7 @@ namespace L2dotNET.GameService.World
 
                 StatusUpdate su = new StatusUpdate(ObjId);
                 su.Add(StatusUpdate.CurMp, (int)CurMp);
-                BroadcastPacket(su);
+                BroadcastPacket(su.ToPacket());
             }
 
             if (CurrentCast.CastRange != -1)
@@ -1590,7 +1590,7 @@ namespace L2dotNET.GameService.World
             List<int> broadcast = new List<int>();
             broadcast.AddRange(arr.Keys);
 
-            BroadcastPacket(new MagicSkillLaunched(this, broadcast, CurrentCast.SkillId, CurrentCast.Level));
+            BroadcastPacket(MagicSkillLaunched.ToPacket(this, broadcast, CurrentCast.SkillId, CurrentCast.Level));
 
             AddEffects(this, CurrentCast, arr);
             CurrentCast = null;
@@ -1658,7 +1658,7 @@ namespace L2dotNET.GameService.World
 
             Heading = (int)((Math.Atan2(-spx, -spy) * 10430.378) + short.MaxValue);
 
-            BroadcastPacket(new CharMoveToLocation(this));
+            BroadcastPacket(CharMoveToLocation.ToPacket(this));
 
             _updatePositionTime.Enabled = true;
 
@@ -1703,7 +1703,7 @@ namespace L2dotNET.GameService.World
 
                 if (update)
                 {
-                    BroadcastPacket(new StopMove(this));
+                    BroadcastPacket(StopMove.ToPacket(this));
                 }
             }
 

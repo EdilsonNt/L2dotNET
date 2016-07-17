@@ -28,11 +28,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     int regId = 0; //MapRegionTable.getInstance().getRegionSysId(player.X, player.Y);
                     if (regId > 0)
                     {
-                        player.SendPacket(new SystemMessage((SystemMessage.SystemMessageId)regId).AddNumber(player.X).AddNumber(player.Y).AddNumber(player.Z));
+                        player.SendPacket(new SystemMessage((SystemMessage.SystemMessageId)regId).AddNumber(player.X).AddNumber(player.Y).AddNumber(player.Z).ToPacket());
                     }
                     else
                     {
-                        player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.NotImplementedYet2361).AddString("Nowhere"));
+                        player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.NotImplementedYet2361).AddString("Nowhere").ToPacket());
                     }
 
                     int x = (player.X >> 15) + 9 + 8;

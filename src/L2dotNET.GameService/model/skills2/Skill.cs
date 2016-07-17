@@ -256,7 +256,7 @@ namespace L2dotNET.GameService.Model.Skills2
 
             if (retcode == -1)
             {
-                target.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1CannotBeUsed).AddSkillName(SkillId, Level));
+                target.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1CannotBeUsed).AddSkillName(SkillId, Level).ToPacket());
             }
 
             return retcode == -2;

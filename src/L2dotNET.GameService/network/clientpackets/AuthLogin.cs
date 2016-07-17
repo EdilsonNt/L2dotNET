@@ -48,7 +48,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                     _client.AccountChars.Add(p);
                 }
 
-                _client.SendPacket(new CharacterSelectionInfo(_client.AccountName, _client.AccountChars, _client.SessionId));
+                _client.SendPacket(CharacterSelectionInfo.ToPacket(_client.AccountName, _client.AccountChars, _client.SessionId));
                 AuthThread.Instance.SetInGameAccount(_client.AccountName, true);
             }
             else

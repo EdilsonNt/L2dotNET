@@ -24,7 +24,7 @@ namespace L2dotNET.GameService.Model.Npcs.Cubic.Data
             }
 
             owner.AddAbnormal(Skill1, owner, true, false);
-            owner.BroadcastPacket(new MagicSkillUse(owner, owner, Skill1, Skill1.SkillHitTime));
+            owner.BroadcastPacket(MagicSkillUse.ToPacket(owner, owner, Skill1, Skill1.SkillHitTime));
             return 1;
         }
     }

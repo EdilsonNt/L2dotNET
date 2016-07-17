@@ -59,7 +59,7 @@ namespace L2dotNET.GameService.Model.Npcs.Cubic
                 SkillCastTask(null, null);
             }
 
-            casterPlayer.BroadcastPacket(new MagicSkillUse(casterPlayer, targetPlayer, skill, skill.SkillHitTime));
+            casterPlayer.BroadcastPacket(MagicSkillUse.ToPacket(casterPlayer, targetPlayer, skill, skill.SkillHitTime));
         }
 
         private void SkillCastTask(object sender, System.Timers.ElapsedEventArgs e)
@@ -90,7 +90,7 @@ namespace L2dotNET.GameService.Model.Npcs.Cubic
                             sm.AddNumber(ts.Hours);
                             sm.AddNumber(ts.Minutes);
                             sm.AddNumber(ts.Seconds);
-                            _caster.SendPacket(sm);
+                            _caster.SendPacket(sm.ToPacket());
                         }
                         else if (ts.TotalMinutes > 0)
                         {
@@ -98,14 +98,14 @@ namespace L2dotNET.GameService.Model.Npcs.Cubic
                             sm.AddSkillName(_cast.SkillId, _cast.Level);
                             sm.AddNumber(ts.Minutes);
                             sm.AddNumber(ts.Seconds);
-                            _caster.SendPacket(sm);
+                            _caster.SendPacket(sm.ToPacket());
                         }
                         else
                         {
                             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2SecondsRemainingInS1ReuseTime);
                             sm.AddSkillName(_cast.SkillId, _cast.Level);
                             sm.AddNumber(ts.Seconds);
-                            _caster.SendPacket(sm);
+                            _caster.SendPacket(sm.ToPacket());
                         }
 
                         return;

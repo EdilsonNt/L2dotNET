@@ -49,7 +49,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.VehicleAPI
                 player.Boat = (L2Boat)player.KnownObjects[_boatId];
             }
 
-            player.BroadcastPacket(new GetOnVehicle(player));
+            player.BroadcastPacket(GetOnVehicle.ToPacket(player));
         }
     }
 }

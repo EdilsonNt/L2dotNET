@@ -192,7 +192,7 @@ namespace L2dotNET.GameService.Model.Npcs
 
             if (newtarget)
             {
-                player.SendPacket(new MyTargetSelected(ObjId, 0));
+                player.SendPacket(MyTargetSelected.ToPacket(ObjId, 0));
             }
             else
             {
@@ -204,7 +204,7 @@ namespace L2dotNET.GameService.Model.Npcs
         {
             List<L2Item> items = player.GetAllItems().Where(item => item.IsEquipped != 1).ToList();
 
-            player.SendPacket(new WareHouseDepositList(player, items, WareHouseDepositList.WhPrivate));
+            player.SendPacket(WareHouseDepositList.ToPacket(player, items, WareHouseDepositList.WhPrivate));
             player.FolkNpc = this;
         }
 
@@ -226,7 +226,7 @@ namespace L2dotNET.GameService.Model.Npcs
 
             List<L2Item> items = player.GetAllItems().Where(item => item.IsEquipped != 1).ToList();
 
-            player.SendPacket(new WareHouseDepositList(player, items, WareHouseDepositList.WhClan));
+            player.SendPacket(WareHouseDepositList.ToPacket(player, items, WareHouseDepositList.WhClan));
             player.FolkNpc = this;
         }
 
@@ -280,7 +280,7 @@ namespace L2dotNET.GameService.Model.Npcs
         {
             foreach (L2Player obj in KnownObjects.Values.OfType<L2Player>())
             {
-                obj.SendPacket(new NpcInfo(this));
+                obj.SendPacket(NpcInfo.ToPacket(this));
             }
         }
 
@@ -338,12 +338,12 @@ namespace L2dotNET.GameService.Model.Npcs
                 {
                     list.Clear();
                     player.ActiveSkillTree = list;
-                    player.SendPacket(new AcquireSkillList(AcquireSkillList.SkillType.Usual));
+                    player.SendPacket(AcquireSkillList.ToPacket(AcquireSkillList.SkillType.Usual));
                 }
 
                 if (nextLvl != 800)
                 {
-                    player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.DoNotHaveFurtherSkillsToLearnS1).AddNumber(nextLvl));
+                    player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.DoNotHaveFurtherSkillsToLearnS1).AddNumber(nextLvl).ToPacket());
                 }
                 else
                 {
@@ -355,7 +355,7 @@ namespace L2dotNET.GameService.Model.Npcs
             }
 
             player.ActiveSkillTree = list;
-            player.SendPacket(new AcquireSkillList(AcquireSkillList.SkillType.Usual));
+            player.SendPacket(AcquireSkillList.ToPacket(AcquireSkillList.SkillType.Usual));
             player.FolkNpc = this;
         }
 
@@ -378,7 +378,7 @@ namespace L2dotNET.GameService.Model.Npcs
 
         private void RemoveCorpse(object sender, ElapsedEventArgs e)
         {
-            BroadcastPacket(new DeleteObject(ObjId));
+            BroadcastPacket(DeleteObject.ToPacket(ObjId));
             L2World.Instance.RemoveObject(this);
         }
 

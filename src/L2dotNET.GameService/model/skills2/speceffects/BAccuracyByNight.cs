@@ -22,13 +22,13 @@ namespace L2dotNET.GameService.Model.Skills2.SpecEffects
 
         public override void OnStartNight(L2Player player)
         {
-            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.NightS1EffectApplies).AddSkillName(_effect.SkillId, _effect.SkillLv));
+            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.NightS1EffectApplies).AddSkillName(_effect.SkillId, _effect.SkillLv).ToPacket());
             player.AddStat(_effect);
         }
 
         public override void OnStartDay(L2Player player)
         {
-            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.DayS1EffectDisappears).AddSkillName(_effect.SkillId, _effect.SkillLv));
+            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.DayS1EffectDisappears).AddSkillName(_effect.SkillId, _effect.SkillLv).ToPacket());
             player.RemoveStat(_effect);
         }
     }

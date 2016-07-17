@@ -28,7 +28,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 return;
             }
 
-            player.BroadcastPacket(new SocialAction(player.ObjId, _actionId));
+            player.BroadcastPacket(SocialAction.ToPacket(player.ObjId, _actionId));
         }
     }
 }

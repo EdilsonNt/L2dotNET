@@ -8,11 +8,11 @@ namespace L2dotNET.GameService.Network.Serverpackets
     {
         private const byte Opcode = 0x48;
 
-        internal static Packet ToPacket(L2Character caster, L2Object target, Skill skill, int hitTime, int flag = 0)
+        internal static Packet ToPacket(L2Character caster, L2Object target, int skillid, int level, int hitTime, int flag = 0)
         {
             Packet p = new Packet(Opcode);
             p.WriteInt(caster.ObjId, target.ObjId);
-            p.WriteInt(skill.SkillId, skill.Level);
+            p.WriteInt(skillid, level);
             p.WriteInt(hitTime);
             p.WriteInt(0); //_reuseDelay
             p.WriteInt(caster.X, caster.Y, caster.Z);
@@ -29,6 +29,11 @@ namespace L2dotNET.GameService.Network.Serverpackets
             p.WriteInt(target.Y);
             p.WriteInt(target.Z);
             return p;
+        }
+
+        internal static Packet ToPacket(L2Character caster, L2Object target, Skill skill, int hitTime, int flag = 0)
+        {
+            return ToPacket(caster, target, skill.SkillId, skill.Level, hitTime, flag);
         }
     }
 }

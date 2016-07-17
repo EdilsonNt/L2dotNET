@@ -63,8 +63,8 @@ namespace L2dotNET.GameService.Network.Serverpackets
             p.WriteInt((int)walkSpd);
             p.WriteInt((int)runSpd);
             p.WriteInt((int)walkSpd);
-            p.WriteDouble(anim);
-            p.WriteDouble(anim2);
+            p.WriteDouble(1);
+            p.WriteDouble(1);
 
             p.WriteDouble(player.Radius);
             p.WriteDouble(player.Height);
@@ -107,10 +107,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
 
             p.WriteInt(player.MaxCp); //max cp here
             p.WriteInt((int)player.CurCp);
-            p.WriteInt(player.GetEnchantValue());
-            p.WriteInt(player.TeamId);
+            p.WriteByte(player.GetEnchantValue());
+            p.WriteByte((byte)player.TeamId);
             p.WriteInt(player.GetClanCrestLargeId());
-            p.WriteInt(player.Noblesse);
+            p.WriteByte(player.Noblesse);
 
             byte hero = player.Heroic;
             if (player.TransformId != 0)

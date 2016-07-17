@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using L2dotNET.GameService.Model.Inventory;
 using L2dotNET.GameService.Model.Player;
+using L2dotNET.GameService.Model.Skills2;
 using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Network.Serverpackets
@@ -9,9 +10,8 @@ namespace L2dotNET.GameService.Network.Serverpackets
     class CharacterSelectionInfo
     {
         private const byte Opcode = 0x13;
-        public static int CharId = -1;
 
-        internal static Packet ToPacket(string account, List<L2Player> players, int sessionId)
+        internal static Packet ToPacket(string account, List<L2Player> players, int sessionId, int charId = -1)
         {
             Packet p = new Packet(Opcode);
 
@@ -60,19 +60,19 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 }
 
                 p.WriteInt(player.HairStyle, player.HairColor, player.Face);
-                p.WriteDouble(player.MaxHp, player.MaxMp);
+                p.WriteDouble(player.MaxHp,player.MaxMp);
                 p.WriteInt(0); // days left before TODO
 
                 p.WriteInt((int)player.ActiveClass.ClassId.Id);
 
                 int selection = 0;
 
-                if (CharId != -1)
+                if (charId != -1)
                 {
-                    selection = CharId == player.ObjId ? 1 : 0;
+                    selection = charId == player.ObjId ? 1 : 0;
                 }
 
-                if ((CharId == -1) && (player.LastAccountSelection == 1))
+                if ((charId == -1) && (player.LastAccountSelection == 1))
                 {
                     selection = 1;
                 }

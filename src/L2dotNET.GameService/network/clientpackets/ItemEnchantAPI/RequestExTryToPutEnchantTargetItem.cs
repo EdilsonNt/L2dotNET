@@ -10,21 +10,17 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
     class RequestExTryToPutEnchantTargetItem : PacketBase
     {
         private int _aSTargetId;
-
+        private GameClient _client;
         public RequestExTryToPutEnchantTargetItem(Packet packet, GameClient client)
         {
             packet.MoveOffset(2);
             _client = client;
-        }
-
-        public override void Read()
-        {
             _aSTargetId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if (player.EnchantState != ItemEnchantManager.StatePutItem)
             {

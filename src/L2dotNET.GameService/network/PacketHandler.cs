@@ -254,57 +254,53 @@ namespace L2dotNET.GameService.Network
                 case 0xD0:
                     switch (packet.SecondOpcode)
                     {
-                        case 8:
+                        case 0x08:
                             packetBase = new RequestManorList(packet, client);
                             break;
                         case 0x11:
                             packetBase = new RequestExSetPledgeCrestLarge(packet, client);
                             break;
 
-                        case 5:
+                        case 0x05:
                             packetBase = new RequestAutoSoulShot(packet, client);
                             break;
 
-                        case 0x16:
+                        case 0x1d:
                             packetBase = new RequestPledgeMemberInfo(packet, client);
                             break;
-
-                        case 0x1E:
-                            packetBase = new RequestExRqItemLink(packet, client);
-                            break;
-                        case 0x24:
-                            packetBase = new RequestSaveInventoryOrder(packet, client);
-                            break;
+                        //case 0x24:
+                        //    packetBase = new RequestSaveInventoryOrder(packet, client);
+                        //    break;
 
                         case 0x22:
                             packetBase = new RequestCursedWeaponList(packet, client);
                             break;
 
-                        case 0x4B:
-                            packetBase = new RequestDispel(packet, client);
-                            break;
-                        case 0x4C:
-                            packetBase = new RequestExTryToPutEnchantTargetItem(packet, client);
-                            break;
-                        case 0x4D:
-                            packetBase = new RequestExTryToPutEnchantSupportItem(packet, client);
-                            break;
-                        case 0x4E:
-                            packetBase = new RequestExCancelEnchantItem(packet, client);
-                            break;
-                        case 0x58:
-                            packetBase = new RequestDominionInfo(packet, client);
-                            break;
-                        case 0x76:
-                            packetBase = new RequestBuySellUiClose(packet, client);
-                            break;
+                        //case 0x4B:
+                        //    packetBase = new RequestDispel(packet, client);
+                        //    break;
+                        //case 0x4C:
+                        //    packetBase = new RequestExTryToPutEnchantTargetItem(packet, client);
+                        //    break;
+                        //case 0x4D:
+                        //    packetBase = new RequestExTryToPutEnchantSupportItem(packet, client);
+                        //    break;
+                        //case 0x4E:
+                        //    packetBase = new RequestExCancelEnchantItem(packet, client);
+                        //    break;
+                        //case 0x58:
+                        //    packetBase = new RequestDominionInfo(packet, client);
+                        //    break;
+                        //case 0x76:
+                        //    packetBase = new RequestBuySellUiClose(packet, client);
+                        //    break;
 
-                        case 0x78:
-                            packetBase = new RequestPartyLootModification(packet, client);
-                            break;
-                        case 0x79:
-                            packetBase = new AnswerPartyLootModification(packet, client);
-                            break;
+                        //case 0x78:
+                        //    packetBase = new RequestPartyLootModification(packet, client);
+                        //    break;
+                        //case 0x79:
+                        //    packetBase = new AnswerPartyLootModification(packet, client);
+                        //    break;
                     }
 
                     break;

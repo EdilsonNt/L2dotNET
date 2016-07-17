@@ -168,7 +168,7 @@ namespace L2dotNET.GameService
             _crypt.decrypt(buff);
             TrafficUp += _buffer.Length;
 
-            PacketHandler.HandlePacket(this, buff);
+            PacketHandler.HandlePacket(new Packet(1, buff), this);
 
             new System.Threading.Thread(Read).Start();
         }

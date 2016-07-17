@@ -30,7 +30,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
             else
             {
-                player.SendPacket(new ExRpItemLink(item));
+               // player.SendPacket(ExRpItemLink.ToPacket(item));
             }
         }
     }

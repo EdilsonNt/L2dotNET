@@ -18,8 +18,6 @@ namespace L2dotNET.GameService.Network.Clientpackets
         {
             L2Player player = _client.CurrentPlayer;
 
-            player.SendPacket(new ExReplyDominionInfo());
-            player.SendPacket(new ExShowOwnthingPos());
         }
     }
 }

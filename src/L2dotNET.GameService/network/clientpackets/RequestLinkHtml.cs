@@ -36,7 +36,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             int idx = player.CurrentTarget?.ObjId ?? player.ObjId;
 
-            player.SendPacket(new NpcHtmlMessage(player, file, idx, id));
+            player.SendPacket(new NpcHtmlMessage(player, file, idx, id).ToPacket());
         }
     }
 }

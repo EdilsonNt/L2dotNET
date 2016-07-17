@@ -9,7 +9,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
     class RequestAddTradeItem : PacketBase
     {
         private int _sId;
-        private long _num;
+        private int _num;
         private int _unk1;
         private readonly GameClient _client;
         public RequestAddTradeItem(Packet packet, GameClient client)
@@ -74,10 +74,10 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 _num = 1;
             }
 
-            long numInList = player.AddItemToTrade(item.ObjId, _num);
-            long numCurrent = item.Count - numInList;
-            player.SendPacket(new TradeOwnAdd(item, numInList));
-            player.Requester.SendPacket(new TradeOtherAdd(item, numInList));
+            int numInList = player.AddItemToTrade(item.ObjId, _num);
+            int numCurrent = item.Count - numInList;
+            player.SendPacket(TradeOwnAdd.ToPacket(item, numInList));
+            player.Requester.SendPacket(TradeOtherAdd.ToPacket(item, numInList));
 
             byte action = 2; //mod, 2-del
             if (item.Template.Stackable)
@@ -89,7 +89,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 }
             }
 
-            player.SendPacket(new TradeUpdate(item, numCurrent, action));
+            player.SendPacket(TradeUpdate.ToPacket(item, numCurrent));
         }
     }
 }

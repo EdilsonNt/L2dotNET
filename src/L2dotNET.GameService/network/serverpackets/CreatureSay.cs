@@ -7,7 +7,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
     {
         private const byte Opcode = 0x4a;
 
-        internal static Packet ToPacket(int id, SayIDList type, string name, string text)
+        internal static Packet ToPacket(SayIDList type, string text, string name = "", int id = 0)
         {
             Packet p = new Packet(Opcode);
             p.WriteInt(id);

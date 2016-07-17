@@ -4,6 +4,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Timers;
 using L2dotNET.GameService.Network;
 using L2dotNET.GameService.Network.Serverpackets;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Model.Player
 {
@@ -41,25 +42,25 @@ namespace L2dotNET.GameService.Model.Player
 
             if (!onCreate)
             {
-                playerMember.SendPacket(new PartySmallWindowAll(this));
+                playerMember.SendPacket(PartySmallWindowAll.ToPacket(playerMember,this));
             }
             else
             {
-                BroadcastToMembers(new PartySmallWindowAll(this));
+                BroadcastToMembers(PartySmallWindowAll.ToPacket(playerMember, this));
             }
 
             playerMember.Party = this;
 
             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YouJoinedS1Party);
             sm.AddPlayerName(Leader.Name);
-            playerMember.SendPacket(sm);
+            playerMember.SendPacket(sm.ToPacket());
 
             sm = new SystemMessage(SystemMessage.SystemMessageId.S1JoinedParty);
             sm.AddPlayerName(Leader.Name);
-            BroadcastToMembers(sm, playerMember.ObjId);
+            BroadcastToMembers(sm.ToPacket(), playerMember.ObjId);
         }
 
-        public void BroadcastToMembers(GameServerNetworkPacket pk)
+        public void BroadcastToMembers(Packet pk)
         {
             foreach (L2Player pl in Members)
             {
@@ -67,7 +68,7 @@ namespace L2dotNET.GameService.Model.Player
             }
         }
 
-        public void BroadcastToMembers(GameServerNetworkPacket pk, int except)
+        public void BroadcastToMembers(Packet pk, int except)
         {
             foreach (L2Player pl in Members.Where(pl => pl.ObjId != except))
             {
@@ -83,10 +84,10 @@ namespace L2dotNET.GameService.Model.Player
         public void VoteForLootChange(byte mode)
         {
             VoteId = mode;
-            BroadcastToMembers(new ExAskModifyPartyLooting(Leader.Name, mode));
+            BroadcastToMembers(ExAskModifyPartyLooting.ToPacket(Leader.Name, mode));
             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.RequestingApprovalForChangingPartyLootToS1);
             sm.AddSysStr(LootSysstrings[mode]);
-            Leader.SendPacket(sm);
+            Leader.SendPacket(sm.ToPacket());
 
             _votesOnStart = (byte)Members.Count;
 
@@ -140,8 +141,8 @@ namespace L2dotNET.GameService.Model.Player
                 VoteId = -1;
             }
 
-            BroadcastToMembers(sm);
-            BroadcastToMembers(new ExSetPartyLooting(VoteId));
+            BroadcastToMembers(sm.ToPacket());
+            BroadcastToMembers(ExSetPartyLooting.ToPacket(VoteId));
             VoteId = -1;
         }
 
@@ -156,17 +157,17 @@ namespace L2dotNET.GameService.Model.Player
                     Leader = Members.First.Value;
                     SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S1HasBecomeAPartyLeader);
                     sm.AddPlayerName(Leader.Name);
-                    BroadcastToMembers(sm);
+                    BroadcastToMembers(sm.ToPacket());
 
-                    BroadcastToMembers(new PartySmallWindowDeleteAll());
-                    BroadcastToMembers(new PartySmallWindowAll(this));
+                    BroadcastToMembers(PartySmallWindowDeleteAll.ToPacket());
+                    BroadcastToMembers(PartySmallWindowAll.ToPacket(playerMember, this));
                 }
                 else
                 {
                     foreach (L2Player pl in Members)
                     {
                         pl.SendSystemMessage(SystemMessage.SystemMessageId.PartyDispersed);
-                        pl.SendPacket(new PartySmallWindowDeleteAll());
+                        pl.SendPacket(PartySmallWindowDeleteAll.ToPacket());
                         pl.Party = null;
                     }
 
@@ -198,17 +199,17 @@ namespace L2dotNET.GameService.Model.Player
             if (Members.Count > 2)
             {
                 playerMember.SendSystemMessage(SystemMessage.SystemMessageId.YouLeftParty);
-                playerMember.SendPacket(new PartySmallWindowDeleteAll());
+                playerMember.SendPacket(PartySmallWindowDeleteAll.ToPacket());
                 playerMember.Party = null;
 
                 SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S1LeftParty);
                 sm.AddPlayerName(playerMember.Name);
-                BroadcastToMembers(sm);
-                BroadcastToMembers(new PartySmallWindowDelete(playerMember.ObjId, playerMember.Name));
+                BroadcastToMembers(sm.ToPacket());
+                BroadcastToMembers(PartySmallWindowDelete.ToPacket(playerMember.ObjId, playerMember.Name));
 
                 if (playerMember.Summon != null)
                 {
-                    BroadcastToMembers(new ExPartyPetWindowDelete(playerMember.Summon.ObjId, playerMember.ObjId, playerMember.Summon.Name));
+                    BroadcastToMembers(ExPartyPetWindowDelete.ToPacket(playerMember.Summon.ObjId, playerMember.ObjId, playerMember.Summon.Name));
                 }
             }
             else
@@ -216,7 +217,7 @@ namespace L2dotNET.GameService.Model.Player
                 foreach (L2Player pl in Members)
                 {
                     pl.SendSystemMessage(SystemMessage.SystemMessageId.PartyDispersed);
-                    pl.SendPacket(new PartySmallWindowDeleteAll());
+                    pl.SendPacket(PartySmallWindowDeleteAll.ToPacket());
                     pl.Party = null;
                 }
 

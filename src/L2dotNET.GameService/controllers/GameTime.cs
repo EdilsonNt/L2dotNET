@@ -5,6 +5,7 @@ using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network;
 using L2dotNET.GameService.Network.Serverpackets;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Controllers
 {
@@ -38,8 +39,8 @@ namespace L2dotNET.GameService.Controllers
         }
 
         public int Time;
-        private readonly GameServerNetworkPacket _dayPk = new SunRise();
-        private readonly GameServerNetworkPacket _nightPk = new SunSet();
+        private readonly Packet _dayPk = SunRise.ToPacket();
+        private readonly Packet _nightPk = SunSet.ToPacket();
         private System.Timers.Timer _timeController;
         public DateTime ServerStartUp;
         public static bool Night;
@@ -119,7 +120,7 @@ namespace L2dotNET.GameService.Controllers
             str += ":";
             str += dt.Second < 10 ? "0" + dt.Second : "" + dt.Second;
             sm.AddString(str);
-            player.SendPacket(sm);
+            player.SendPacket(sm.ToPacket());
         }
     }
 }

@@ -35,7 +35,7 @@ namespace L2dotNET.GameService.Model.Skills2.Effects
 
             InventoryUpdate iu = new InventoryUpdate();
             iu.AddModItem(item);
-            player.SendPacket(iu);
+            player.SendPacket(iu.ToPacket());
 
             return Nothing;
         }

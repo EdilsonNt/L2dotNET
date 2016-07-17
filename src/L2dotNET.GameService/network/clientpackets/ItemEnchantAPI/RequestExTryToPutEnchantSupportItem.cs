@@ -11,22 +11,18 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
     {
         private int _aSSupportId;
         private int _aSTargetId;
-
+        private GameClient _client;
         public RequestExTryToPutEnchantSupportItem(Packet packet, GameClient client)
         {
             packet.MoveOffset(2);
             _client = client;
-        }
-
-        public override void Read()
-        {
             _aSSupportId = packet.ReadInt();
             _aSTargetId = packet.ReadInt();
         }
 
         public override void RunImpl()
         {
-            L2Player player = Client.CurrentPlayer;
+            L2Player player = _client.CurrentPlayer;
 
             if ((player.EnchantState != ItemEnchantManager.StateEnchantStart) || (player.EnchantItem.ObjId != _aSTargetId))
             {

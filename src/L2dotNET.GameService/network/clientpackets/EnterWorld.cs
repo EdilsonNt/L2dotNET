@@ -23,7 +23,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             player.TotalRestore();
 
-            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.WelcomeToLineage));
+            player.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.WelcomeToLineage).ToPacket());
 
             AnnouncementManager.Instance.OnEnter(player);
 
@@ -34,7 +34,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
             player.StartRegeneration();
             // player.sendItemList(false);
-            player.SendPacket(new FriendList());
+            player.SendPacket(FriendList.ToPacket());
             player.SendQuestList();
             player.UpdateSkillList();
             player.UpdateReuse();
@@ -44,7 +44,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 ClanTable.Instance.Apply(player);
             }
 
-            player.SendPacket(new ExStorageMaxCount(player));
+            player.SendPacket(ExStorageMaxCount.ToPacket(player));
             // player.sendPacket(new ExBasicActionList());
             //  NpcTable.getInstance().spawnNpc("grandmaster_ramos", player.X, player.Y, player.Z, player.Heading);
             player.SendActionFailed();
@@ -58,13 +58,11 @@ namespace L2dotNET.GameService.Network.Clientpackets
             //player.SetRegion(worldRegion);
             //player.getKnowns(500, 500, false);
 
-            player.SendPacket(new UserInfo(player));
-            player.SendPacket(new UserInfo(player));
+            player.SendPacket(UserInfo.ToPacket(player));
+            player.SendPacket(UserInfo.ToPacket(player));
 
             //player.sendPacket(new ShortCutInit(player));
             player.StartAi();
-
-            player.RequestPing();
         }
 
         //private int[][] _tracert = new int[5][];

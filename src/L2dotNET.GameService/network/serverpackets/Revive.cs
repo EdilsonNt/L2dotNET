@@ -7,10 +7,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
     {
         private const byte Opcode = 0x07;
 
-        internal static Packet ToPacket(L2Object obj)
+        internal static Packet ToPacket(int objId)
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(obj.ObjId);
+            p.WriteInt(objId);
             return p;
         }
     }

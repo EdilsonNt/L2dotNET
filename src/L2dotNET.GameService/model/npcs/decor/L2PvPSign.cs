@@ -13,7 +13,7 @@ namespace L2dotNET.GameService.Model.Npcs.Decor
 
         public override void NotifyAction(L2Player player)
         {
-            player.SendPacket(new NpcHtmlMessage(player, Htm, ObjId, 0));
+            player.SendPacket(new NpcHtmlMessage(player, Htm, ObjId, 0).ToPacket());
         }
 
         public override string AsString()

@@ -38,7 +38,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
                 return;
             }
 
-            player.SendPacket(new RecipeItemMakeInfo(player, rec, 2));
+            player.SendPacket(RecipeItemMakeInfo.ToPacket(player, rec, 2));
         }
     }
 }

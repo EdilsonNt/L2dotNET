@@ -81,8 +81,8 @@ namespace L2dotNET.GameService.Network.LoginAuth
 
             IsConnected = true;
 
-            SendPacket(new Send.LoginAuth());
-            SendPacket(new LoginServPing(this));
+            SendPacket(Send.LoginAuth.ToPacket());
+            SendPacket(LoginServPing.ToPacket(this));
             new System.Threading.Thread(Read).Start();
         }
 
@@ -150,12 +150,12 @@ namespace L2dotNET.GameService.Network.LoginAuth
             Initialize();
         }
 
-        public void SendPacket(GameServerNetworkPacket pk)
+        public void SendPacket(Packet pk)
         {
-            pk.Write();
+            //pk.Write();
 
             List<byte> blist = new List<byte>();
-            byte[] db = pk.ToByteArray();
+            byte[] db = pk.GetBuffer();
 
             short len = (short)db.Length;
             blist.AddRange(BitConverter.GetBytes(len));
@@ -189,13 +189,13 @@ namespace L2dotNET.GameService.Network.LoginAuth
 
         public void SetInGameAccount(string account, bool status = false)
         {
-            SendPacket(new AccountInGame(account, status));
+            SendPacket(AccountInGame.ToPacket(account, status));
         }
 
         public void UpdatePlayersOnline()
         {
             short cnt = (short)L2World.Instance.GetPlayers().Count;
-            SendPacket(new PlayerCount(cnt));
+            SendPacket(PlayerCount.ToPacket(cnt));
         }
 
         private readonly SortedList<string, AccountModel> _awaitingAccounts = new SortedList<string, AccountModel>();

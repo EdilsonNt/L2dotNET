@@ -63,7 +63,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 player.Sp -= e.LvUpSp;
                 StatusUpdate su = new StatusUpdate(player.ObjId);
                 su.Add(StatusUpdate.Sp, player.Sp);
-                player.SendPacket(su);
+                player.SendPacket(su.ToPacket());
             }
 
             player.DestroyItemById(e.ItemId, e.ItemCount);
@@ -94,7 +94,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
                 if (upd)
                 {
-                    player.SendPacket(new ShortCutInit(player));
+                    player.SendPacket(ShortCutInit.ToPacket(player));
                 }
             }
 

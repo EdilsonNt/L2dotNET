@@ -5,6 +5,7 @@ using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Zones.Forms;
 using L2dotNET.GameService.Network;
 using L2dotNET.GameService.World;
+using L2dotNET.Network;
 
 namespace L2dotNET.GameService.Model.Zones
 {
@@ -28,7 +29,7 @@ namespace L2dotNET.GameService.Model.Zones
             }
         }
 
-        public void BroadcastPacket(GameServerNetworkPacket pk)
+        public void BroadcastPacket(Packet pk)
         {
             foreach (L2Object obj in ObjectsInside.Values)
                 if (obj is L2Player)

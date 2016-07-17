@@ -14,7 +14,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
 
         public override void RunImpl()
         {
-            _client.SendPacket(new ShowMiniMap());
+            _client.SendPacket(ShowMiniMap.ToPacket());
         }
     }
 }

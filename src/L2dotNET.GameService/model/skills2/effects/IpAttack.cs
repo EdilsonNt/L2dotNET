@@ -37,10 +37,10 @@ namespace L2dotNET.GameService.Model.Skills2.Effects
             //double shieldDef = Formulas.checkShieldDef(caster, tar);
             double damage = Formulas.GetPhysSkillHitDamage(caster, tar, _power);
 
-            caster.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddPlayerName(caster.Name).AddString(tar.Name).AddNumber(damage));
+            caster.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddPlayerName(caster.Name).AddString(tar.Name).AddNumber(damage).ToPacket());
             if (tar is L2Player)
             {
-                tar.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddPlayerName(tar.Name).AddPlayerName(caster.Name).AddNumber(damage));
+                tar.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddPlayerName(tar.Name).AddPlayerName(caster.Name).AddNumber(damage).ToPacket());
             }
 
             tar.ReduceHp(caster, damage);

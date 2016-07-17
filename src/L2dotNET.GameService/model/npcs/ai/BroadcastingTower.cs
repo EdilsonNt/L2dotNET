@@ -94,7 +94,7 @@ namespace L2dotNET.GameService.Model.Npcs.Ai
             player.Obsy = player.Y;
             player.Obsz = player.Z;
 
-            player.SendPacket(new ObservationMode(dx[3], dx[4], dx[5]));
+            player.SendPacket(ObservationMode.ToPacket(dx[3], dx[4], dx[5]));
         }
 
         private void ShowGroup(L2Player player, L2Npc npc, int group)

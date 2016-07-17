@@ -65,30 +65,30 @@ namespace L2dotNET.GameService.Compression
             return Encoding.UTF8.GetString(buff);
         }
 
-        public void p.WriteInt(int d)
+        public void WriteD(int d)
         {
             byte[] buff = BitConverter.GetBytes(d);
             Stream.Write(buff, 0, buff.Length);
         }
 
-        public void p.WriteInt(long q)
+        public void WriteQ(long q)
         {
             byte[] buff = BitConverter.GetBytes(q);
             Stream.Write(buff, 0, buff.Length);
         }
 
-        public void p.WriteInt(byte c)
+        public void WriteC(byte c)
         {
             Stream.WriteByte(c);
         }
 
-        public void p.WriteString(string str)
+        public void WriteS(string str)
         {
             byte[] buff = Encoding.UTF8.GetBytes(str);
             Stream.Write(buff, 0, buff.Length);
         }
 
-        public void p.WriteDouble(double f)
+        public void WriteF(double f)
         {
             byte[] buff = BitConverter.GetBytes(f);
             Stream.Write(buff, 0, buff.Length);

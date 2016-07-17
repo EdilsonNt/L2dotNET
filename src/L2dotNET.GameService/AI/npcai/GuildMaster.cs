@@ -365,7 +365,7 @@ namespace L2dotNET.GameService.AI.NpcAI
                             string mstr = talker.Clan.GetSubpledgeMasterName(reply) ?? FString.GetInstance().Get(1010642);
                             htm.Replace("<?" + reply + "submaster?>", mstr);
 
-                            talker.SendPacket(htm);
+                            talker.SendPacket(htm.ToPacket());
                         }
                         else
                         {
@@ -388,7 +388,7 @@ namespace L2dotNET.GameService.AI.NpcAI
                             string mstr = talker.Clan.GetSubpledgeMasterName(reply) ?? FString.GetInstance().Get(1010642);
                             htm.Replace("<?" + reply + "submaster?>", mstr);
 
-                            talker.SendPacket(htm);
+                            talker.SendPacket(htm.ToPacket());
                         }
                         else
                         {
@@ -534,7 +534,7 @@ namespace L2dotNET.GameService.AI.NpcAI
             }
 
             talker.ActiveSkillTree = avail;
-            talker.SendPacket(new AcquireSkillList(AcquireSkillList.SkillType.Clan));
+            talker.SendPacket(AcquireSkillList.ToPacket(AcquireSkillList.SkillType.Clan));
         }
 
         public override void TalkedBypass(L2Player talker, string bypass)
@@ -606,7 +606,7 @@ namespace L2dotNET.GameService.AI.NpcAI
             talker.ClanPrivs = L2Clan.CpAll;
 
             talker.BroadcastUserInfo();
-            talker.SendPacket(new PledgeShowMemberListAll(clan, 0));
+            talker.SendPacket(PledgeShowMemberListAll.ToPacket(clan, 0));
 
             talker.ShowHtm("pl006.htm", Myself);
 

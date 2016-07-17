@@ -104,7 +104,7 @@ namespace L2dotNET.GameService.Managers
 
             if (!next)
             {
-                player.SendPacket(new ExPutEnchantTargetItemResult());
+                //player.SendPacket(new ExPutEnchantTargetItemResult());
                 player.EnchantScroll = null;
                 player.EnchantState = 0;
                 player.SendSystemMessage(SystemMessage.SystemMessageId.DoesNotFitScrollConditions);
@@ -113,7 +113,7 @@ namespace L2dotNET.GameService.Managers
             {
                 player.EnchantState = StateEnchantStart;
                 player.EnchantItem = item;
-                player.SendPacket(new ExPutEnchantTargetItemResult(item.ObjId));
+                //player.SendPacket(new ExPutEnchantTargetItemResult(item.ObjId));
             }
         }
 
@@ -150,14 +150,14 @@ namespace L2dotNET.GameService.Managers
 
             if (!next)
             {
-                player.SendPacket(new ExPutEnchantSupportItemResult());
+                //player.SendPacket(new ExPutEnchantSupportItemResult());
                 player.EnchantStone = null;
                 player.SendSystemMessage(SystemMessage.SystemMessageId.ItemDoesNotMeetRequirementsForSupportEnhancementSpellbook);
             }
             else
             {
                 player.EnchantStone = stone;
-                player.SendPacket(new ExPutEnchantSupportItemResult(stone.ObjId));
+               // player.SendPacket(new ExPutEnchantSupportItemResult(stone.ObjId));
             }
         }
     }

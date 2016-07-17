@@ -21,7 +21,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             Dictionary<int, PcTemplate> dict = CharTemplateTable.Instance.Templates;
             List<PcTemplate> pcTemp = dict.Select((t, i) => dict.SingleOrDefault(x => x.Key == i).Value).ToList();
 
-            _client.SendPacket(new CharTemplates(pcTemp));
+            _client.SendPacket(CharTemplates.ToPacket(pcTemp));
         }
     }
 }

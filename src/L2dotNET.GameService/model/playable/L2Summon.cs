@@ -40,7 +40,7 @@ namespace L2dotNET.GameService.Model.Playable
         {
             if ((Owner != null) && (Owner.ObjId == player.ObjId))
             {
-                player.SendPacket(new PetStatusShow(ObjectSummonType));
+                player.SendPacket(PetStatusShow.ToPacket(ObjectSummonType));
             }
         }
 
@@ -63,7 +63,7 @@ namespace L2dotNET.GameService.Model.Playable
         {
             foreach (L2Player obj in KnownObjects.Values.OfType<L2Player>())
             {
-                obj.SendPacket(new PetInfo(this));
+                obj.SendPacket(PetInfo.ToPacket(this));
             }
         }
 
@@ -116,7 +116,7 @@ namespace L2dotNET.GameService.Model.Playable
             Z = Owner.Z;
             Heading = Owner.Heading;
 
-            Owner.SendPacket(new PetStatusUpdate(this));
+            Owner.SendPacket(PetStatusUpdate.ToPacket(this));
 
             L2World.Instance.AddObject(this); //to add pet
             _isSpawned = true;
@@ -133,7 +133,7 @@ namespace L2dotNET.GameService.Model.Playable
             Owner = owner;
             owner.Summon = this;
 
-            owner.Party?.BroadcastToMembers(new ExPartyPetWindowAdd(this));
+            owner.Party?.BroadcastToMembers(ExPartyPetWindowAdd.ToPacket(this));
 
             Title = owner.Name;
         }
@@ -142,9 +142,9 @@ namespace L2dotNET.GameService.Model.Playable
         {
             AiCharacter.Disable();
 
-            Owner.SendPacket(new PetDelete(ObjectSummonType, ObjId));
+            Owner.SendPacket(PetDelete.ToPacket(ObjectSummonType, ObjId));
 
-            Owner.Party?.BroadcastToMembers(new ExPartyPetWindowDelete(ObjId, Owner.ObjId, Name));
+            Owner.Party?.BroadcastToMembers(ExPartyPetWindowDelete.ToPacket(ObjId, Owner.ObjId, Name));
 
             Owner.Summon = null;
             DeleteMe();
@@ -262,7 +262,7 @@ namespace L2dotNET.GameService.Model.Playable
             }
 
             nulled.Clear();
-            Owner.Party.BroadcastToMembers(p);
+            Owner.Party.BroadcastToMembers(p.ToPacket());
         }
 
         public override string AsString()

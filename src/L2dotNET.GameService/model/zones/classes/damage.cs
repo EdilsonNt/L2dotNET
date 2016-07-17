@@ -70,7 +70,7 @@ namespace L2dotNET.GameService.Model.Zones.Classes
 
             L2Player p = (L2Player)obj;
             p.IsInDanger = true;
-            p.SendPacket(new EtcStatusUpdate(p));
+            p.SendPacket(EtcStatusUpdate.ToPacket(p));
         }
 
         public override void OnExit(L2Object obj, bool cls)
@@ -91,7 +91,7 @@ namespace L2dotNET.GameService.Model.Zones.Classes
 
             L2Player p = (L2Player)obj;
             p.IsInDanger = false;
-            p.SendPacket(new EtcStatusUpdate(p));
+            p.SendPacket(EtcStatusUpdate.ToPacket(p));
         }
     }
 }

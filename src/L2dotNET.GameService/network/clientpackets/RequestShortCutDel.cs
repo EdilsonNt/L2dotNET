@@ -44,7 +44,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 //sqb.sql_delete(false);
             }
 
-            player.SendPacket(new ShortCutInit(player));
+            player.SendPacket(ShortCutInit.ToPacket(player));
         }
     }
 }

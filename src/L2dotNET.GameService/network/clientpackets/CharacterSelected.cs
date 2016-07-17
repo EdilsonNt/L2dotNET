@@ -47,7 +47,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
             player.Gameclient = _client;
             _client.CurrentPlayer = player;
 
-            _client.SendPacket(new Serverpackets.CharacterSelected(player, _client.SessionId));
+            _client.SendPacket(Serverpackets.CharacterSelected.ToPacket(player, _client.SessionId));
         }
 
         //TODO: Simplify method body

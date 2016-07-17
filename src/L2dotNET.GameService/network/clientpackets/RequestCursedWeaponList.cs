@@ -7,22 +7,18 @@ namespace L2dotNET.GameService.Network.Clientpackets
 {
     class RequestCursedWeaponList : PacketBase
     {
+        private GameClient _client;
         public RequestCursedWeaponList(Packet packet, GameClient client)
         {
             packet.MoveOffset(2);
             _client = client;
         }
 
-        public override void Read()
-        {
-            // nothing
-        }
-
         public override void RunImpl()
         {
             int[] ids = CursedWeapons.GetInstance().GetWeaponIds();
 
-            Client.SendPacket(new ExCursedWeaponList(ids));
+            _client.SendPacket(ExCursedWeaponList.ToPacket(ids));
         }
     }
 }

@@ -44,12 +44,12 @@ namespace L2dotNET.GameService.Model.Npcs
 
             if (newtarget)
             {
-                player.SendPacket(new MyTargetSelected(ObjId, player.Level - Template.Level));
+                player.SendPacket(MyTargetSelected.ToPacket(ObjId, (short)(player.Level - Template.Level)));
 
                 StatusUpdate su = new StatusUpdate(ObjId);
                 su.Add(StatusUpdate.CurHp, (int)CurHp);
                 su.Add(StatusUpdate.MaxHp, (int)CharacterStat.GetStat(EffectType.BMaxHp));
-                player.SendPacket(su);
+                player.SendPacket(su.ToPacket());
             }
             else
             {
@@ -104,7 +104,7 @@ namespace L2dotNET.GameService.Model.Npcs
         {
             foreach (L2Player obj in KnownObjects.Values.OfType<L2Player>())
             {
-                obj.SendPacket(new NpcInfo(this));
+                obj.SendPacket(NpcInfo.ToPacket(this));
             }
         }
 

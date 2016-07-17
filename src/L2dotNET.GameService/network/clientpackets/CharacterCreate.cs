@@ -1,4 +1,5 @@
-﻿using L2dotNET.GameService.Model.Inventory;
+﻿using L2dotNET.GameService.Enums;
+using L2dotNET.GameService.Model.Inventory;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Model.Skills2;
 using L2dotNET.GameService.Network.Serverpackets;
@@ -55,26 +56,26 @@ namespace L2dotNET.GameService.Network.Clientpackets
         {
             if (_name.Length > 16)
             {
-                _client.SendPacket(new CharCreateFail(CharCreateFail.CharCreateFailReason.TooLong16Chars));
+                _client.SendPacket(CharCreateFail.ToPacket(CharCreateFailReason.TooLong16Chars));
                 return;
             }
 
             if (_client.AccountChars.Count > 7)
             {
-                _client.SendPacket(new CharCreateFail(CharCreateFail.CharCreateFailReason.TooManyCharsOnAccount));
+                _client.SendPacket(CharCreateFail.ToPacket(CharCreateFailReason.TooManyCharsOnAccount));
                 return;
             }
 
             if (PlayerService.CheckIfPlayerNameExists(_name))
             {
-                _client.SendPacket(new CharCreateFail(CharCreateFail.CharCreateFailReason.NameExists));
+                _client.SendPacket(CharCreateFail.ToPacket(CharCreateFailReason.NameExists));
                 return;
             }
 
             PcTemplate template = CharTemplateTable.Instance.GetTemplate((byte)_classId);
             if (template == null)
             {
-                _client.SendPacket(new CharCreateFail(CharCreateFail.CharCreateFailReason.CreationRestriction));
+                _client.SendPacket(CharCreateFail.ToPacket(CharCreateFailReason.CreationRestriction));
                 return;
             }
 
@@ -201,12 +202,10 @@ namespace L2dotNET.GameService.Network.Clientpackets
                                       };
             PlayerService.CreatePlayer(playerModel);
             player.Gameclient.AccountChars.Add(player);
-            _client.SendPacket(new CharCreateOk());
+            _client.SendPacket(CharCreateOk.ToPacket());
             L2World.Instance.AddPlayer(player);
-            CharacterSelectionInfo csl = new CharacterSelectionInfo(_client.AccountName, _client.AccountChars, _client.SessionId)
-                                         {
-                                             CharId = player.ObjId
-                                         };
+            Packet csl = CharacterSelectionInfo.ToPacket(_client.AccountName, _client.AccountChars, _client.SessionId,
+                player.ObjId);
             _client.SendPacket(csl);
         }
     }

@@ -25,7 +25,7 @@ namespace L2dotNET.GameService.Model.Skills2.Effects
             double next = target.CurHp;
 
             int diff = (int)(next - current);
-            target.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1HpRestored).AddNumber(diff));
+            target.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1HpRestored).AddNumber(diff).ToPacket());
             return Nothing;
         }
     }

@@ -76,7 +76,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.VehicleAPI
             player.BoatX = _dx;
             player.BoatY = _dy;
             player.BoatZ = _dz;
-            player.BroadcastPacket(new MoveToLocationInVehicle(player, _x, _y, _z));
+            player.BroadcastPacket(MoveToLocationInVehicle.ToPacket(player, _x, _y, _z));
         }
     }
 }

@@ -38,8 +38,8 @@ namespace L2dotNET.GameService.Network.Clientpackets.VehicleAPI
                 return;
             }
 
-            player.BroadcastPacket(new StopMoveInVehicle(player, _x, _y, _z));
-            player.BroadcastPacket(new GetOffVehicle(player, _x, _y, _z));
+            player.BroadcastPacket(StopMoveInVehicle.ToPacket(player, _x, _y, _z));
+            player.BroadcastPacket(GetOffVehicle.ToPacket(player, _x, _y, _z));
             player.Boat = null;
         }
     }

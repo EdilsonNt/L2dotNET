@@ -31,12 +31,10 @@ namespace L2dotNET.GameService.Network.Clientpackets
             }
 
             player.Termination();
-            player.SendPacket(new RestartResponse());
+            player.SendPacket(RestartResponse.ToPacket(true));
 
-            CharacterSelectionInfo csl = new CharacterSelectionInfo(_client.AccountName, _client.AccountChars, _client.SessionId)
-                                         {
-                                             CharId = player.ObjId
-                                         };
+            Packet csl = CharacterSelectionInfo.ToPacket(_client.AccountName, _client.AccountChars, _client.SessionId,
+                player.ObjId);
             player.SendPacket(csl);
         }
     }

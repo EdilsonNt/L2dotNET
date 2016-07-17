@@ -121,7 +121,7 @@ namespace L2dotNET.GameService.Network.Clientpackets
                 player.AddItem(itemId, count);
             }
 
-            player.SendPacket(new ExBuySellListClose());
+            player.SendPacket(ExBuySellListClose.ToPacket());
         }
     }
 }

@@ -10,36 +10,48 @@ namespace L2dotNET.GameService.Network.Serverpackets
 {
     public class SystemMessage
     {
-        private static readonly List<object[]> _data = new List<object[]>();
+        private readonly List<object[]> _data = new List<object[]>();
+        public int MessgeId;
 
-        public void AddString(string val)
+        public SystemMessage(SystemMessageId msgId)
+        {
+            MessgeId = (int)msgId;
+        }
+
+        public SystemMessage AddString(string val)
         {
             _data.Add(new object[] { 0, val });
+            return this;
         }
 
-        public void AddNumber(int val)
+        public SystemMessage AddNumber(int val)
         {
             _data.Add(new object[] { 1, val });
+            return this;
         }
 
-        public void AddNumber(double val)
+        public SystemMessage AddNumber(double val)
         {
             _data.Add(new object[] { 1, (int)val });
+            return this;
         }
 
-        public void AddNpcName(int val)
+        public SystemMessage AddNpcName(int val)
         {
             _data.Add(new object[] { 2, 1000000 + val });
+            return this;
         }
 
-        public void AddItemName(int val)
+        public SystemMessage AddItemName(int val)
         {
             _data.Add(new object[] { 3, val });
+            return this;
         }
 
-        public void AddSkillName(int val, int lvl)
+        public SystemMessage AddSkillName(int val, int lvl)
         {
             _data.Add(new object[] { 4, val, lvl });
+            return this;
         }
 
         public void AddCastleName(int val)
@@ -67,34 +79,32 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _data.Add(new object[] { 10, val });
         }
 
-        public void AddPlayerName(string val)
+        public SystemMessage AddPlayerName(string val)
         {
             _data.Add(new object[] { 12, val });
+            return this;
         }
 
-        public void AddName(L2Object obj)
+        public SystemMessage AddName(L2Object obj)
         {
             if (obj is L2Player)
             {
-                AddPlayerName(((L2Player)obj).Name);
+                return AddPlayerName(((L2Player)obj).Name);
             }
-            else if (obj is L2Npc)
+            if (obj is L2Npc)
             {
-                AddNpcName(((L2Npc)obj).NpcId);
+                return AddNpcName(((L2Npc)obj).NpcId);
             }
-            else if (obj is L2Summon)
+            if (obj is L2Summon)
             {
-                AddNpcName(((L2Summon)obj).NpcId);
+                return AddNpcName(((L2Summon)obj).NpcId);
             }
-            else if(obj is L2Item)
+            if (obj is L2Item)
             {
-                AddItemName(((L2Item)obj).Template.ItemId);
+                return AddItemName(((L2Item)obj).Template.ItemId);
             }
-            else
-            {
-                AddString(obj.AsString());
-            }
-            
+
+            return AddString(obj.AsString());
         }
 
         public void AddSysStr(int val)
@@ -102,11 +112,10 @@ namespace L2dotNET.GameService.Network.Serverpackets
             _data.Add(new object[] { 13, val });
         }
         private const byte Opcode = 0x64;
-
-        internal static Packet ToPacket(SystemMessageId msgId)
+        internal Packet ToPacket()
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt((int)msgId);
+            p.WriteInt(MessgeId);
             p.WriteInt(_data.Count);
 
             foreach (object[] d in _data)

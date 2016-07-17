@@ -20,7 +20,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
         {
             L2Player player = _client.CurrentPlayer;
 
-            player.SendPacket(new RecipeBookItemList(player, _type));
+            player.SendPacket(RecipeBookItemList.ToPacket(player, _type));
         }
     }
 }

@@ -116,7 +116,7 @@ namespace L2dotNET.GameService.Model.Items
             }
 
             character.AddAbnormal(skill, character, true, false);
-            character.BroadcastPacket(new MagicSkillUse(character, character, skill, 100));
+            character.BroadcastPacket(MagicSkillUse.ToPacket(character, character, skill, 100));
         }
 
         private void CalcSkill(L2Character character)

@@ -7,7 +7,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
     {
         private const byte Opcode = 0x21;
 
-        internal static Packet ToPacket(L2Item item)
+        internal static Packet ToPacket(L2Item item, int num)
         {
             Packet p =  new Packet(Opcode);
             p.WriteShort(1);
@@ -15,7 +15,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
             p.WriteShort((short)item.Template.Type1);
             p.WriteInt(item.ObjId); //item.ObjID
             p.WriteInt(item.Template.ItemId);
-            p.WriteInt(item.Count);
+            p.WriteInt(num);
 
             p.WriteShort((short)item.Template.Type2);
             p.WriteShort(0); // ??

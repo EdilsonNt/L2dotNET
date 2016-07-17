@@ -111,12 +111,12 @@ namespace L2dotNET.GameService.Model.Structures
                     if (captured)
                     {
                         cl.UpdatePledgeNameValue(ReputationCapture);
-                        cl.BroadcastToMembers(new SystemMessage(SystemMessage.SystemMessageId.ClanAddedS1SPointsToReputationScore).AddNumber(ReputationCapture));
+                        cl.BroadcastToMembers(new SystemMessage(SystemMessage.SystemMessageId.ClanAddedS1SPointsToReputationScore).AddNumber(ReputationCapture).ToPacket());
                     }
                     else
                     {
                         cl.UpdatePledgeNameValue(ReputationNothing);
-                        cl.BroadcastToMembers(new SystemMessage(SystemMessage.SystemMessageId.ClanAcquiredContestedClanHallAndS1ReputationPoints).AddNumber(ReputationNothing));
+                        cl.BroadcastToMembers(new SystemMessage(SystemMessage.SystemMessageId.ClanAcquiredContestedClanHallAndS1ReputationPoints).AddNumber(ReputationNothing).ToPacket());
                     }
                 }
                 else

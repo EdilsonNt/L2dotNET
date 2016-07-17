@@ -6,9 +6,32 @@ namespace L2dotNET.GameService.Network.Serverpackets
     class Attack
     {
         private const byte Opcode = 0x05;
-        private static Hit[] _hits = new Hit[0];
+        protected int AttackerObjId;
+        public bool Soulshot;
+        public int Grade;
+        private readonly int _x;
+        private int _tx;
+        private readonly int _y;
+        private int _ty;
+        private readonly int _z;
+        private int _tz;
+        private Hit[] _hits;
 
-        public void AddHit(int targetId, int damage, bool miss, bool crit, bool shld, bool soulshot, int grade)
+        public Attack(L2Character player, L2Object target, bool ss, int grade)
+        {
+            AttackerObjId = player.ObjId;
+            Soulshot = ss;
+            Grade = grade;
+            _x = player.X;
+            _y = player.Y;
+            _z = player.Z;
+            _tx = target.X;
+            _ty = target.Y;
+            _tz = target.Z;
+            _hits = new Hit[0];
+        }
+
+        public void AddHit(int targetId, int damage, bool miss, bool crit, bool shld)
         {
             int pos = _hits.Length;
             Hit[] tmp = new Hit[pos + 1];
@@ -18,7 +41,7 @@ namespace L2dotNET.GameService.Network.Serverpackets
                 tmp[i] = _hits[i];
             }
 
-            tmp[pos] = new Hit(targetId, damage, miss, crit, shld, soulshot, grade);
+            tmp[pos] = new Hit(targetId, damage, miss, crit, shld, Soulshot, Grade);
             _hits = tmp;
         }
 
@@ -27,12 +50,12 @@ namespace L2dotNET.GameService.Network.Serverpackets
             return _hits.Length > 0;
         }
 
-        internal static Packet ToPacket(L2Character player, L2Object target, bool ss, int grade)
+        internal Packet ToPacket()
         {
             Packet p = new Packet(Opcode);
-            p.WriteInt(player.ObjId, _hits[0].TargetId,_hits[0].Damage);
+            p.WriteInt(AttackerObjId, _hits[0].TargetId,_hits[0].Damage);
             p.WriteByte((byte)_hits[0].Flags);
-            p.WriteInt(player.X, player.Y, player.Z);
+            p.WriteInt(_x, _y, _z);
             p.WriteShort((short)(_hits.Length - 1));
             for (int i = 1; i < _hits.Length; i++)
             {

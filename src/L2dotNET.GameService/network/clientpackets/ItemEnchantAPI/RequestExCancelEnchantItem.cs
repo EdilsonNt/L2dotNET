@@ -1,4 +1,5 @@
 ﻿using L2dotNET.GameService.Config;
+using L2dotNET.GameService.Enums;
 using L2dotNET.GameService.Managers;
 using L2dotNET.GameService.Model.Player;
 using L2dotNET.GameService.Network.Serverpackets;
@@ -29,7 +30,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.ItemEnchantAPI
             }
 
             player.EnchantState = 0;
-            player.SendPacket(new EnchantResult(EnchantResultVal.CloseWindow));
+            player.SendPacket(EnchantResult.ToPacket(EnchantResultVal.CloseWindow));
         }
     }
 }

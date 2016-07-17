@@ -25,7 +25,7 @@ namespace L2dotNET.GameService.Model.Npcs
 
             NpcHtmlMessage htm = new NpcHtmlMessage(player, "agitjanitorhi.htm", ObjId);
             htm.Replace("<?my_pledge_name?>", player.Clan.Name);
-            player.SendPacket(htm);
+            player.SendPacket(htm.ToPacket());
         }
 
         public override void OnDialog(L2Player player, int ask, int reply)
@@ -47,7 +47,7 @@ namespace L2dotNET.GameService.Model.Npcs
                                 door.BroadcastUserInfo();
                             }
 
-                            player.SendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorOpen.htm", ObjId));
+                            player.SendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorOpen.htm", ObjId).ToPacket());
                             break;
                         case 2: //close
                             foreach (L2Door door in _hideout.doors.Where(door => door.Closed != 1))
@@ -56,7 +56,7 @@ namespace L2dotNET.GameService.Model.Npcs
                                 door.BroadcastUserInfo();
                             }
 
-                            player.SendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorClose.htm", ObjId));
+                            player.SendPacket(new NpcHtmlMessage(player, "AgitJanitorAfterDoorClose.htm", ObjId).ToPacket());
                             break;
                     }
 

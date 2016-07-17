@@ -67,7 +67,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
             player.CurMp -= rec.MpConsume;
             StatusUpdate su = new StatusUpdate(player.ObjId);
             su.Add(StatusUpdate.CurMp, (int)player.CurMp);
-            player.SendPacket(su);
+            player.SendPacket(su.ToPacket());
 
             foreach (RecipeItemEntry material in rec.Materials)
             {
@@ -78,7 +78,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
             {
                 if (new Random().Next(0, 100) > rec.SuccessRate)
                 {
-                    player.SendPacket(new RecipeItemMakeInfo(player, rec, 0));
+                    player.SendPacket(RecipeItemMakeInfo.ToPacket(player, rec, 0));
                     player.SendActionFailed();
                     return;
                 }
@@ -89,7 +89,7 @@ namespace L2dotNET.GameService.Network.Clientpackets.RecipeAPI
                 player.AddItem(prod.Item.ItemId, prod.Count);
             }
 
-            player.SendPacket(new RecipeItemMakeInfo(player, rec, 1));
+            player.SendPacket(RecipeItemMakeInfo.ToPacket(player, rec, 1));
         }
     }
 }

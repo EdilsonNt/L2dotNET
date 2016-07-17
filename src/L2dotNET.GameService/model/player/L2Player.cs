@@ -113,6 +113,9 @@ namespace L2dotNET.GameService.Model.Player
                                   CurHp = playerModel.CurHp,
                                   CurMp = playerModel.CurMp,
                                   CurCp = playerModel.CurCp,
+                                  MaxCp = playerModel.MaxCp,
+                                  MaxHp = playerModel.MaxHp,
+                                  MaxMp = playerModel.MaxMp,
                                   Face = playerModel.Face,
                                   HairStyle = playerModel.HairStyle,
                                   HairColor = playerModel.HairColor,
@@ -299,21 +302,14 @@ namespace L2dotNET.GameService.Model.Player
             Gameclient.SendPacket(pk);
         }
 
-        private ActionFailed _af;
-
         public override void SendActionFailed()
         {
-            if (_af == null)
-            {
-                _af = new ActionFailed();
-            }
-
-            SendPacket(_af);
+            SendPacket(ActionFailed.ToPacket());
         }
 
         public override void SendSystemMessage(SystemMessage.SystemMessageId msgId)
         {
-            SendPacket(new SystemMessage(msgId));
+            SendPacket(new SystemMessage(msgId).ToPacket());
         }
 
         public int PenaltyWeight;
@@ -338,7 +334,7 @@ namespace L2dotNET.GameService.Model.Player
 
             if (newtarget)
             {
-                player.SendPacket(new MyTargetSelected(ObjId, 0));
+                player.SendPacket(MyTargetSelected.ToPacket(ObjId, 0));
             }
             else
             {
@@ -348,7 +344,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public override void SendMessage(string p)
         {
-            SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1).AddString(p));
+            SendPacket(new SystemMessage(SystemMessage.SystemMessageId.S1).AddString(p).ToPacket());
         }
 
         public int CurrentFocusEnergy = 0;
@@ -380,7 +376,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public void UpdateReuse()
         {
-            SendPacket(new SkillCoolTime(this));
+            SendPacket(SkillCoolTime.ToPacket(this));
         }
 
         public void CastSkill(Skill skill, bool ctrlPressed, bool shiftPressed)
@@ -438,7 +434,7 @@ namespace L2dotNET.GameService.Model.Player
                             sm.AddNumber(ts.Hours);
                             sm.AddNumber(ts.Minutes);
                             sm.AddNumber(ts.Seconds);
-                            SendPacket(sm);
+                            SendPacket(sm.ToPacket());
                         }
                         else if (ts.TotalMinutes > 0)
                         {
@@ -446,14 +442,14 @@ namespace L2dotNET.GameService.Model.Player
                             sm.AddSkillName(skill.SkillId, skill.Level);
                             sm.AddNumber(ts.Minutes);
                             sm.AddNumber(ts.Seconds);
-                            SendPacket(sm);
+                            SendPacket(sm.ToPacket());
                         }
                         else
                         {
                             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.S2SecondsRemainingInS1ReuseTime);
                             sm.AddSkillName(skill.SkillId, skill.Level);
                             sm.AddNumber(ts.Seconds);
-                            SendPacket(sm);
+                            SendPacket(sm.ToPacket());
                         }
 
                         SendActionFailed();
@@ -541,7 +537,7 @@ namespace L2dotNET.GameService.Model.Player
 
                 StatusUpdate su = new StatusUpdate(ObjId);
                 su.Add(StatusUpdate.CurHp, (int)CurHp);
-                BroadcastPacket(su);
+                BroadcastPacket(su.ToPacket());
             }
 
             if (skill.MpConsume1 > 0)
@@ -550,7 +546,7 @@ namespace L2dotNET.GameService.Model.Player
 
                 StatusUpdate su = new StatusUpdate(ObjId);
                 su.Add(StatusUpdate.CurMp, (int)CurMp);
-                BroadcastPacket(su);
+                BroadcastPacket(su.ToPacket());
             }
 
             //if (skill.ConsumeItemId != 0)
@@ -563,10 +559,10 @@ namespace L2dotNET.GameService.Model.Player
 
             if (hitTime > 0)
             {
-                SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Blue, hitTime - 20));
+                SendPacket(SetupGauge.ToPacket(SetupGauge.SgColor.Blue, hitTime - 20));
             }
 
-            BroadcastPacket(new MagicSkillUse(this, target, skill, hitTime == 0 ? 20 : hitTime, blowOk));
+            BroadcastPacket(MagicSkillUse.ToPacket(this, target, skill, hitTime == 0 ? 20 : hitTime, blowOk));
             if (hitTime > 50)
             {
                 if (CastTime == null)
@@ -602,7 +598,7 @@ namespace L2dotNET.GameService.Model.Player
 
                 StatusUpdate su = new StatusUpdate(ObjId);
                 su.Add(StatusUpdate.CurMp, (int)CurMp);
-                BroadcastPacket(su);
+                BroadcastPacket(su.ToPacket());
             }
 
             if (CurrentCast.CastRange != -1)
@@ -636,7 +632,7 @@ namespace L2dotNET.GameService.Model.Player
             List<int> broadcast = new List<int>();
             broadcast.AddRange(arr.Keys);
 
-            BroadcastPacket(new MagicSkillLaunched(this, broadcast, CurrentCast.SkillId, CurrentCast.Level));
+            BroadcastPacket(MagicSkillLaunched.ToPacket(this, broadcast, CurrentCast.SkillId, CurrentCast.Level));
 
             AddEffects(this, CurrentCast, arr);
             CurrentCast = null;
@@ -681,11 +677,11 @@ namespace L2dotNET.GameService.Model.Player
             }
 
             nulled.Clear();
-            SendPacket(m);
+            SendPacket(m.ToPacket());
 
             if (p != null)
             {
-                Party?.BroadcastToMembers(p);
+                Party?.BroadcastToMembers(p.ToPacket());
             }
         }
 
@@ -710,7 +706,7 @@ namespace L2dotNET.GameService.Model.Player
         {
             if (file.EndsWithIgnoreCase(".htm"))
             {
-                SendPacket(new NpcHtmlMessage(this, file, o.ObjId, 0));
+                SendPacket(new NpcHtmlMessage(this, file, o.ObjId).ToPacket());
                 if (o is L2Npc)
                 {
                     FolkNpc = (L2Npc)o;
@@ -728,7 +724,7 @@ namespace L2dotNET.GameService.Model.Player
             {
                 NpcHtmlMessage htm = new NpcHtmlMessage(this, file, npc.ObjId, 0);
                 htm.Replace("<?quest_id?>", questId);
-                SendPacket(htm);
+                SendPacket(htm.ToPacket());
                 FolkNpc = npc;
             }
             else
@@ -750,7 +746,7 @@ namespace L2dotNET.GameService.Model.Player
         public void QuestAccept(QuestInfo qi)
         {
             Quests.Add(qi);
-            SendPacket(new PlaySound("ItemSound.quest_accept"));
+            SendPacket(PlaySound.ToPacket("ItemSound.quest_accept"));
             SendQuestList();
 
             //SQL_Block sqb = new SQL_Block("user_quests");
@@ -761,7 +757,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public void ShowHtmPlain(string plain, L2Object o)
         {
-            SendPacket(new NpcHtmlMessage(this, plain, o?.ObjId ?? -1, true));
+            SendPacket(new NpcHtmlMessage(this, plain, o?.ObjId ?? -1, true).ToPacket());
             if (o is L2Npc)
             {
                 FolkNpc = (L2Npc)o;
@@ -773,7 +769,7 @@ namespace L2dotNET.GameService.Model.Player
             foreach (QuestInfo qi in Quests.Where(qi => qi.Id == questId))
             {
                 qi.Stage = stage;
-                SendPacket(new PlaySound("ItemSound.quest_middle"));
+                SendPacket(PlaySound.ToPacket("ItemSound.quest_middle"));
 
                 //SQL_Block sqb = new SQL_Block("user_quests");
                 //sqb.param("qstage", stage);
@@ -793,7 +789,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public void SendQuestList()
         {
-            SendPacket(new QuestList(this));
+            SendPacket(QuestList.ToPacket(this));
         }
 
         public void AddExpSp(int exp, int sp, bool msg)
@@ -801,7 +797,7 @@ namespace L2dotNET.GameService.Model.Player
             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YouEarnedS1ExpAndS2Sp);
             sm.AddNumber(exp);
             sm.AddNumber(sp);
-            SendPacket(sm);
+            SendPacket(sm.ToPacket());
 
             Exp += exp;
             Sp += sp;
@@ -809,7 +805,7 @@ namespace L2dotNET.GameService.Model.Player
             StatusUpdate su = new StatusUpdate(ObjId);
             su.Add(StatusUpdate.Exp, (int)Exp);
             su.Add(StatusUpdate.Sp, Sp);
-            SendPacket(su);
+            SendPacket(su.ToPacket());
         }
 
         public void FinishQuest(int questId)
@@ -836,7 +832,7 @@ namespace L2dotNET.GameService.Model.Player
                     }
                 }
 
-                SendPacket(new PlaySound("ItemSound.quest_finish"));
+                SendPacket(PlaySound.ToPacket("ItemSound.quest_finish"));
                 break;
             }
 
@@ -922,7 +918,7 @@ namespace L2dotNET.GameService.Model.Player
             }
 
             Quests.Remove(qi);
-            SendPacket(new PlaySound("ItemSound.quest_giveup"));
+            SendPacket(PlaySound.ToPacket("ItemSound.quest_giveup"));
         }
 
         public L2Clan Clan;
@@ -943,7 +939,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public override void UpdateSkillList()
         {
-            SendPacket(new SkillList(this, PBlockAct, PBlockSpell, PBlockSkill));
+            SendPacket(SkillList.ToPacket(this, PBlockAct, PBlockSpell, PBlockSkill));
         }
 
         private Timer _timerTooFar;
@@ -1046,7 +1042,7 @@ namespace L2dotNET.GameService.Model.Player
 
                     RecipeBook.Remove(r);
 
-                    SendPacket(new RecipeBookItemList(this, rec.Iscommonrecipe));
+                    SendPacket(RecipeBookItemList.ToPacket(this, rec.Iscommonrecipe));
                     break;
                 }
             }
@@ -1093,7 +1089,7 @@ namespace L2dotNET.GameService.Model.Player
                     Shortcuts.Add(sc);
                 }
 
-                SendPacket(new ShortCutRegister(sc));
+                SendPacket(ShortCutRegister.ToPacket(sc));
 
                 //SQL_Block sqb = new SQL_Block("user_shortcuts");
                 //sqb.param("ownerId", ObjID);
@@ -1176,7 +1172,7 @@ namespace L2dotNET.GameService.Model.Player
         {
             if (sendMessage)
             {
-                SendPacket(new SystemMessage(SystemMessage.SystemMessageId.EarnedS1Adena).AddNumber(count));
+                SendPacket(new SystemMessage(SystemMessage.SystemMessageId.EarnedS1Adena).AddNumber(count).ToPacket());
             }
 
             if (count <= 0)
@@ -1186,7 +1182,7 @@ namespace L2dotNET.GameService.Model.Player
 
             InventoryUpdate iu = new InventoryUpdate();
             iu.AddNewItem(Inventory.AddItem(57, count, this));
-            SendPacket(iu);
+            SendPacket(iu.ToPacket());
         }
 
         public override string AsString()
@@ -1196,18 +1192,18 @@ namespace L2dotNET.GameService.Model.Player
 
         public override void OnRemObject(L2Object obj)
         {
-            SendPacket(new DeleteObject(obj.ObjId));
+            SendPacket(DeleteObject.ToPacket(obj.ObjId));
         }
 
         public override void OnAddObject(L2Object obj, Packet pk, string msg = null)
         {
             if (obj is L2Npc)
             {
-                SendPacket(new NpcInfo((L2Npc)obj));
+                SendPacket(NpcInfo.ToPacket((L2Npc)obj));
             }
             else if (obj is L2Player)
             {
-                SendPacket(new CharInfo((L2Player)obj));
+                SendPacket(CharInfo.ToPacket((L2Player)obj));
 
                 if (msg != null)
                 {
@@ -1216,23 +1212,23 @@ namespace L2dotNET.GameService.Model.Player
             }
             else if (obj is L2Item)
             {
-                SendPacket(pk ?? new SpawnItem((L2Item)obj));
+                SendPacket(SpawnItem.ToPacket((L2Item)obj));
             }
             else if (obj is L2Summon)
             {
-                SendPacket(pk ?? new PetInfo((L2Summon)obj));
+                SendPacket(PetInfo.ToPacket((L2Summon)obj));
             }
             else if (obj is L2Chair)
             {
-                SendPacket(new StaticObject((L2Chair)obj));
+                SendPacket(StaticObject.ToPacket((L2Chair)obj));
             }
             else if (obj is L2StaticObject)
             {
-                SendPacket(new StaticObject((L2StaticObject)obj));
+                SendPacket(StaticObject.ToPacket((L2StaticObject)obj));
             }
             else if (obj is L2Boat)
             {
-                SendPacket(new VehicleInfo((L2Boat)obj));
+                SendPacket(VehicleInfo.ToPacket((L2Boat)obj));
             }
         }
 
@@ -1240,13 +1236,13 @@ namespace L2dotNET.GameService.Model.Player
         {
             foreach (L2Player player in L2World.Instance.GetPlayers().Where(player => player != this))
             {
-                player.SendPacket(new CharInfo(this));
+                player.SendPacket(CharInfo.ToPacket(this));
             }
         }
 
         public override void BroadcastUserInfo()
         {
-            SendPacket(new UserInfo(this));
+            SendPacket(UserInfo.ToPacket(this));
 
             //if (getPolyType() == PolyType.NPC)
             //    Broadcast.toKnownPlayers(this, new AbstractNpcInfo.PcMorphInfo(this, getPolyTemplate()));
@@ -1303,7 +1299,7 @@ namespace L2dotNET.GameService.Model.Player
             //    activeChar.sendPacket(new AbstractNpcInfo.PcMorphInfo(this, getPolyTemplate()));
             //else
             //{
-            player.SendPacket(new CharInfo(this));
+            player.SendPacket(CharInfo.ToPacket(this));
 
             if (_isSitting)
             {
@@ -1363,7 +1359,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public void ShowHtmAdmin(string val, bool plain)
         {
-            SendPacket(new TutorialShowHtml(this, val, true));
+            SendPacket(TutorialShowHtml.ToPacket(val));
 
             ViewingAdminPage = 1;
         }
@@ -1375,7 +1371,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public void SendItemList(bool open = false)
         {
-            SendPacket(new ItemList(this, open));
+            SendPacket(ItemList.ToPacket(this, open));
             //SendPacket(new ExQuestItemList(this));
         }
 
@@ -1399,7 +1395,7 @@ namespace L2dotNET.GameService.Model.Player
 
             StatusUpdate su = new StatusUpdate(ObjId);
             su.Add(StatusUpdate.CurLoad, CurrentWeight);
-            SendPacket(su);
+            SendPacket(su.ToPacket());
 
             long weightproc = (total * 1000) / (int)CharacterStat.GetStat(EffectType.BMaxWeight);
 
@@ -1441,7 +1437,7 @@ namespace L2dotNET.GameService.Model.Player
 
             PenaltyWeight = newWeightPenalty;
 
-            SendPacket(new EtcStatusUpdate(this));
+            SendPacket(EtcStatusUpdate.ToPacket(this));
         }
 
         public bool CheckFreeWeight(int weight)
@@ -1688,7 +1684,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public override void UpdateAbnormalEventEffect()
         {
-            BroadcastPacket(new ExBrExtraUserInfo(ObjId, AbnormalBitMaskEvent));
+            BroadcastPacket(ExBrExtraUserInfo.ToPacket(ObjId, AbnormalBitMaskEvent));
         }
 
         public override void UpdateAbnormalExEffect()
@@ -1763,18 +1759,18 @@ namespace L2dotNET.GameService.Model.Player
         public void ReduceSouls(byte count)
         {
             Souls -= count;
-            SendPacket(new EtcStatusUpdate(this));
+            SendPacket(EtcStatusUpdate.ToPacket(this));
         }
 
         public void AddSouls(byte count)
         {
             Souls += count;
-            SendPacket(new EtcStatusUpdate(this));
+            SendPacket(EtcStatusUpdate.ToPacket(this));
 
             SystemMessage sm = new SystemMessage(SystemMessage.SystemMessageId.YourSoulCountHasIncreasedByS1NowAtS2);
             sm.AddNumber(count);
             sm.AddNumber(Souls);
-            SendPacket(sm);
+            SendPacket(sm.ToPacket());
         }
 
         public void IncreaseSouls()
@@ -1799,7 +1795,7 @@ namespace L2dotNET.GameService.Model.Player
             PartyState = 1;
             Requester = asker;
             Requester.ItemDistribution = askerItemDistribution;
-            SendPacket(new AskJoinParty(asker.Name, askerItemDistribution));
+            SendPacket(AskJoinParty.ToPacket(asker.Name, askerItemDistribution));
         }
 
         public void ClearPend()
@@ -1847,7 +1843,7 @@ namespace L2dotNET.GameService.Model.Player
                 }
             }
 
-            SendPacket(new MyTargetSelected(target.ObjId, color));
+            SendPacket(MyTargetSelected.ToPacket(target.ObjId, (short)color));
         }
 
         public override void OnOldTargetSelection(L2Object target)
@@ -1909,8 +1905,8 @@ namespace L2dotNET.GameService.Model.Player
             _petId = npcId;
             _petControlItem = item;
 
-            BroadcastPacket(new MagicSkillUse(this, this, 1111, 1, 5000));
-            SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Blue, 4900));
+            //BroadcastPacket(MagicSkillUse.ToPacket(this, this,new Skill(),  1111, 1, 5000));
+            SendPacket(SetupGauge.ToPacket(SetupGauge.SgColor.Blue, 4900));
         }
 
         private void PetSummonEnd(object sender, ElapsedEventArgs e)
@@ -2026,13 +2022,13 @@ namespace L2dotNET.GameService.Model.Player
             }
 
             _sitTime.Enabled = true;
-            BroadcastPacket(new ChangeWaitType(this, ChangeWaitType.Sit));
+            BroadcastPacket(ChangeWaitType.ToPacket(this, ChangeWaitType.Sit));
         }
 
         public void Stand()
         {
             _sitTime.Enabled = true;
-            BroadcastPacket(new ChangeWaitType(this, ChangeWaitType.Stand));
+            BroadcastPacket(ChangeWaitType.ToPacket(this, ChangeWaitType.Stand));
             //TODO stop relax effect
         }
 
@@ -2060,7 +2056,7 @@ namespace L2dotNET.GameService.Model.Player
         {
             _chair = chairObj;
             _chair.IsUsedAlready = true;
-            BroadcastPacket(new ChairSit(ObjId, chairObj.StaticId));
+            BroadcastPacket(ChairSit.ToPacket(ObjId, chairObj.StaticId));
         }
 
         public bool IsOnShip()
@@ -2148,7 +2144,7 @@ namespace L2dotNET.GameService.Model.Player
 
             if (ranged)
             {
-                SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Red, (int)timeAtk));
+                //SendPacket(new SetupGauge(ObjId, SetupGauge.SgColor.Red, (int)timeAtk));
                 //Inventory.destroyItem(SecondaryWeaponSupport, 1, false, true);
             }
 
@@ -2201,7 +2197,7 @@ namespace L2dotNET.GameService.Model.Player
             AttackToEnd.Interval = timeAtk;
             AttackToEnd.Enabled = true;
 
-            BroadcastPacket(atk);
+            BroadcastPacket(atk.ToPacket());
         }
 
         public override void AttackDoHit(object sender, ElapsedEventArgs e)
@@ -2212,24 +2208,24 @@ namespace L2dotNET.GameService.Model.Player
                 {
                     if (Hit1.Crit)
                     {
-                        SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1LandedACriticalHit).AddPlayerName(Name));
+                        SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1LandedACriticalHit).AddPlayerName(Name).ToPacket());
                     }
 
-                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddPlayerName(Name).AddName(CurrentTarget).AddNumber(Hit1.Damage));
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddPlayerName(Name).AddName(CurrentTarget).AddNumber(Hit1.Damage).ToPacket());
                     CurrentTarget.ReduceHp(this, Hit1.Damage);
 
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit1.Damage));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit1.Damage).ToPacket());
                     }
                 }
                 else
                 {
-                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1AttackWentAstray).AddPlayerName(Name));
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1AttackWentAstray).AddPlayerName(Name).ToPacket());
 
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this).ToPacket());
                         ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
@@ -2246,24 +2242,24 @@ namespace L2dotNET.GameService.Model.Player
                 {
                     if (Hit2.Crit)
                     {
-                        SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1LandedACriticalHit).AddName(this));
+                        SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1LandedACriticalHit).AddName(this).ToPacket());
                     }
 
-                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddName(this).AddName(CurrentTarget).AddNumber(Hit2.Damage));
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasGivenC2DamageOfS3).AddName(this).AddName(CurrentTarget).AddNumber(Hit2.Damage).ToPacket());
                     CurrentTarget.ReduceHp(this, Hit2.Damage);
 
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit2.Damage));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasReceivedS3DamageFromC2).AddName(CurrentTarget).AddName(this).AddNumber(Hit2.Damage).ToPacket());
                     }
                 }
                 else
                 {
-                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1AttackWentAstray).AddPlayerName(Name));
+                    SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1AttackWentAstray).AddPlayerName(Name).ToPacket());
 
                     if (CurrentTarget is L2Player)
                     {
-                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this));
+                        CurrentTarget.SendPacket(new SystemMessage(SystemMessage.SystemMessageId.C1HasEvadedC2Attack).AddName(CurrentTarget).AddName(this).ToPacket());
                         ((L2Player)CurrentTarget).AiCharacter.NotifyEvaded(this);
                     }
                 }
@@ -2347,7 +2343,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public void Mount(NpcTemplate npc)
         {
-            BroadcastPacket(new Ride(this, true, npc.NpcId));
+            BroadcastPacket(Ride.ToPacket(this, true, npc.NpcId));
             MountedTemplate = npc;
             BroadcastUserInfo();
         }
@@ -2362,19 +2358,19 @@ namespace L2dotNET.GameService.Model.Player
 
         public void UnMount()
         {
-            BroadcastPacket(new Ride(this, false));
+            BroadcastPacket(Ride.ToPacket(this, false));
             MountedTemplate = null;
             BroadcastUserInfo();
         }
 
-        public SortedList<int, long> CurrentTrade;
+        public SortedList<int, int> CurrentTrade;
         public int Sstt;
 
-        public long AddItemToTrade(int objId, long num)
+        public int AddItemToTrade(int objId, int num)
         {
             if (CurrentTrade == null)
             {
-                CurrentTrade = new SortedList<int, long>();
+                CurrentTrade = new SortedList<int, int>();
             }
 
             if (CurrentTrade.ContainsKey(objId))
@@ -2387,7 +2383,7 @@ namespace L2dotNET.GameService.Model.Player
             return num;
         }
 
-        public void NotifyDayChange(GameServerNetworkPacket pk)
+        public void NotifyDayChange(Packet pk)
         {
             SendPacket(pk);
             if (pk is SunSet) //включаем ночные скилы
@@ -2404,7 +2400,7 @@ namespace L2dotNET.GameService.Model.Player
 
         public void Revive(double percent)
         {
-            BroadcastPacket(new Revive(ObjId));
+            BroadcastPacket(Network.Serverpackets.Revive.ToPacket(ObjId));
             Dead = false;
             StartRegeneration();
         }
@@ -2416,26 +2412,6 @@ namespace L2dotNET.GameService.Model.Player
         public int LastRequestedMultiSellId = -1;
         public int AttackingId;
         public SortedList<int, AcquireSkill> ActiveSkillTree;
-
-        public void RequestPing()
-        {
-            _lastPingId = new Random().Next(int.MaxValue);
-            NetPing ping = new NetPing(_lastPingId);
-            _pingTimeout = DateTime.Now;
-            SendPacket(ping);
-        }
-
-        public void UpdatePing(int id, int ms, int unk)
-        {
-            if (_lastPingId != id)
-            {
-                Log.Warn($"player fail to ping respond right {id} {_lastPingId} at {_pingTimeout.ToLocalTime()}");
-                return;
-            }
-
-            Ping = ms;
-            SendMessage("Your connection latency is " + ms);
-        }
 
         public void InstantTeleportWithItem(int x, int y, int z, int id, long cnt)
         {
@@ -2466,12 +2442,12 @@ namespace L2dotNET.GameService.Model.Player
             if (lvlChanged)
             {
                 Level = newLvl;
-                BroadcastPacket(new SocialAction(ObjId, 2122));
+                BroadcastPacket(SocialAction.ToPacket(ObjId, 2122));
             }
 
             if (!lvlChanged)
             {
-                SendPacket(new UserInfo(this));
+                SendPacket(UserInfo.ToPacket(this));
             }
             else
             {
@@ -2484,7 +2460,7 @@ namespace L2dotNET.GameService.Model.Player
         public void BroadcastSkillUse(int skillId)
         {
             Skill skill = SkillTable.Instance.Get(skillId);
-            BroadcastPacket(new MagicSkillUse(this, this, skill.SkillId, skill.Level, skill.SkillHitTime));
+            BroadcastPacket(MagicSkillUse.ToPacket(this, this, skill, skill.SkillHitTime));
         }
 
         public bool ClanLeader => Clan?.LeaderId == ObjId;
